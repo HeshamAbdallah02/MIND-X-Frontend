@@ -1,24 +1,53 @@
-import logo from './logo.svg';
-import './App.css';
+//frontend/src/App.js
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { HelmetProvider } from 'react-helmet-async';
+import { AuthProvider } from './context/AuthContext';
+import Header from './components/layout/Header';
+import Home from './pages/Home';
+import AdminLogin from './pages/AdminLogin';
+import Dashboard from './pages/Dashboard';
+import PrivateRoute from './components/PrivateRoute';
+
+const Layout = ({ children, hideHeader = false }) => (
+  <div className="min-h-screen bg-white">
+    {!hideHeader && <Header />}
+    <div className={!hideHeader ? "pt-16" : ""}>
+      {children}
+    </div>
+  </div>
+);
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <HelmetProvider>
+      <AuthProvider>
+        <Router future={{ 
+          v7_startTransition: true,
+          v7_relativeSplatPath: true
+        }}>
+          <Routes>
+            <Route path="/admin/login" element={
+              <Layout hideHeader>
+                <AdminLogin />
+              </Layout>
+            } />
+            <Route path="/" element={
+              <Layout>
+                <Home />
+              </Layout>
+            } />
+            <Route path="/dashboard/*" element={
+              <Layout>
+                <PrivateRoute>
+                  <Dashboard />
+                </PrivateRoute>
+              </Layout>
+            } />
+          </Routes>
+        </Router>
+      </AuthProvider>
+    </HelmetProvider>
   );
 }
 

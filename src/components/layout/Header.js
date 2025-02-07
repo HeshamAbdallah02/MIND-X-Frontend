@@ -1,0 +1,234 @@
+// frontend/src/components/layout/Header.js
+import React, { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
+import Logo from './Logo';
+import axios from 'axios';
+
+const Header = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [headerConfig, setHeaderConfig] = useState({
+    logo: {
+      imageUrl: '',
+      altText: 'MIND-X Logo'
+    },
+    colors: {
+      background: '#81C99C',
+      text: {
+        default: '#606161',
+        hover: '#FBB859'
+      }
+    }
+  });
+  const [isLoading, setIsLoading] = useState(true);
+  
+  const location = useLocation();
+  const { logout } = useAuth();
+
+  const isAdminLoginPage = location.pathname.match('/admin/login');
+  const isDashboard = location.pathname.startsWith('/dashboard');
+
+  useEffect(() => {
+    const fetchHeaderConfig = async () => {
+      try {
+        setIsLoading(true);
+        const response = await axios.get('http://localhost:5000/api/header');
+        if (response.data) {
+          setHeaderConfig(response.data);
+        }
+      } catch (error) {
+        console.error('Error fetching header configuration:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchHeaderConfig();
+  }, []);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 0);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const navItems = isDashboard ? [
+    { name: 'Home', path: '/dashboard' },
+    { name: 'Our Story', path: '/dashboard/our-story' },
+    { name: 'Events', path: '/dashboard/events' },
+    { name: 'Trainings', path: '/dashboard/trainings' },
+    { name: 'Crew', path: '/dashboard/crew' },
+    { name: 'Daily Life', path: '/dashboard/daily-life' },
+    { name: 'Blog', path: '/dashboard/blog' }
+  ] : [
+    { name: 'Home', path: '/' },
+    { name: 'Our Story', path: '/our-story' },
+    { name: 'Events', path: '/events' },
+    { name: 'Trainings', path: '/trainings' },
+    { name: 'Crew', path: '/crew' },
+    { name: 'Daily Life', path: '/daily-life' },
+    { name: 'Blog', path: '/blog' }
+  ];
+
+  // If it's the admin login page, don't render the header
+  if (isAdminLoginPage) {
+    return null;
+  }
+
+  const isActivePath = (path) => {
+    if (isDashboard) {
+      if (path === '/dashboard' && location.pathname === '/dashboard') {
+        return true;
+      }
+      return location.pathname.startsWith(path) && path !== '/dashboard';
+    }
+    return location.pathname === path;
+  };
+
+  if (isLoading) {
+    return <div className="h-16 bg-[#81C99C]" />;
+  }
+
+  return (
+    <header 
+      style={{
+        backgroundColor: isScrolled 
+          ? `${headerConfig.colors.background}E6`
+          : headerConfig.colors.background,
+        '--text-default': headerConfig.colors.text.default,
+        '--text-hover': headerConfig.colors.text.hover
+      }}
+      className={`fixed w-full top-0 z-50 transition-all duration-300 min-h-[64px] ${
+        isScrolled ? 'backdrop-blur-sm shadow-lg' : ''
+      }`}
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
+        <div className="flex justify-between items-center h-16 min-h-[64px]">
+          {/* Logo */}
+          <div className="flex-shrink-0 transform hover:scale-105 transition-transform duration-200">
+            <Link to={isDashboard ? '/dashboard' : '/'}>
+              {headerConfig.logo.imageUrl ? (
+                <img
+                  src={headerConfig.logo.imageUrl}
+                  alt={headerConfig.logo.altText}
+                  className="h-8 object-contain"
+                />
+              ) : (
+                <Logo />
+              )}
+            </Link>
+          </div>
+
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center space-x-4">
+            <nav className="flex space-x-1">
+              {navItems.map((item) => {
+                const isActive = isActivePath(item.path);
+                return (
+                  <Link
+                    key={item.name}
+                    to={item.path}
+                    className={`relative px-3 py-2 text-sm font-medium transition-all duration-200 ${
+                      isActive 
+                        ? 'text-[var(--text-hover)]' 
+                        : 'text-[var(--text-default)] hover:text-[var(--text-hover)]'
+                    } group`}
+                  >
+                    {item.name}
+                    <span 
+                      className={`absolute bottom-0 left-0 w-full h-0.5 bg-[var(--text-hover)] transform origin-left transition-transform duration-200 ${
+                        isActive ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
+                      }`}
+                    />
+                  </Link>
+                );
+              })}
+            </nav>
+
+            {isDashboard && (
+              <button
+                onClick={logout}
+                className="ml-6 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center"
+              >
+                <span>Logout</span>
+              </button>
+            )}
+          </div>
+
+          {/* Mobile Menu Button */}
+          <div className="md:hidden flex items-center">
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              style={{ color: headerConfig.colors.text.default }}
+              className="relative inline-flex items-center justify-center w-10 h-10 p-2 rounded-md hover:text-[var(--text-hover)] focus:outline-none focus:ring-2 focus:ring-inset transition-colors duration-200"
+              aria-expanded="false"
+            >
+              <span className="sr-only">Open main menu</span>
+              <div className="absolute w-6 h-6 flex flex-col justify-center items-center">
+                <span 
+                  className={`absolute h-0.5 w-6 bg-current transform transition-all duration-300 ${
+                    isMenuOpen ? 'rotate-45 translate-y-0' : '-translate-y-2'
+                  }`}
+                />
+                <span 
+                  className={`absolute h-0.5 w-6 bg-current transform transition-all duration-300 ${
+                    isMenuOpen ? 'opacity-0' : 'translate-y-0'
+                  }`}
+                />
+                <span 
+                  className={`absolute h-0.5 w-6 bg-current transform transition-all duration-300 ${
+                    isMenuOpen ? '-rotate-45 translate-y-0' : 'translate-y-2'
+                  }`}
+                />
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile Menu */}
+      <div 
+        className={`md:hidden fixed top-16 left-0 right-0 transform transition-all duration-300 ease-in-out ${
+          isMenuOpen ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'
+        }`}
+      >
+        <div 
+          style={{ backgroundColor: `${headerConfig.colors.background}E6` }}
+          className="px-2 pt-2 pb-3 space-y-1 backdrop-blur-sm shadow-lg"
+        >
+          {navItems.map((item) => {
+            const isActive = isActivePath(item.path);
+            return (
+              <Link
+                key={item.name}
+                to={item.path}
+                className={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${
+                  isActive 
+                    ? 'text-[var(--text-hover)] bg-[var(--text-default)]/10' 
+                    : 'text-[var(--text-default)] hover:text-[var(--text-hover)]'
+                }`}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                {item.name}
+              </Link>
+            );
+          })}
+          
+          {isDashboard && (
+            <button
+              onClick={logout}
+              className="w-full text-left px-3 py-2 mt-2 text-base font-medium text-white bg-red-600 rounded-md hover:bg-red-700"
+            >
+              Logout
+            </button>
+          )}
+        </div>
+      </div>
+    </header>
+  );
+};
+
+export default Header;
