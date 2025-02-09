@@ -1,37 +1,39 @@
+//frontend/src/components/dashboard/pages/home/sections/header/HeaderManager.js
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import axios from 'axios';
 import { toast } from 'react-hot-toast';
+import { useAuth } from '../../../../../../context/AuthContext';
 import useHeaderConfig from './hooks/useHeaderConfig';
 import useChanges from '../../../../hooks/useChanges';
 import { useChangeTracker } from '../../../../context/ChangeTrackerContext';
 import ColorManagement from './components/ColorManagement';
 import LogoManagement from './components/LogoManagement';
+import api from '../../../../../../utils/api';
 
 const HeaderManager = () => {
+  const { admin } = useAuth();
   const { config, updateConfig } = useHeaderConfig();
   const { currentData, updateData } = useChanges(config);
-  const { registerCallbacks, setHasChanges } = useChangeTracker(); // Added setHasChanges here
+  const { registerCallbacks } = useChangeTracker();
   const [isUploading, setIsUploading] = useState(false);
   const [tempLogoData, setTempLogoData] = useState(null);
+  const [lockStatus] = useState({ locked: false });
 
   // Refs to track latest currentData and config
   const currentDataRef = useRef(currentData);
   const configRef = useRef(config);
-
+  
   useEffect(() => {
     currentDataRef.current = currentData;
     configRef.current = config;
   }, [currentData, config]);
 
-  // Clear change tracking on unmount
-  useEffect(() => {
-    return () => {
-      setHasChanges(false);
-    };
-  }, [setHasChanges]);
-
   // Memoized save handler using refs
   const handleSave = useCallback(async () => {
+    if (lockStatus.locked && lockStatus.lock.admin._id !== admin._id) {
+      toast.error('You no longer have the lock for this section');
+      return false;
+    }
+
     try {
       const success = await updateConfig(currentDataRef.current);
       if (success) {
@@ -43,7 +45,7 @@ const HeaderManager = () => {
       console.error('Error saving changes:', error);
       return false;
     }
-  }, [updateConfig]);
+  }, [updateConfig, lockStatus, admin]);
 
   // Memoized discard handler using refs
   const handleDiscard = useCallback(() => {
@@ -73,26 +75,13 @@ const HeaderManager = () => {
     }));
   };
 
-  useEffect(() => {
-    return () => {
-      if (tempLogoData?.publicId) {
-        const token = localStorage.getItem('token');
-        axios.delete(`http://localhost:5000/api/upload/${tempLogoData.publicId}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        }).catch(() => {});
-      }
-    };
-  }, [tempLogoData]);
-
+  // Updated handleLogoUpload
   const handleLogoUpload = async (file) => {
     setIsUploading(true);
     
     if (tempLogoData?.publicId) {
       try {
-        const token = localStorage.getItem('token');
-        await axios.delete(`http://localhost:5000/api/upload/${tempLogoData.publicId}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await api.delete(`/upload/${tempLogoData.publicId}`);
       } catch (error) {
         console.error('Error deleting previous temp upload:', error);
       }
@@ -102,17 +91,11 @@ const HeaderManager = () => {
     formData.append('file', file);
 
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.post(
-        'http://localhost:5000/api/upload',
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            Authorization: `Bearer ${token}`
-          }
+      const response = await api.post('/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
         }
-      );
+      });
       
       setTempLogoData({
         url: response.data.url,
@@ -136,18 +119,11 @@ const HeaderManager = () => {
     }
   };
 
-  useEffect(() => {
-    if (!currentData.logo.imageUrl && tempLogoData) {
-      setTempLogoData(null);
-    }
-  }, [currentData.logo.imageUrl, tempLogoData]);
-
+  // Updated handleLogoDelete
   const handleLogoDelete = async () => {
     try {
-      const token = localStorage.getItem('token');
       let publicIdToDelete = null;
 
-      // Determine which logo to delete
       if (tempLogoData?.publicId) {
         publicIdToDelete = tempLogoData.publicId;
       } else if (currentData.logo?.publicId) {
@@ -155,12 +131,9 @@ const HeaderManager = () => {
       }
 
       if (publicIdToDelete) {
-        await axios.delete(`http://localhost:5000/api/upload/${publicIdToDelete}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await api.delete(`/upload/${publicIdToDelete}`);
       }
 
-      // Update the configuration
       updateData(prev => ({
         ...prev,
         logo: {

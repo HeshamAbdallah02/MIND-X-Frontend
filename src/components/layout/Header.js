@@ -2,50 +2,18 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useHeaderConfig } from '../../context/HeaderConfigContext';
 import Logo from './Logo';
-import axios from 'axios';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [headerConfig, setHeaderConfig] = useState({
-    logo: {
-      imageUrl: '',
-      altText: 'MIND-X Logo'
-    },
-    colors: {
-      background: '#81C99C',
-      text: {
-        default: '#606161',
-        hover: '#FBB859'
-      }
-    }
-  });
-  const [isLoading, setIsLoading] = useState(true);
-  
+  const { admin, logout } = useAuth();
+  const { config: headerConfig, loading } = useHeaderConfig();
   const location = useLocation();
-  const { logout } = useAuth();
 
   const isAdminLoginPage = location.pathname.match('/admin/login');
-  const isDashboard = location.pathname.startsWith('/dashboard');
-
-  useEffect(() => {
-    const fetchHeaderConfig = async () => {
-      try {
-        setIsLoading(true);
-        const response = await axios.get('http://localhost:5000/api/header');
-        if (response.data) {
-          setHeaderConfig(response.data);
-        }
-      } catch (error) {
-        console.error('Error fetching header configuration:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchHeaderConfig();
-  }, []);
+  const isDashboard = !!admin;
 
   useEffect(() => {
     const handleScroll = () => {
@@ -73,7 +41,6 @@ const Header = () => {
     { name: 'Blog', path: '/blog' }
   ];
 
-  // If it's the admin login page, don't render the header
   if (isAdminLoginPage) {
     return null;
   }
@@ -88,7 +55,7 @@ const Header = () => {
     return location.pathname === path;
   };
 
-  if (isLoading) {
+  if (loading) {
     return <div className="h-16 bg-[#81C99C]" />;
   }
 
@@ -96,10 +63,10 @@ const Header = () => {
     <header 
       style={{
         backgroundColor: isScrolled 
-          ? `${headerConfig.colors.background}E6`
-          : headerConfig.colors.background,
-        '--text-default': headerConfig.colors.text.default,
-        '--text-hover': headerConfig.colors.text.hover
+          ? `${headerConfig?.colors?.background}E6` || '#81C99CE6'
+          : headerConfig?.colors?.background || '#81C99C',
+        '--text-default': headerConfig?.colors?.text?.default || '#606161',
+        '--text-hover': headerConfig?.colors?.text?.hover || '#FBB859'
       }}
       className={`fixed w-full top-0 z-50 transition-all duration-300 min-h-[64px] ${
         isScrolled ? 'backdrop-blur-sm shadow-lg' : ''
@@ -110,10 +77,10 @@ const Header = () => {
           {/* Logo */}
           <div className="flex-shrink-0 transform hover:scale-105 transition-transform duration-200">
             <Link to={isDashboard ? '/dashboard' : '/'}>
-              {headerConfig.logo.imageUrl ? (
+              {headerConfig?.logo?.imageUrl ? (
                 <img
                   src={headerConfig.logo.imageUrl}
-                  alt={headerConfig.logo.altText}
+                  alt={headerConfig.logo.altText || 'MIND-X Logo'}
                   className="h-8 object-contain"
                 />
               ) : (
@@ -162,7 +129,7 @@ const Header = () => {
           <div className="md:hidden flex items-center">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              style={{ color: headerConfig.colors.text.default }}
+              style={{ color: headerConfig?.colors?.text?.default || '#606161' }}
               className="relative inline-flex items-center justify-center w-10 h-10 p-2 rounded-md hover:text-[var(--text-hover)] focus:outline-none focus:ring-2 focus:ring-inset transition-colors duration-200"
               aria-expanded="false"
             >
@@ -196,7 +163,7 @@ const Header = () => {
         }`}
       >
         <div 
-          style={{ backgroundColor: `${headerConfig.colors.background}E6` }}
+          style={{ backgroundColor: `${headerConfig?.colors?.background}E6` || '#81C99CE6' }}
           className="px-2 pt-2 pb-3 space-y-1 backdrop-blur-sm shadow-lg"
         >
           {navItems.map((item) => {

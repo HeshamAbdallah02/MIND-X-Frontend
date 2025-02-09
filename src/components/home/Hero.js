@@ -202,10 +202,10 @@ const Hero = () => {
         </div>
         <div className="absolute inset-0 bg-black/30" />
       </div>
-
+  
       {/* Content */}
-      <div className="relative h-full flex items-center">
-        <div className="container mx-auto px-4">
+      <div className="relative h-full flex items-center justify-start"> {/* Added justify-start */}
+        <div className="w-full max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8"> {/* Updated container */}
           <div 
             className={`max-w-2xl transition-opacity duration-300 ${
               isTransitioning ? 'opacity-0' : 'opacity-100'
@@ -213,12 +213,11 @@ const Hero = () => {
           >
             <h1 
               className={`${contents[currentIndex].heading.size} font-bold mb-4 md:leading-tight`}
-              style={{ 
-                color: contents[currentIndex].heading.color}}
+              style={{ color: contents[currentIndex].heading.color }}
             >
               {contents[currentIndex].heading.text}
             </h1>
-
+  
             {contents[currentIndex].subheading?.text && (
               <h2 
                 className={`${contents[currentIndex].subheading.size} mb-4`}
@@ -227,7 +226,7 @@ const Hero = () => {
                 {contents[currentIndex].subheading.text}
               </h2>
             )}
-
+  
             {contents[currentIndex].description?.text && (
               <p 
                 className={`${contents[currentIndex].description.size} mb-8`}
@@ -236,7 +235,7 @@ const Hero = () => {
                 {contents[currentIndex].description.text}
               </p>
             )}
-
+  
             {renderButton(contents[currentIndex].button)}
           </div>
         </div>

@@ -1,5 +1,5 @@
 //frontend/src/pages/AdminLogin.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
@@ -8,17 +8,22 @@ const AdminLogin = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const { login } = useAuth();
+  const { login, admin, loading } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!loading && admin) {
+      navigate('/dashboard');
+    }
+  }, [admin, loading, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     try {
       await login(email, password);
-      navigate('/dashboard');
     } catch (err) {
-      setError('Invalid credentials');
+      setError(err.message || 'Invalid credentials');
     }
   };
 

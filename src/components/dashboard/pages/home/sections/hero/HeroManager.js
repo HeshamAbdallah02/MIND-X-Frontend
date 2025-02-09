@@ -1,4 +1,4 @@
-//frontend/src/components/dashboard/pages/home/sections/hero/HeroManager.js
+// frontend/src/components/dashboard/pages/home/sections/hero/HeroManager.js
 import React, { useRef, useEffect } from 'react';
 import useHeroData from './hooks/useHeroData';
 import useHeroConfig from './hooks/useHeroConfig';
@@ -6,35 +6,35 @@ import HeroForm from './components/HeroForm';
 import HeroList from './components/HeroList';
 
 const HeroManager = () => {
-  const formRef = useRef(); 
+  const formRef = useRef();
 
   const { 
-      contents, 
-      isLoading, 
-      fetchContents, 
-      deleteContent, 
-      updateOrder 
+    contents, 
+    isLoading, 
+    fetchContents, 
+    deleteContent, 
+    updateOrder 
   } = useHeroData();
 
   const {
-      formData,
-      setFormData,
-      isEditing,
-      isUploading,
-      handleSubmit,
-      handleFileUpload,
-      resetForm,
-      editContent
+    formData,
+    setFormData,
+    isEditing,
+    isUploading,
+    handleSubmit,
+    handleFileUpload,
+    resetForm,
+    editContent
   } = useHeroConfig({ 
-      fetchContents
+    fetchContents 
   });
-  
+
   // Scroll to form when entering edit mode
   useEffect(() => {
     if (isEditing && formRef.current) {
       formRef.current.scrollIntoView({ 
         behavior: 'smooth', 
-        block: 'start' // Aligns top of form with viewport
+        block: 'start'
       });
     }
   }, [isEditing]);

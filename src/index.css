@@ -5,6 +5,13 @@
     color: var(--text-hover);
   }
 }
+
+@layer utilities {
+  .max-w-content {
+    max-width: min(1280px, 100%);
+  }
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

@@ -1,4 +1,4 @@
-// hooks/useHeaderConfig.js
+//frontend/src/components/dashboard/pages/home/sections/header/hooks/useHeaderConfig.js
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';

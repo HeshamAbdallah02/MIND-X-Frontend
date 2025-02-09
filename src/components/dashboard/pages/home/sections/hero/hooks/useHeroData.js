@@ -1,7 +1,7 @@
-//frontend/src/components/dashboard/pages/home/sections/hero/hooks/useHeroData.js
+// frontend/src/components/dashboard/pages/home/sections/hero/hooks/useHeroData.js
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 import { toast } from 'react-hot-toast';
+import api from '../../../../../../../utils/api';
 
 const useHeroData = () => {
   const [contents, setContents] = useState([]);
@@ -9,7 +9,7 @@ const useHeroData = () => {
 
   const fetchContents = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/hero');
+      const response = await api.get('/hero');
       setContents(response.data.sort((a, b) => a.order - b.order));
     } catch (error) {
       console.error('Fetch error:', error);
@@ -21,13 +21,7 @@ const useHeroData = () => {
 
   const deleteContent = async (contentId) => {
     try {
-      const token = localStorage.getItem('token');
-      await axios.delete(
-        `http://localhost:5000/api/hero/${contentId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      );
+      await api.delete(`/hero/${contentId}`);
       toast.success('Content deleted successfully');
       await fetchContents();
     } catch (error) {
@@ -37,14 +31,7 @@ const useHeroData = () => {
 
   const updateOrder = async (contentId, newOrder) => {
     try {
-      const token = localStorage.getItem('token');
-      await axios.patch(
-        `http://localhost:5000/api/hero/${contentId}/order`,
-        { order: newOrder },
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      );
+      await api.patch(`/hero/${contentId}/order`, { order: newOrder });
       await fetchContents();
     } catch (error) {
       console.error('Reorder error:', error);
