@@ -1,4 +1,3 @@
-// frontend/src/components/layout/Header.js
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
@@ -12,6 +11,8 @@ const Header = () => {
   const { config: headerConfig, loading } = useHeaderConfig();
   const location = useLocation();
 
+  // Check if the current route is part of the dashboard
+  const isDashboardRoute = location.pathname.startsWith('/dashboard');
   const isAdminLoginPage = location.pathname.match('/admin/login');
   const isDashboard = !!admin;
 
@@ -23,30 +24,33 @@ const Header = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const navItems = isDashboard ? [
-    { name: 'Home', path: '/dashboard' },
-    { name: 'Our Story', path: '/dashboard/our-story' },
-    { name: 'Events', path: '/dashboard/events' },
-    { name: 'Trainings', path: '/dashboard/trainings' },
-    { name: 'Crew', path: '/dashboard/crew' },
-    { name: 'Daily Life', path: '/dashboard/daily-life' },
-    { name: 'Blog', path: '/dashboard/blog' }
-  ] : [
-    { name: 'Home', path: '/' },
-    { name: 'Our Story', path: '/our-story' },
-    { name: 'Events', path: '/events' },
-    { name: 'Trainings', path: '/trainings' },
-    { name: 'Crew', path: '/crew' },
-    { name: 'Daily Life', path: '/daily-life' },
-    { name: 'Blog', path: '/blog' }
-  ];
+  // Define navigation items based on the current route
+  const navItems = isDashboardRoute
+    ? [
+        { name: 'Home', path: '/dashboard' },
+        { name: 'Our Story', path: '/dashboard/our-story' },
+        { name: 'Events', path: '/dashboard/events' },
+        { name: 'Trainings', path: '/dashboard/trainings' },
+        { name: 'Crew', path: '/dashboard/crew' },
+        { name: 'Daily Life', path: '/dashboard/daily-life' },
+        { name: 'Blog', path: '/dashboard/blog' },
+      ]
+    : [
+        { name: 'Home', path: '/' },
+        { name: 'Our Story', path: '/our-story' },
+        { name: 'Events', path: '/events' },
+        { name: 'Trainings', path: '/trainings' },
+        { name: 'Crew', path: '/crew' },
+        { name: 'Daily Life', path: '/daily-life' },
+        { name: 'Blog', path: '/blog' },
+      ];
 
   if (isAdminLoginPage) {
     return null;
   }
 
   const isActivePath = (path) => {
-    if (isDashboard) {
+    if (isDashboardRoute) {
       if (path === '/dashboard' && location.pathname === '/dashboard') {
         return true;
       }
@@ -60,13 +64,13 @@ const Header = () => {
   }
 
   return (
-    <header 
+    <header
       style={{
-        backgroundColor: isScrolled 
+        backgroundColor: isScrolled
           ? `${headerConfig?.colors?.background}E6` || '#81C99CE6'
           : headerConfig?.colors?.background || '#81C99C',
         '--text-default': headerConfig?.colors?.text?.default || '#606161',
-        '--text-hover': headerConfig?.colors?.text?.hover || '#FBB859'
+        '--text-hover': headerConfig?.colors?.text?.hover || '#FBB859',
       }}
       className={`fixed w-full top-0 z-50 transition-all duration-300 min-h-[64px] ${
         isScrolled ? 'backdrop-blur-sm shadow-lg' : ''
@@ -76,7 +80,7 @@ const Header = () => {
         <div className="flex justify-between items-center h-16 min-h-[64px]">
           {/* Logo */}
           <div className="flex-shrink-0 transform hover:scale-105 transition-transform duration-200">
-            <Link to={isDashboard ? '/dashboard' : '/'}>
+            <Link to={isDashboardRoute ? '/dashboard' : '/'}>
               {headerConfig?.logo?.imageUrl ? (
                 <img
                   src={headerConfig.logo.imageUrl}
@@ -88,7 +92,6 @@ const Header = () => {
               )}
             </Link>
           </div>
-
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-4">
             <nav className="flex space-x-1">
@@ -99,13 +102,13 @@ const Header = () => {
                     key={item.name}
                     to={item.path}
                     className={`relative px-3 py-2 text-sm font-medium transition-all duration-200 ${
-                      isActive 
-                        ? 'text-[var(--text-hover)]' 
+                      isActive
+                        ? 'text-[var(--text-hover)]'
                         : 'text-[var(--text-default)] hover:text-[var(--text-hover)]'
                     } group`}
                   >
                     {item.name}
-                    <span 
+                    <span
                       className={`absolute bottom-0 left-0 w-full h-0.5 bg-[var(--text-hover)] transform origin-left transition-transform duration-200 ${
                         isActive ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
                       }`}
@@ -114,8 +117,8 @@ const Header = () => {
                 );
               })}
             </nav>
-
-            {isDashboard && (
+            {/* Show logout button only on dashboard routes */}
+            {isDashboard && isDashboardRoute && (
               <button
                 onClick={logout}
                 className="ml-6 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center"
@@ -124,7 +127,6 @@ const Header = () => {
               </button>
             )}
           </div>
-
           {/* Mobile Menu Button */}
           <div className="md:hidden flex items-center">
             <button
@@ -135,17 +137,17 @@ const Header = () => {
             >
               <span className="sr-only">Open main menu</span>
               <div className="absolute w-6 h-6 flex flex-col justify-center items-center">
-                <span 
+                <span
                   className={`absolute h-0.5 w-6 bg-current transform transition-all duration-300 ${
                     isMenuOpen ? 'rotate-45 translate-y-0' : '-translate-y-2'
                   }`}
                 />
-                <span 
+                <span
                   className={`absolute h-0.5 w-6 bg-current transform transition-all duration-300 ${
                     isMenuOpen ? 'opacity-0' : 'translate-y-0'
                   }`}
                 />
-                <span 
+                <span
                   className={`absolute h-0.5 w-6 bg-current transform transition-all duration-300 ${
                     isMenuOpen ? '-rotate-45 translate-y-0' : 'translate-y-2'
                   }`}
@@ -155,14 +157,13 @@ const Header = () => {
           </div>
         </div>
       </div>
-
       {/* Mobile Menu */}
-      <div 
+      <div
         className={`md:hidden fixed top-16 left-0 right-0 transform transition-all duration-300 ease-in-out ${
           isMenuOpen ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'
         }`}
       >
-        <div 
+        <div
           style={{ backgroundColor: `${headerConfig?.colors?.background}E6` || '#81C99CE6' }}
           className="px-2 pt-2 pb-3 space-y-1 backdrop-blur-sm shadow-lg"
         >
@@ -173,8 +174,8 @@ const Header = () => {
                 key={item.name}
                 to={item.path}
                 className={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${
-                  isActive 
-                    ? 'text-[var(--text-hover)] bg-[var(--text-default)]/10' 
+                  isActive
+                    ? 'text-[var(--text-hover)] bg-[var(--text-default)]/10'
                     : 'text-[var(--text-default)] hover:text-[var(--text-hover)]'
                 }`}
                 onClick={() => setIsMenuOpen(false)}
@@ -183,15 +184,16 @@ const Header = () => {
               </Link>
             );
           })}
-          
-          {isDashboard && (
+
+          {/* Show logout button only on dashboard routes
+          {isDashboard && isDashboardRoute && (
             <button
               onClick={logout}
               className="w-full text-left px-3 py-2 mt-2 text-base font-medium text-white bg-red-600 rounded-md hover:bg-red-700"
             >
               Logout
             </button>
-          )}
+          )} */}
         </div>
       </div>
     </header>
