@@ -1,3 +1,4 @@
+//frontend/src/components/dashboard/shared/ColorPicker.js
 import React, { useState } from 'react';
 import { HexColorPicker } from 'react-colorful';
 

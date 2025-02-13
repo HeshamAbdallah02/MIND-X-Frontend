@@ -1,4 +1,4 @@
-// components/dashboard/shared/FileUpload.js
+//frontend/src/components/dashboard/shared/FileUpload.js
 import React, { useRef, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
