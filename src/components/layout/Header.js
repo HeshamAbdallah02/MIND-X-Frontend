@@ -66,9 +66,9 @@ const Header = () => {
   return (
     <header
       style={{
-        backgroundColor: isScrolled
-          ? `${headerConfig?.colors?.background}E6` || '#81C99CE6'
-          : headerConfig?.colors?.background || '#81C99C',
+        background: isScrolled
+          ? `linear-gradient(to right, white, ${headerConfig?.colors?.background || '#81C99C'}E6 25%)`
+          : `linear-gradient(to right, white, ${headerConfig?.colors?.background || '#81C99C'} 25%)`,
         '--text-default': headerConfig?.colors?.text?.default || '#606161',
         '--text-hover': headerConfig?.colors?.text?.hover || '#FBB859',
       }}
@@ -85,7 +85,7 @@ const Header = () => {
                 <img
                   src={headerConfig.logo.imageUrl}
                   alt={headerConfig.logo.altText || 'MIND-X Logo'}
-                  className="h-8 object-contain"
+                  className="h-40 object-contain"
                 />
               ) : (
                 <Logo />

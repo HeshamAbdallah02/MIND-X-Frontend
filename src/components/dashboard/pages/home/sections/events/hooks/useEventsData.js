@@ -74,39 +74,39 @@ const toggleActive = async (id, currentStatus) => {
     }
   };
 
-const updateOrder = async (draggedId, newIndex) => {
-    try {
-    // Optimistic update
-    setEvents(prev => {
-        const newEvents = [...prev];
-        const draggedItem = newEvents.find(e => e._id === draggedId);
-        const oldIndex = newEvents.findIndex(e => e._id === draggedId);
-        
-        newEvents.splice(oldIndex, 1);
-        newEvents.splice(newIndex, 0, draggedItem);
-        
-        return newEvents.map((e, index) => ({ 
-        ...e, 
-        order: index 
-        }));
-    });
-
-    // API call with fresh data
-    const response = await api.patch(`/events/${draggedId}/order`, { 
-      order: newIndex 
-    });
-
-    // Update with server response
-    setEvents(response.data);
+  const updateOrder = async (draggedId, newPosition) => {
+    const originalEvents = [...events];
     
-  } catch (error) {
-    console.error('Reorder error:', error);
-    toast.error('Error updating order');
-    // Revert to server state
-    const response = await api.get('/events/admin');
-    setEvents(response.data);
-  }
-};
+    try {
+      // Correct optimistic update
+      setEvents(prev => {
+        const activeEvents = prev.filter(e => e.active).sort((a, b) => a.order - b.order);
+        const targetEvent = activeEvents.find(e => e._id === draggedId);
+        
+        if (!targetEvent) return prev;
+  
+        const updatedEvents = activeEvents
+          .filter(e => e._id !== draggedId)
+          .toSpliced(newPosition, 0, targetEvent)
+          .map((e, index) => ({ ...e, order: index }));
+  
+        return [
+          ...updatedEvents,
+          ...prev.filter(e => !e.active)
+        ];
+      });
+  
+      const { data } = await api.patch(`/events/${draggedId}/order`, { 
+        order: newPosition 
+      });
+      
+      setEvents(data);
+    } catch (error) {
+      console.error('Reorder error:', error);
+      toast.error('Error updating order');
+      setEvents(originalEvents);
+    }
+  };
 
 useEffect(() => { fetchEvents(); }, []);
 

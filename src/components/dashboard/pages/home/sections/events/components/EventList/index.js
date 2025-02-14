@@ -11,10 +11,12 @@ const EventList = ({ events, onEdit, onDelete, onToggleActive, onReorder }) => {
 
   // Separate active/inactive events with more explicit logging
   const [activeEvents, inactiveEvents] = events.reduce((acc, event) => {
-    console.log(`Event: ${event.title.text}, Active: ${event.active}`);
     acc[event.active ? 0 : 1].push(event);
     return acc;
   }, [[], []]);
+  
+  // Sort active events by order before rendering
+  const sortedActive = [...activeEvents].sort((a, b) => a.order - b.order);
 
   // Log separated events
   useEffect(() => {
@@ -44,7 +46,7 @@ const EventList = ({ events, onEdit, onDelete, onToggleActive, onReorder }) => {
                 ref={provided.innerRef}
                 className="space-y-4"
               >
-                {activeEvents.map((event, index) => (
+                {sortedActive.map((event, index) => (
                   <Draggable 
                     key={event._id} 
                     draggableId={event._id} 
