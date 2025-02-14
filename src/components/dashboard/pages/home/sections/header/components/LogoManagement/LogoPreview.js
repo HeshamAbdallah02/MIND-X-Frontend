@@ -1,7 +1,8 @@
-// components/LogoManagement/LogoPreview.js
 import React from 'react';
+import { useChangeTracker } from '../../../../../../context/ChangeTrackerContext';
 
 const LogoPreview = ({ logo, tempPreviewUrl, onDelete }) => {
+  const { hasChanges } = useChangeTracker();
   const displayUrl = tempPreviewUrl || logo.imageUrl;
 
   return displayUrl ? (
@@ -31,7 +32,7 @@ const LogoPreview = ({ logo, tempPreviewUrl, onDelete }) => {
           />
         </svg>
       </button>
-      {tempPreviewUrl && (
+      {tempPreviewUrl && hasChanges && (
         <p className="text-sm text-gray-500 mt-2">
           *Unsaved changes
         </p>

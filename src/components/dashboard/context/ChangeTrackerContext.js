@@ -15,20 +15,36 @@ export const ChangeTrackerProvider = ({ children }) => {
   }, []);
 
   const handleSave = async () => {
-    if (!saveCallbackRef.current) return;
+    if (!saveCallbackRef.current) return false;
+    
     setIsSaving(true);
     try {
       const success = await saveCallbackRef.current();
-      if (success) setHasChanges(false);
+      if (success) {
+        setHasChanges(false);
+        // Ensure state is properly synchronized
+        setTimeout(() => {
+          setHasChanges(false);
+        }, 0);
+      }
       return success;
+    } catch (error) {
+      console.error('Save failed:', error);
+      return false;
     } finally {
       setIsSaving(false);
     }
   };
 
   const handleDiscard = () => {
-    discardCallbackRef.current?.();
-    setHasChanges(false);
+    if (discardCallbackRef.current) {
+      discardCallbackRef.current();
+      setHasChanges(false);
+      // Ensure state is properly synchronized
+      setTimeout(() => {
+        setHasChanges(false);
+      }, 0);
+    }
   };
 
   const value = {

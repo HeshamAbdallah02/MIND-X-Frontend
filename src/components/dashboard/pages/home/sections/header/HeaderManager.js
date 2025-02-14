@@ -37,7 +37,11 @@ const HeaderManager = () => {
     try {
       const success = await updateConfig(currentDataRef.current);
       if (success) {
+        // Update both refs and sync the state
+        configRef.current = currentDataRef.current;
         setTempLogoData(null);
+        // Force sync with server data
+        updateData(currentDataRef.current);
         return true;
       }
       return false;
@@ -45,7 +49,7 @@ const HeaderManager = () => {
       console.error('Error saving changes:', error);
       return false;
     }
-  }, [updateConfig, lockStatus, admin]);
+  }, [updateConfig, lockStatus, admin, updateData]);
 
   // Memoized discard handler using refs
   const handleDiscard = useCallback(() => {
@@ -79,40 +83,62 @@ const HeaderManager = () => {
   const handleLogoUpload = async (file) => {
     setIsUploading(true);
     
-    if (tempLogoData?.publicId) {
-      try {
-        await api.delete(`/upload/${tempLogoData.publicId}`);
-      } catch (error) {
-        console.error('Error deleting previous temp upload:', error);
-      }
-    }
-
-    const formData = new FormData();
-    formData.append('file', file);
-
     try {
+      // Validate file type and size
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+      if (!allowedTypes.includes(file.type)) {
+        toast.error('Invalid file type. Please upload an image file.');
+        return;
+      }
+
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error('File size must be less than 5MB');
+        return;
+      }
+
+      // Delete previous temp upload if exists
+      if (tempLogoData?.publicId) {
+        try {
+          await api.delete(`/upload/${tempLogoData.publicId}`);
+        } catch (error) {
+          console.error('Error deleting previous temp upload:', error);
+        }
+      }
+
+      const formData = new FormData();
+      formData.append('file', file);
+
       const response = await api.post('/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
-        }
+        },
+        timeout: 30000
       });
+      
+      const newData = {
+        ...currentDataRef.current,
+        logo: {
+          ...currentDataRef.current.logo,
+          imageUrl: response.data.url,
+          publicId: response.data.publicId
+        }
+      };
+      
+      // Update the data without saving
+      updateData(newData);
       
       setTempLogoData({
         url: response.data.url,
         publicId: response.data.publicId
       });
       
-      updateData(prev => ({
-        ...prev,
-        logo: {
-          ...prev.logo,
-          imageUrl: response.data.url
-        }
-      }));
+      // Remove the automatic save
+      // await handleSave();
       
-      toast.success('Logo uploaded successfully');
+      toast.success('Logo uploaded successfully. Click "Save Changes" to apply.');
     } catch (error) {
-      toast.error('Error uploading logo');
+      console.error('Upload error:', error?.response?.data || error);
+      toast.error(error?.response?.data?.error || 'Error uploading logo');
       throw error;
     } finally {
       setIsUploading(false);

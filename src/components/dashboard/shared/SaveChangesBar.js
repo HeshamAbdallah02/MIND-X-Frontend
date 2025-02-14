@@ -1,5 +1,4 @@
-// frontend/src/components/dashboard/shared/SaveChangesBar.js
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useChangeTracker } from '../context/ChangeTrackerContext';
 
 const SaveChangesBar = () => {
@@ -7,8 +6,34 @@ const SaveChangesBar = () => {
     hasChanges, 
     isSaving,
     onSave,
-    onDiscard
+    onDiscard,
+    setHasChanges
   } = useChangeTracker();
+
+  useEffect(() => {
+    // Reset hasChanges when component unmounts
+    return () => {
+      setHasChanges(false);
+    };
+  }, [setHasChanges]);
+
+  const handleSave = async () => {
+    try {
+      const success = await onSave();
+      if (success) {
+        // Ensure hasChanges is reset after successful save
+        setHasChanges(false);
+      }
+    } catch (error) {
+      console.error('Error saving changes:', error);
+    }
+  };
+
+  const handleDiscard = () => {
+    onDiscard();
+    // Ensure hasChanges is reset after discard
+    setHasChanges(false);
+  };
 
   if (!hasChanges) return null;
 
@@ -20,14 +45,14 @@ const SaveChangesBar = () => {
         </p>
         <div className="space-x-3">
           <button
-            onClick={onDiscard}
+            onClick={handleDiscard}
             className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900"
             disabled={isSaving}
           >
             Discard
           </button>
           <button
-            onClick={onSave}
+            onClick={handleSave}
             disabled={isSaving}
             className="px-4 py-2 text-sm font-medium text-white bg-[#81C99C] rounded-lg hover:bg-[#81C99C]/90 disabled:opacity-50"
           >
