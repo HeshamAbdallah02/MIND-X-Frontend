@@ -41,7 +41,6 @@ const StatsForm = ({ initialData, onSuccess, onCancel }) => {
       initialValues={{
         number: initialData?.number || '',
         label: initialData?.label || '',
-        description: initialData?.description || '',
         icon: initialData?.icon || 'FaUsers'
       }}
       validate={values => {
@@ -90,18 +89,6 @@ const StatsForm = ({ initialData, onSuccess, onCancel }) => {
                 className="w-full px-3 py-2 border rounded-lg focus:ring-[#81C99C] focus:border-[#81C99C]"
               />
             </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-[#606161] mb-1">
-              Description
-            </label>
-            <Field
-              as="textarea"
-              name="description"
-              rows={2}
-              className="w-full px-3 py-2 border rounded-lg focus:ring-[#81C99C] focus:border-[#81C99C]"
-            />
           </div>
 
           <div>
