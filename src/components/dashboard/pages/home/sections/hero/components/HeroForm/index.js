@@ -1,5 +1,4 @@
-//frontend/src/components/dashboard/pages/home/sections/hero/components/HeroForm/index.js
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import MediaSection from './MediaSection';
 import HeadingSection from './HeadingSection';
 import SubheadingSection from './SubheadingSection';
@@ -15,10 +14,37 @@ const HeroForm = React.forwardRef(({
   handleFileUpload, 
   resetForm 
 }, ref) => {
+  const [isFormChanged, setIsFormChanged] = useState(false);
+  const [initialFormState, setInitialFormState] = useState(formData);
+
+  // Update initial form state when editing mode changes
+  useEffect(() => {
+    setInitialFormState(formData);
+    setIsFormChanged(false);
+  }, [isEditing]); // Remove formData from dependencies
+
+  // Track actual changes by comparing with initial state
+  useEffect(() => {
+    if (!initialFormState) return; // Guard against initial null state
+    
+    const hasChanges = JSON.stringify(formData) !== JSON.stringify(initialFormState);
+    console.log('Form changed:', hasChanges); // Debug log
+    setIsFormChanged(hasChanges);
+  }, [formData, initialFormState]);
+
+  // Reset form changed state when form is reset
+  const handleReset = () => {
+    setIsFormChanged(false);
+    setInitialFormState(formData);
+    resetForm();
+  };
+
   const onSubmit = (e) => {
+    e.preventDefault(); // Fix: Prevent default form submission
     console.log('Form submitted'); // Debug log
     console.log('Form data:', formData); // Debug log
     handleSubmit(e);
+    setIsFormChanged(false);
   };
 
   return (
@@ -53,15 +79,19 @@ const HeroForm = React.forwardRef(({
         <div className="flex justify-end space-x-4">
           <button
             type="button"
-            onClick={resetForm}
-            className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors duration-200"
+            onClick={handleReset}
+            className="px-4 py-2 border border-[#606161] rounded-md text-[#606161] hover:bg-[#606161] hover:text-white transition-colors duration-200"
           >
             Cancel
           </button>
           <button
             type="submit"
-            disabled={isUploading}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 transition-colors duration-200"
+            disabled={isUploading || !isFormChanged}
+            className={`px-4 py-2 rounded-md font-medium transition-all duration-200
+              ${isFormChanged 
+                ? 'bg-[#FBB859] text-white hover:bg-[#81C99A] active:scale-95' 
+                : 'bg-gray-100 text-gray-400 border border-gray-200'
+              }`}
           >
             {isUploading ? 'Uploading...' : isEditing ? 'Update Content' : 'Create Content'}
           </button>

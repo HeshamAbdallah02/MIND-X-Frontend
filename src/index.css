@@ -1,6 +1,9 @@
 /* frontend/src/index.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 @layer components {
-  /* Enable CSS variables for text colors */
   .hover\\:text-primary:hover {
     color: var(--text-hover);
   }
@@ -12,9 +15,10 @@
   }
 }
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+:root {
+  --ease-out: cubic-bezier(0.33, 1, 0.68, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+}
 
 /* Animation System */
 [data-visible="false"] {
@@ -28,11 +32,6 @@
 [data-visible="true"] {
   opacity: 1;
   transform: translateY(0);
-}
-
-:root {
-  --ease-out: cubic-bezier(0.33, 1, 0.68, 1);
-  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
 }
 
 /* Carousel Specific */
@@ -50,6 +49,44 @@
   transition-delay: 200ms;
 }
 
+/* Drag-and-Drop Enhancements */
+.draggable-item[draggable="true"] {
+  cursor: grab;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.draggable-item:active {
+  cursor: grabbing;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); 
+}
+
+.drag-handle:hover {
+  transform: scale(1.1);
+  transition: transform 150ms ease-out;
+}
+
+/* Message Animator */
+.animate-enter {
+  animation: bounce-in 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.animate-leave {
+  animation: fade-out 0.3s ease-out forwards;
+}
+
+@keyframes bounce-in {
+  0% { transform: translate(-50%, -20px); opacity: 0; }
+  50% { transform: translate(-50%, 10px); }
+  100% { transform: translate(-50%, 0); opacity: 1; }
+}
+
+@keyframes fade-out {
+  from { opacity: 1; transform: translate(-50%, 0); }
+  to { opacity: 0; transform: translate(-50%, -20px); }
+}
+
+/* Base Styles */
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -62,4 +99,42 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+/* Mobile Optimization */
+@media (max-width: 768px) {
+  .stats-container {
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    scroll-snap-type: x mandatory;
+    scroll-padding: 0 1rem;
+  }
+  
+  .stat-card {
+    scroll-snap-align: center;
+    scroll-margin: 0 1rem;
+  }
+}
+
+/* Scrollbar Management */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  overscroll-behavior: contain;
+  overflow: hidden;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+/* Transition Enhancements */
+.draggable-item {
+  will-change: transform;
+  transition: transform 0.2s ease;
+}
+
+.countup-transition {
+  transition: all 0.3s ease-out;
 }

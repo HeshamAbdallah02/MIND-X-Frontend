@@ -6,12 +6,14 @@ import DescriptionSection from './DescriptionSection';
 import DateSection from './DateSection';
 import ColorPickerSection from './ColorPickerSection';
 import URLSection from './URLSection';
+import { toast } from 'react-hot-toast';
 
 const EventForm = React.forwardRef(({ 
   formData, 
   setFormData, 
   isEditing, 
-  isUploading, 
+  isUploading,
+  hasChanges,
   handleSubmit, 
   handleFileUpload, 
   resetForm 
@@ -20,7 +22,7 @@ const EventForm = React.forwardRef(({
   const handleFormSubmit = (e) => {
     e.preventDefault();
     if (!formData.coverImage?.url) {
-      alert('Cover image is required');
+      toast.error('Cover image is required');
       return;
     }
     handleSubmit(e);
@@ -76,10 +78,18 @@ const EventForm = React.forwardRef(({
           </button>
           <button
             type="submit"
-            disabled={isUploading}
-            className="px-6 py-2.5 bg-[#81C99C] text-white rounded-lg hover:bg-[#6ba986] disabled:opacity-50 transition-all"
+            disabled={isUploading || !hasChanges}
+            className={`px-6 py-2.5 rounded-lg transition-all ${
+              !isUploading && hasChanges
+                ? 'bg-[#81C99C] hover:bg-[#6ba986] text-white'
+                : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+            }`}
           >
-            {isUploading ? 'Saving...' : isEditing ? 'Update Event' : 'Create Event'}
+            {isUploading 
+              ? 'Saving...' 
+              : hasChanges
+                ? (isEditing ? 'Update Event' : 'Create Event')
+                : (isEditing ? 'No Changes' : 'Fill Required Fields')}
           </button>
         </div>
       </form>

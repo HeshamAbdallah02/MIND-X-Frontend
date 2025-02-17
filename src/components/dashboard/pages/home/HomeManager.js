@@ -5,10 +5,10 @@ import { Helmet } from 'react-helmet-async';
 // Import actual section managers
 import HeaderManager from './sections/header/HeaderManager';
 import HeroManager from './sections/hero/HeroManager';
+import BrandManager from './sections/brand/BrandManager';
+import EventsManager from './sections/events/EventsManager';
 
 // Placeholder imports (to be replaced with actual components later)
-import MissionManager from './sections/mission/MissionManager';
-import EventsManager from './sections/events/EventsManager';
 import StatsManager from './sections/stats/StatsManager';
 import TestimonialsManager from './sections/testimonials/TestimonialsManager';
 import PartnersManager from './sections/partners/PartnersManager';
@@ -21,9 +21,9 @@ const HomeManager = () => {
   const sections = [
     { id: 'header', name: 'Header', component: HeaderManager },
     { id: 'hero', name: 'Hero Section', component: HeroManager },
-    { id: 'mission', name: 'Mission & Vision', component: MissionManager },
-    { id: 'events', name: 'Upcoming Events', component: EventsManager },
+    { id: 'mission', name: 'Mission & Vision', component: BrandManager },
     { id: 'stats', name: 'Statistics', component: StatsManager },
+    { id: 'events', name: 'Upcoming Events', component: EventsManager },
     { id: 'testimonials', name: 'Testimonials', component: TestimonialsManager },
     { id: 'partners', name: 'Sponsors & Partners', component: PartnersManager },
     { id: 'faq', name: 'FAQ', component: FAQManager }

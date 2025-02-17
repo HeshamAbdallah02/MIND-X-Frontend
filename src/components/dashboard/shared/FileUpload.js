@@ -16,24 +16,15 @@ const FileUpload = ({
 
   const attemptUpload = async (file, attemptNumber, maxAttempts) => {
     try {
-      const startTime = Date.now();
-      console.log(`Upload attempt ${attemptNumber} for:`, file.name, file.size);
-      
-      await onFileSelect(file);
-      
-      const duration = Date.now() - startTime;
-      console.log(`Upload completed in ${duration}ms`);
-      return true;
+        await onFileSelect(file);
+        return true;
     } catch (error) {
-      console.error(`Upload attempt ${attemptNumber} failed:`, error);
-      
-      if (attemptNumber === maxAttempts) {
-        throw error;
-      }
-      
-      // Wait before retrying
-      await delay(1000 * attemptNumber);
-      return false;
+        if (attemptNumber === maxAttempts) {
+            throw error;
+        }
+        const backoffTime = Math.min(1000 * Math.pow(2, attemptNumber - 1), 10000);
+        await delay(backoffTime);
+        return false;
     }
   };
 
@@ -51,8 +42,6 @@ const FileUpload = ({
 
     try {
       for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-        setUploadStatus(`Upload attempt ${attempt}/${maxAttempts}`);
-        
         const success = await attemptUpload(file, attempt, maxAttempts);
         if (success) {
           setUploadStatus('');
@@ -60,12 +49,11 @@ const FileUpload = ({
         }
         
         if (attempt < maxAttempts) {
-          setUploadStatus(`Retrying... (Attempt ${attempt + 1}/${maxAttempts})`);
+          setUploadStatus('Retrying...');
         }
       }
     } catch (error) {
-      console.error('All upload attempts failed:', error);
-      toast.error('Upload failed after multiple attempts');
+      toast.error('Upload failed');
     } finally {
       setUploadStatus('');
       e.target.value = '';

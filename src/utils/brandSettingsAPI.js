@@ -1,5 +1,6 @@
 // frontend/src/api/brandSettingsAPI.js
 import axios from 'axios';
+import api from './api'; // Use the configured axios instance
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
@@ -8,26 +9,36 @@ export const fetchSettings = async () => {
     const response = await axios.get(`${API_URL}/api/settings`);
     return response.data;
   } catch (error) {
-    console.error('Error fetching settings:', error);
     throw error;
   }
 };
 
 export const updateSettings = async (data, token) => {
   try {
-    const response = await axios.put(
-      `${API_URL}/api/settings`,
-      data,
+    const response = await api.put('/settings', data);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const uploadFile = async (file, token) => {
+  try {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const response = await axios.post(
+      `${API_URL}/api/upload`,
+      formData,
       {
         headers: {
           Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
+          'Content-Type': 'multipart/form-data',
         },
       }
     );
     return response.data;
   } catch (error) {
-    console.error('Error updating settings:', error);
     throw error;
   }
 };

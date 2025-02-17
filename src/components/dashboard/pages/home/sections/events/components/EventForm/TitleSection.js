@@ -6,7 +6,10 @@ const TitleSection = ({ formData, setFormData }) => {
   const handleChange = (field, value) => {
     setFormData(prev => ({
       ...prev,
-      title: { ...prev.title, [field]: value }
+      title: { 
+        ...(prev.title || { text: '', color: '#606161' }), // Fallback
+        [field]: value 
+      }
     }));
   };
 
@@ -20,14 +23,22 @@ const TitleSection = ({ formData, setFormData }) => {
           </label>
           <input
             type="text"
-            value={formData.title.text}
-            onChange={(e) => handleChange('text', e.target.value)}
+            value={formData.title?.text || ''}
+            onChange={(e) => {
+              setFormData(prev => ({
+                ...prev,
+                title: { 
+                  ...prev.title, 
+                  text: e.target.value 
+                }
+              }));
+            }}
             className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-[#81C99C]"
             maxLength={60}
           />
         </div>
         <ColorPicker
-          color={formData.title.color}
+          color={formData.title?.color || '#606161'}
           onChange={(color) => handleChange('color', color)}
           label="Title Color"
         />

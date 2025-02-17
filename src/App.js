@@ -10,6 +10,7 @@ import Dashboard from './pages/Dashboard';
 import PrivateRoute from './components/PrivateRoute';
 import { HeaderConfigProvider } from './context/HeaderConfigContext';
 import { BrandSettingsProvider } from './context/BrandSettingsContext';
+import { Toaster } from 'react-hot-toast';
 
 const Layout = ({ children, hideHeader = false }) => (
   <div className="min-h-screen bg-white">
@@ -50,6 +51,7 @@ function App() {
                   } />
                 </Routes>
               </Router>
+              <Toaster position="top-center" />
           </BrandSettingsProvider>
         </HeaderConfigProvider>
       </AuthProvider>

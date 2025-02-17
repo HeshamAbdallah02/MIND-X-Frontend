@@ -1,12 +1,9 @@
 // frontend/src/components/dashboard/pages/home/sections/events/EventsManager.js
-import React, { useRef, useEffect } from 'react';
+import React from 'react';
 import useEventsData from './hooks/useEventsData';
-import useEventsConfig from './hooks/useEventsConfig';
-import EventForm from './components/EventForm';
 import EventList from './components/EventList';
 
 const EventsManager = () => {
-  const formRef = useRef();
   const { 
     events, 
     isLoading, 
@@ -15,26 +12,6 @@ const EventsManager = () => {
     toggleActive, 
     updateOrder 
   } = useEventsData();
-
-  const {
-    formData,
-    setFormData,
-    isEditing,
-    isUploading,
-    handleSubmit,
-    handleFileUpload,
-    resetForm,
-    editEvent
-  } = useEventsConfig({ fetchEvents });
-
-  useEffect(() => {
-    if (isEditing && formRef.current) {
-      formRef.current.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start'
-      });
-    }
-  }, [isEditing]);
 
   if (isLoading) {
     return (
@@ -45,25 +22,21 @@ const EventsManager = () => {
   }
 
   return (
-    <div className="space-y-8">
-      <EventForm
-        ref={formRef}
-        formData={formData}
-        setFormData={setFormData}
-        isEditing={isEditing}
-        isUploading={isUploading}
-        handleSubmit={handleSubmit}
-        handleFileUpload={handleFileUpload}
-        resetForm={resetForm}
-      />
+    <div className="space-y-8 max-w-content mx-auto px-4">
+      <div className="bg-white rounded-2xl shadow-xl p-8">
+        <h2 className="text-3xl font-bold mb-8 text-[#606161]">
+          Manage Events
+          <span className="block mt-1 w-12 h-1 bg-[#FBB859] rounded-full" />
+        </h2>
 
-      <EventList
-        events={events}
-        onEdit={editEvent}
-        onDelete={deleteEvent}
-        onToggleActive={toggleActive}
-        onReorder={updateOrder}
-      />
+        <EventList
+          events={events}
+          onDelete={deleteEvent}
+          onToggleActive={toggleActive}
+          onReorder={updateOrder}
+          onSuccess={fetchEvents}
+        />
+      </div>
     </div>
   );
 };

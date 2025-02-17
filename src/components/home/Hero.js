@@ -181,6 +181,8 @@ const Hero = () => {
         to={button.action.target}
         style={buttonStyle}
         className="px-6 py-3 rounded-md font-medium transition-transform hover:scale-105"
+        target="_blank"
+        rel="noopener noreferrer"
       >
         {button.text}
       </Link>

@@ -40,71 +40,77 @@ const useHeroConfig = ({fetchContents}) => {
   const [isUploading, setIsUploading] = useState(false);
 
   const cleanPayload = (data) => {
-      // Helper function to format size
-      const formatSize = (size) => {
-      if (!size) return 'text-[16px]'; // Default fallback
-      if (size.startsWith('text-[')) return size; // Already in correct format
+    // If no data is provided (new content case), return initialFormData
+    if (!data) {
+      return initialFormData;
+    }
+
+    // Helper function to format size
+    const formatSize = (size) => {
+      if (!size) return 'text-[16px]';
+      if (size.startsWith('text-[')) return size;
       if (size.startsWith('text-')) {
-          // Convert text-64px to text-[64px]
-          const numMatch = size.match(/\d+/);
-          return numMatch ? `text-[${numMatch[0]}px]` : 'text-[16px]';
+        const numMatch = size.match(/\d+/);
+        return numMatch ? `text-[${numMatch[0]}px]` : 'text-[16px]';
       }
-      // Handle plain numbers or other formats
       const numMatch = size.match(/\d+/);
       return numMatch ? `text-[${numMatch[0]}px]` : 'text-[16px]';
-      };
-  
-      // Format sizes in the data
-      const withSizes = {
+    };
+
+    // Format sizes in the data
+    const withSizes = {
       ...data,
       heading: {
-          ...data.heading,
-          text: data.heading.text,
-          color: data.heading.color,
-          size: formatSize(data.heading.size)
+        ...data.heading,
+        text: data.heading?.text || '',
+        color: data.heading?.color || '#ffffff',
+        size: formatSize(data.heading?.size)
       },
       subheading: data.subheading ? {
-          ...data.subheading,
-          text: data.subheading.text,
-          color: data.subheading.color,
-          size: formatSize(data.subheading.size)
+        ...data.subheading,
+        text: data.subheading.text || '',
+        color: data.subheading.color || '#ffffff',
+        size: formatSize(data.subheading.size)
       } : undefined,
       description: data.description ? {
-          ...data.description,
-          text: data.description.text,
-          color: data.description.color,
-          size: formatSize(data.description.size)
+        ...data.description,
+        text: data.description.text || '',
+        color: data.description.color || '#ffffff',
+        size: formatSize(data.description.size)
       } : undefined
-      };
-  
-      // Build the cleaned payload
-      const cleaned = {
-      mediaType: withSizes.mediaType,
-      mediaUrl: withSizes.mediaUrl,
-      displayDuration: withSizes.displayDuration,
+    };
+
+    // Build the cleaned payload
+    const cleaned = {
+      mediaType: withSizes.mediaType || 'image',
+      mediaUrl: withSizes.mediaUrl || '',
+      displayDuration: withSizes.displayDuration || 5000,
       heading: withSizes.heading,
       order: withSizes.order
-      };
-  
-      // Add optional fields if they exist
-      if (withSizes.subheading?.text) {
+    };
+
+    // Add optional fields if they exist
+    if (withSizes.subheading?.text) {
       cleaned.subheading = withSizes.subheading;
-      }
-  
-      if (withSizes.description?.text) {
+    }
+
+    if (withSizes.description?.text) {
       cleaned.description = withSizes.description;
-      }
-  
-      if (withSizes.button?.text) {
+    }
+
+    if (withSizes.button?.text) {
       cleaned.button = {
-          text: withSizes.button.text,
-          backgroundColor: withSizes.button.backgroundColor,
-          textColor: withSizes.button.textColor,
-          action: withSizes.button.action.target ? withSizes.button.action : undefined
+        text: withSizes.button.text || '',
+        backgroundColor: withSizes.button.backgroundColor || '#FBB859',
+        textColor: withSizes.button.textColor || '#ffffff',
+        action: withSizes.button.action?.target ? withSizes.button.action : {
+          type: 'url',
+          target: ''
+        }
       };
-      }
-  
-      return cleaned;
+    }
+
+    return cleaned;
   };
 
   const handleSubmit = async (e) => {
@@ -198,10 +204,9 @@ const useHeroConfig = ({fetchContents}) => {
   };
 
   const editContent = (content) => {
-    const cleanedContent = cleanPayload(content);
     setSelectedContent(content);
-    setFormData(cleanedContent);
-    setIsEditing(true);
+    setFormData(content ? cleanPayload(content) : initialFormData);
+    setIsEditing(!!content);
   };
 
   return {
@@ -212,7 +217,8 @@ const useHeroConfig = ({fetchContents}) => {
     handleSubmit,
     handleFileUpload,
     resetForm,
-    editContent
+    editContent,
+    initialFormData
   };
 };
 

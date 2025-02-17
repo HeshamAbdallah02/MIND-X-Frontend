@@ -9,14 +9,14 @@ const DateSection = ({ formData, setFormData }) => {
     // Convert display date to ISO format
     useEffect(() => {
     try {
-        const dateObj = new Date(formData.date.text);
+        const dateObj = new Date(formData.date?.text);
         if (!isNaN(dateObj)) {
         setInternalDate(dateObj.toISOString().split('T')[0]);
         }
     } catch {
         setInternalDate('');
     }
-    }, [formData.date.text]);
+    }, [formData.date?.text]);
 
     const handleDateChange = (e) => {
     const isoDate = e.target.value;
@@ -54,11 +54,11 @@ const DateSection = ({ formData, setFormData }) => {
             required
             />
             <p className="mt-2 text-sm text-gray-500">
-            Selected: {formData.date.text || 'No date selected'}
+            Selected: {formData.date?.text || 'No date selected'}
             </p>
         </div>
         <ColorPicker
-            color={formData.date.color}
+            color={formData.date?.color}
             onChange={(color) => setFormData(prev => ({
             ...prev,
             date: { ...prev.date, color }

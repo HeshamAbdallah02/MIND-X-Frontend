@@ -1,4 +1,4 @@
-// useChanges.js
+//frontend/src/components/dashboard/hooks/useChanges.js
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useChangeTracker } from '../context/ChangeTrackerContext';
 import isEqual from 'lodash/isEqual';
@@ -34,7 +34,6 @@ const useChanges = (initialData) => {
       setHasChanges(false);
       return true;
     } catch (error) {
-      console.error('Save failed:', error);
       return false;
     }
   }, [setHasChanges]);

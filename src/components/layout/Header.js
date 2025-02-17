@@ -79,16 +79,21 @@ const Header = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
         <div className="flex justify-between items-center h-16 min-h-[64px]">
           {/* Logo */}
-          <div className="flex-shrink-0 transform hover:scale-105 transition-transform duration-200">
-            <Link to={isDashboardRoute ? '/dashboard' : '/'}>
+          <div className="flex-shrink-0 relative group">
+            <Link 
+              to={isDashboardRoute ? '/dashboard' : '/'} 
+              className="inline-block relative h-16 w-40 hover:scale-105 transition-transform duration-200"
+            >
               {headerConfig?.logo?.imageUrl ? (
                 <img
                   src={headerConfig.logo.imageUrl}
                   alt={headerConfig.logo.altText || 'MIND-X Logo'}
-                  className="h-40 object-contain"
+                  className="h-full w-full object-contain object-left p-2 pointer-events-none"
                 />
               ) : (
-                <Logo />
+                <div className="h-full flex items-center justify-start">
+                  <Logo />
+                </div>
               )}
             </Link>
           </div>

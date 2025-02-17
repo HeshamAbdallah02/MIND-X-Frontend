@@ -1,37 +1,105 @@
-// frontend/src/components/dashboard/pages/home/sections/events/components/EventList/index.js
-import React, { useEffect } from 'react';
+//frontend/src/components/dashboard/pages/home/sections/events/components/EventList/index.js
+import React, { useState, useCallback, useMemo } from 'react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
-import EventItem from './EventItem';
+import { FiPlus } from 'react-icons/fi';
+import EventCard from './EventCard';
+import useEventsConfig from '../../hooks/useEventsConfig';
+import VirtualizedEventList from './VirtualizedEventList';
+import useIntersection from '../../../../../../../../hooks/useIntersection';
 
-const EventList = ({ events, onEdit, onDelete, onToggleActive, onReorder }) => {
-  // Log events to understand their structure
-  useEffect(() => {
-    console.log('All Events:', events);
-  }, [events]);
+const EventList = React.memo(({ events, onDelete, onToggleActive, onReorder, onSuccess }) => {
+  const [activeCardId, setActiveCardId] = useState(null);
+  const eventsConfig = useEventsConfig({ fetchEvents: onSuccess });
+  const [containerRef] = useIntersection({ threshold: 0.1 });
 
-  // Separate active/inactive events with more explicit logging
-  const [activeEvents, inactiveEvents] = events.reduce((acc, event) => {
-    acc[event.active ? 0 : 1].push(event);
-    return acc;
-  }, [[], []]);
-  
-  // Sort active events by order before rendering
-  const sortedActive = [...activeEvents].sort((a, b) => a.order - b.order);
+  const [activeEvents, inactiveEvents] = useMemo(() => 
+    events.reduce((acc, event) => {
+      acc[event.active ? 0 : 1].push(event);
+      return acc;
+    }, [[], []]), 
+  [events]);
 
-  // Log separated events
-  useEffect(() => {
-    console.log('Active Events:', activeEvents);
-    console.log('Inactive Events:', inactiveEvents);
-  }, [activeEvents, inactiveEvents]);
+  const sortedActive = useMemo(() => 
+    [...activeEvents].sort((a, b) => a.order - b.order), 
+  [activeEvents]);
 
-  const handleDragEnd = (result) => {
+  const handleDragEnd = useCallback((result) => {
     if (!result.destination) return;
     onReorder(result.draggableId, result.destination.index);
-  };
+  }, [onReorder]);
+
+  // Memoized handlers
+  const memoizedHandlers = useMemo(() => ({
+    handleAddNew: () => {
+      setActiveCardId('new');
+      eventsConfig.resetForm();
+    },
+    handleEdit: (event) => {
+      setActiveCardId(event._id);
+      eventsConfig.editEvent(event);
+    },
+    handleCancel: () => {
+      setActiveCardId(null);
+      eventsConfig.resetForm();
+    },
+    handleSuccess: () => {
+      setActiveCardId(null);
+      onSuccess();
+    }
+  }), [eventsConfig, onSuccess]);
+
+  const renderDraggableItem = useCallback((event, index, isActive = true) => (
+    <Draggable 
+      key={event._id} 
+      draggableId={event._id} 
+      index={index}
+      isDragDisabled={activeCardId !== null}
+    >
+     {(provided, snapshot) => (
+      <div ref={provided.innerRef} {...provided.draggableProps}>
+        <EventCard
+          event={event}
+          config={eventsConfig}
+          isEditing={activeCardId === event._id}
+          onEdit={() => memoizedHandlers.handleEdit(event)}
+          onDelete={onDelete}
+          onToggleActive={onToggleActive}
+          onCancel={memoizedHandlers.handleCancel}
+          onSuccess={memoizedHandlers.handleSuccess}
+          draggableProps={provided.draggableProps}
+          dragHandleProps={provided.dragHandleProps}
+          isDragging={snapshot.isDragging}
+        />
+      </div>
+    )}
+  </Draggable>
+), [activeCardId, eventsConfig, memoizedHandlers, onDelete, onToggleActive]);
 
   return (
-    <div className="bg-white rounded-lg shadow p-6">
-      <h2 className="text-2xl font-bold mb-6 text-[#606161]">Manage Events</h2>
+    <div className="space-y-6" ref={containerRef}>
+      {/* Add New Card */}
+      <div 
+        className={`p-6 border-3 border-dashed rounded-2xl transition-all duration-300 cursor-pointer
+          ${activeCardId === 'new' ? 'border-[#FBB859] bg-[#FBB859]/10' : 'border-[#81C99C]/30 hover:border-[#81C99C]'}
+          hover:shadow-lg group`}
+        onClick={() => !activeCardId && memoizedHandlers.handleAddNew()}
+      >
+        {activeCardId === 'new' ? (
+          <EventCard
+            isNew
+            config={eventsConfig}
+            onCancel={memoizedHandlers.handleCancel}
+            onSuccess={memoizedHandlers.handleSuccess}
+          />
+        ) : (
+          <div className="flex flex-col items-center justify-center h-full gap-3">
+            <FiPlus className="w-10 h-10 text-[#81C99C] transition-transform group-hover:rotate-90" />
+            <span className="text-lg font-medium text-[#606161] group-hover:text-[#81C99C]">
+              Add New Event
+            </span>
+          </div>
+        )}
+      </div>
 
       <DragDropContext onDragEnd={handleDragEnd}>
         {/* Active Events */}
@@ -46,72 +114,40 @@ const EventList = ({ events, onEdit, onDelete, onToggleActive, onReorder }) => {
                 ref={provided.innerRef}
                 className="space-y-4"
               >
-                {sortedActive.map((event, index) => (
-                  <Draggable 
-                    key={event._id} 
-                    draggableId={event._id} 
-                    index={index}
-                  >
-                    {(provided, snapshot) => (
-                      <EventItem
-                        event={event}
-                        ref={provided.innerRef}
-                        draggableProps={provided.draggableProps}
-                        dragHandleProps={provided.dragHandleProps}
-                        onEdit={onEdit}
-                        onDelete={onDelete}
-                        onToggleActive={onToggleActive}
-                        isDragging={snapshot.isDragging}
-                      />
-                    )}
-                  </Draggable>
-                ))}
+                {sortedActive.map((event, index) => renderDraggableItem(event, index))}
                 {provided.placeholder}
               </div>
             )}
           </Droppable>
         </div>
 
-        {/* Inactive Events */}
+        {/* Inactive Events - Virtualized */}
         <div className="pt-6 border-t">
           <h3 className="text-lg font-semibold mb-4 text-[#FBB859]">
             Inactive Drafts ({inactiveEvents.length})
           </h3>
-          <Droppable droppableId="inactive-events" type="EVENT">
-            {(provided) => (
-              <div
-                {...provided.droppableProps}
-                ref={provided.innerRef}
-                className="space-y-4"
-              >
-                {inactiveEvents.map((event, index) => (
-                  <Draggable 
-                    key={event._id} 
-                    draggableId={event._id} 
-                    index={index}
-                  >
-                    {(provided, snapshot) => (
-                      <EventItem
-                        event={event}
-                        ref={provided.innerRef}
-                        draggableProps={provided.draggableProps}
-                        dragHandleProps={provided.dragHandleProps}
-                        onEdit={onEdit}
-                        onDelete={onDelete}
-                        onToggleActive={onToggleActive}
-                        isDragging={snapshot.isDragging}
-                      />
-                    )}
-                  </Draggable>
-                ))}
-                {provided.placeholder}
+          <VirtualizedEventList
+            events={inactiveEvents}
+            Component={({ event, style }) => (
+              <div style={style} className="px-4">
+                <EventCard
+                  event={event}
+                  config={eventsConfig}
+                  isEditing={activeCardId === event._id}
+                  onEdit={() => memoizedHandlers.handleEdit(event)}
+                  onDelete={onDelete}
+                  onToggleActive={onToggleActive}
+                  onCancel={memoizedHandlers.handleCancel}
+                  onSuccess={memoizedHandlers.handleSuccess}
+                  isDragging={false}
+                />
               </div>
             )}
-          </Droppable>
+          />
         </div>
       </DragDropContext>
     </div>
   );
-};
+});
 
 export default EventList;

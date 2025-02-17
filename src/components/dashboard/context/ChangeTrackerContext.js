@@ -1,5 +1,5 @@
 // frontend/src/components/dashboard/context/ChangeTrackerContext.js
-import React, { createContext, useContext, useState, useCallback, useRef } from 'react';
+import React, { createContext, useContext, useState, useCallback, useRef, useEffect } from 'react';
 
 const ChangeTrackerContext = createContext();
 
@@ -55,6 +55,14 @@ export const ChangeTrackerProvider = ({ children }) => {
     onSave: handleSave,
     onDiscard: handleDiscard
   };
+
+  useEffect(() => {
+    return () => {
+        // Cleanup on unmount
+        saveCallbackRef.current = null;
+        discardCallbackRef.current = null;
+    };
+}, []);
 
   return (
     <ChangeTrackerContext.Provider value={value}>
