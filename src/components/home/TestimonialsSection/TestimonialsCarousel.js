@@ -1,3 +1,4 @@
+//frontend/src/components/home/TestimonialsSection/TestimonialsCarousel.js
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import TestimonialCard from './TestimonialCard';

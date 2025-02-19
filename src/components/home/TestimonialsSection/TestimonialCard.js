@@ -5,7 +5,7 @@ import { FaQuoteRight } from 'react-icons/fa';
 
 const TestimonialCard = ({ testimonial, isActive, colors, showFeedback = true }) => {
   const handleImageClick = () => {
-    if (testimonial.profileUrl) {
+    if (isActive && testimonial.profileUrl) {
       window.open(testimonial.profileUrl, '_blank', 'noopener,noreferrer');
     }
   };
@@ -17,16 +17,16 @@ const TestimonialCard = ({ testimonial, isActive, colors, showFeedback = true })
           className={`
             rounded-full overflow-hidden border-4 
             transition-all duration-300 
-            cursor-pointer
             ${isActive ? 'w-40 h-40' : 'w-28 h-28'}
+            ${isActive && testimonial.profileUrl ? 'cursor-pointer' : ''}
           `}
           style={{ 
             borderColor: isActive ? colors.circleBorderColor : colors.circleBorderColor + '100',
             transform: isActive ? 'scale(1)' : 'scale(0.95)'
           }}
           onClick={handleImageClick}
-          role={testimonial.profileUrl ? 'link' : undefined}
-          aria-label={testimonial.profileUrl ? `Visit ${testimonial.name}'s profile` : undefined}
+          role={isActive && testimonial.profileUrl ? 'link' : undefined}
+          aria-label={isActive && testimonial.profileUrl ? `Visit ${testimonial.name}'s profile` : undefined}
         >
           <img
             src={testimonial.image.url}
