@@ -4,6 +4,7 @@ import Hero from '../components/home/Hero';
 import BrandSection from '../components/home/BrandSection';
 import UpcomingEvents from '../components/home/UpcomingEvents';
 import StatsSection from '../components/home/StatsSection';
+import TestimonialsSection from '../components/home/TestimonialsSection';
 
 const Home = () => {
   return (
@@ -12,6 +13,7 @@ const Home = () => {
       <BrandSection />
       <StatsSection />
       <UpcomingEvents />
+      <TestimonialsSection />
       {/* Other sections will go here */}
     </div>
   );

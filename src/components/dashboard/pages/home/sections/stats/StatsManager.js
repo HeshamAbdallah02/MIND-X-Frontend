@@ -14,6 +14,8 @@ const StatsManager = () => {
   const [activeStat, setActiveStat] = useState(null);
   const [isAddingNew, setIsAddingNew] = useState(false);
 
+  const maxStatsReached = stats?.length >= 7;
+
   // Color operations
   const handleSaveColors = async (newColors) => {
     try {
@@ -70,7 +72,7 @@ const StatsManager = () => {
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <p className="text-4xl font-bold text-[#FBB859] mb-1">
-                    {stat.number}+
+                    {stat.number}
                   </p>
                   <h3 className="text-lg font-semibold text-[#606161]">
                     {stat.label}
@@ -109,18 +111,25 @@ const StatsManager = () => {
 
           {/* Add New Card */}
           <div 
-            className={`p-6 border-3 border-dashed rounded-2xl transition-all duration-300 cursor-pointer
-              ${isAddingNew ? 'border-[#FBB859] bg-[#FBB859]/10' : 'border-[#81C99C]/30 hover:border-[#81C99C]'}
-              hover:shadow-lg group`}
-            onClick={() => !isAddingNew && setIsAddingNew(true)}
+            className={`p-6 border-3 border-dashed rounded-2xl transition-all duration-300 ${
+              maxStatsReached 
+                ? 'border-gray-300 cursor-not-allowed' 
+                : `${isAddingNew ? 'border-[#FBB859] bg-[#FBB859]/10' : 'border-[#81C99C]/30 hover:border-[#81C99C]'} cursor-pointer hover:shadow-lg group`
+            }`}
+            onClick={!maxStatsReached ? () => !isAddingNew && setIsAddingNew(true) : undefined}
           >
             <div className="flex flex-col items-center justify-center h-full gap-3">
-              <FiPlus className="w-10 h-10 text-[#81C99C] transition-transform group-hover:rotate-90" />
-              <span className="text-lg font-medium text-[#606161] group-hover:text-[#81C99C]">
-                Add New Statistic
+              <FiPlus className={`w-10 h-10 transition-transform ${
+                maxStatsReached ? 'text-gray-400' : 'text-[#81C99C] group-hover:rotate-90'
+              }`} />
+              <span className={`text-lg font-medium ${
+                maxStatsReached ? 'text-gray-400' : 'text-[#606161] group-hover:text-[#81C99C]'
+              }`}>
+                {maxStatsReached ? 'Maximum 7 statistics reached' : 'Add New Statistic'}
               </span>
             </div>
           </div>
+
 
           {/* Add New Form */}
           {isAddingNew && (
