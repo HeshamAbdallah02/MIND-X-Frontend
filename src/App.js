@@ -6,6 +6,7 @@ import { AuthProvider } from './context/AuthContext';
 import { IntersectionObserverProvider } from './context/IntersectionObserverContext';
 import Header from './components/layout/Header';
 import Home from './pages/Home';
+import OurStory from './pages/OurStory';
 import AdminLogin from './pages/AdminLogin';
 import Dashboard from './pages/Dashboard';
 import PrivateRoute from './components/PrivateRoute';
@@ -42,6 +43,11 @@ function App() {
                     <Route path="/" element={
                       <Layout>
                         <Home />
+                      </Layout>
+                    } />
+                    <Route path="/our-story" element={
+                      <Layout>
+                        <OurStory />
                       </Layout>
                     } />
                     <Route path="/dashboard/*" element={
