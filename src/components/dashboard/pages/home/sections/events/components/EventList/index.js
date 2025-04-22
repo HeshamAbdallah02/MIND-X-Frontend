@@ -5,7 +5,7 @@ import { FiPlus } from 'react-icons/fi';
 import EventCard from './EventCard';
 import useEventsConfig from '../../hooks/useEventsConfig';
 import VirtualizedEventList from './VirtualizedEventList';
-import useIntersection from '../../../../../../../../hooks/useIntersection';
+import { useIntersection } from '../../../../../../../../hooks/useIntersection';
 
 const EventList = React.memo(({ events, onDelete, onToggleActive, onReorder, onSuccess }) => {
   const [activeCardId, setActiveCardId] = useState(null);

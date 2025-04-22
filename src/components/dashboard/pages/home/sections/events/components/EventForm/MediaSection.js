@@ -19,7 +19,7 @@ const MediaSection = ({ formData, setFormData, handleFileUpload }) => {
       <h3 className="text-lg font-semibold text-[#606161]">Event Media</h3>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <FileUpload
-          onFileSelect={handleImageUpload}
+          onUpload={handleImageUpload}
           accept="image/*"
           label="Upload Cover Image"
           maxSize={10 * 1024 * 1024}

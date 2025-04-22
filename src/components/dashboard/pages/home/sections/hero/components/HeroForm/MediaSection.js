@@ -39,7 +39,7 @@ const MediaSection = ({ formData, setFormData, handleFileUpload }) => {
       {/* Media Upload */}
       <div className="space-y-2 mt-4">
         <FileUpload
-          onFileSelect={handleFileUpload}
+          onUpload={handleFileUpload}
           accept={formData.mediaType === 'video' ? 'video/*' : 'image/*'}
           label="Upload Media"
         />

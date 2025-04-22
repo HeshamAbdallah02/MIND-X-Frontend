@@ -1,4 +1,4 @@
-//frontend/src/components/dashboard/shared/ColorPicker.js
+// frontend/src/components/dashboard/shared/ColorPicker.js
 import React, { useState } from 'react';
 import { HexColorPicker } from 'react-colorful';
 
@@ -7,9 +7,11 @@ const ColorPicker = ({ color, onChange, label }) => {
 
   return (
     <div className="relative">
-      <label className="block text-sm font-medium text-gray-700 mb-1">
-        {label}
-      </label>
+      {label && (
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          {label}
+        </label>
+      )}
       <div className="flex items-center space-x-2">
         <button
           type="button"

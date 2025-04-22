@@ -2,7 +2,7 @@
 import React from 'react';
 import { FaEdit, FaTrash, FaGripVertical, FaTimes } from 'react-icons/fa';
 import EventForm from '../EventForm';
-import useIntersection from '../../../../../../../../hooks/useIntersection';
+import { useIntersection } from '../../../../../../../../hooks/useIntersection';
 
 const EventCard = React.forwardRef(({
   event = {}, 

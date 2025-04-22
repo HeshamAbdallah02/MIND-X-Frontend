@@ -84,61 +84,28 @@ const HeaderManager = () => {
     setIsUploading(true);
     
     try {
-      // Validate file type and size
-      const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
-      if (!allowedTypes.includes(file.type)) {
-        toast.error('Invalid file type. Please upload an image file.');
-        return;
-      }
-
-      if (file.size > 5 * 1024 * 1024) {
-        toast.error('File size must be less than 5MB');
-        return;
-      }
-
-      // Delete previous temp upload if exists
-      if (tempLogoData?.publicId) {
-        try {
-          await api.delete(`/upload/${tempLogoData.publicId}`);
-        } catch (error) {
-          console.error('Error deleting previous temp upload:', error);
-        }
-      }
-
+      // Create FormData identical to sponsor form
       const formData = new FormData();
-      formData.append('file', file);
-
-      const response = await api.post('/upload', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        },
-        timeout: 30000
-      });
-      
+      formData.append('file', file); // Must match sponsor form's field name
+  
+      // Use API instance with default headers
+      const response = await api.post('/upload', formData);
+  
+      // Update state with response
       const newData = {
         ...currentDataRef.current,
         logo: {
-          ...currentDataRef.current.logo,
           imageUrl: response.data.url,
-          publicId: response.data.publicId
+          publicId: response.data.publicId,
+          altText: currentDataRef.current.logo?.altText || 'MIND-X Logo'
         }
       };
-      
-      // Update the data without saving
+  
       updateData(newData);
-      
-      setTempLogoData({
-        url: response.data.url,
-        publicId: response.data.publicId
-      });
-      
-      // Remove the automatic save
-      // await handleSave();
-      
-      toast.success('Logo uploaded successfully. Click "Save Changes" to apply.');
+      return true;
     } catch (error) {
-      console.error('Upload error:', error?.response?.data || error);
-      toast.error(error?.response?.data?.error || 'Error uploading logo');
+      console.error('Upload Failed:', error.response?.data || error);
+      toast.error(error.response?.data?.error || 'Logo upload failed');
       throw error;
     } finally {
       setIsUploading(false);

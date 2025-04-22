@@ -1,6 +1,6 @@
 // frontend/src/components/home/StatsSection/index.js
 import React from 'react';
-import useIntersection from '../../../hooks/useIntersection';
+import { useIntersection } from '../../../hooks/useIntersection';
 import SectionTitle from '../../shared/SectionTitle';
 import { motion } from 'framer-motion';
 import useStatsData from './hooks/useStatsData';
@@ -23,7 +23,11 @@ const icons = {
 };
 
 const StatsSection = () => {
-  const [sectionRef, isVisible] = useIntersection({ threshold: 0.1 });
+  const [sectionRef, isVisible] = useIntersection({
+    triggerOnce: true,
+    rootMargin: '0px 0px -25% 0px',
+    threshold: 0.1
+  });
   const { stats, loading } = useStatsData();
   const { settings } = useSettings();
 
@@ -57,7 +61,7 @@ const StatsSection = () => {
       ref={sectionRef}
       style={{ backgroundColor: sectionBackground }}
       className="py-16"
-      data-visible={isVisible}
+      data-visible={isVisible.toString()}
     >
       <div className="container mx-auto pt-10 pb-14">
         <SectionTitle 

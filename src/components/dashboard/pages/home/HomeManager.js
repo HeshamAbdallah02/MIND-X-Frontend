@@ -7,12 +7,10 @@ import HeaderManager from './sections/header/HeaderManager';
 import HeroManager from './sections/hero/HeroManager';
 import BrandManager from './sections/brand/BrandManager';
 import EventsManager from './sections/events/EventsManager';
-
-// Placeholder imports (to be replaced with actual components later)
 import StatsManager from './sections/stats/StatsManager';
 import TestimonialsManager from './sections/testimonials/TestimonialsManager';
-import PartnersManager from './sections/partners/PartnersManager';
-import FAQManager from './sections/faq/FAQManager';
+import SponsorsManager from './sections/sponsors/SponsorsManager';
+import FooterManager from './sections/footer/FooterManager';
 
 const HomeManager = () => {
   const [activeSection, setActiveSection] = useState('header');
@@ -25,8 +23,8 @@ const HomeManager = () => {
     { id: 'stats', name: 'Statistics', component: StatsManager },
     { id: 'events', name: 'Upcoming Events', component: EventsManager },
     { id: 'testimonials', name: 'Testimonials', component: TestimonialsManager },
-    { id: 'partners', name: 'Sponsors & Partners', component: PartnersManager },
-    { id: 'faq', name: 'FAQ', component: FAQManager }
+    { id: 'sponsors', name: 'Sponsors & Partners', component: SponsorsManager },
+    { id: 'footer', name: 'Footer', component: FooterManager }
   ];
 
   const renderContent = () => {

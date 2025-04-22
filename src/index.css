@@ -4,8 +4,27 @@
 @tailwind utilities;
 
 @layer components {
-  .hover\\:text-primary:hover {
+  .hover\:text-primary:hover {
     color: var(--text-hover);
+  }
+
+  /* Logo Scroller Components */
+  .logo-scroller-container {
+    @apply opacity-0 translate-y-4;
+    transition: 
+      opacity 0.6s var(--ease-out),
+      transform 0.6s var(--ease-out);
+  }
+
+  .logo-scroller-track {
+    @apply flex items-center whitespace-nowrap;
+    min-width: max-content;
+    /* Remove CSS-based animation; we handle scrolling in JS */
+    animation: none;
+  }
+
+  .logo-scroller-item {
+    @apply relative flex-shrink-0 w-32 h-32 flex items-center justify-center;
   }
 }
 
@@ -17,21 +36,35 @@
 
 :root {
   --ease-out: cubic-bezier(0.33, 1, 0.68, 1);
-  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
 }
 
-/* Animation System */
+@keyframes scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(calc(-50% - 2rem)); }
+}
+
+/* Animation System - Core Styles */
 [data-visible="false"] {
-  opacity: 0;
-  transform: translateY(1rem);
+  opacity: 0 !important;
+  transform: translateY(1rem) !important;
   transition: 
     opacity 0.6s var(--ease-out),
     transform 0.6s var(--ease-out);
 }
 
 [data-visible="true"] {
+  @apply opacity-100 translate-y-0;
+}
+
+section[data-visible="true"] .logo-scroller-container {
+  @apply opacity-100 translate-y-0;
+}
+
+/* Component-specific overrides */
+.logo-scroller-container[data-visible="true"] {
   opacity: 1;
   transform: translateY(0);
+  transition-delay: 0.3s !important;
 }
 
 /* Carousel Specific */
@@ -137,4 +170,29 @@ code {
 
 .countup-transition {
   transition: all 0.3s ease-out;
+}
+
+@keyframes marquee {
+  from { transform: translateX(100%); }
+  to { transform: translateX(-100%); }
+}
+
+.animate-marquee {
+  animation: marquee linear infinite;
+  will-change: transform;
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+  width: fit-content;
+}
+
+@media (max-width: 768px) {
+  .logo-scroller-container {
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+  }
+  
+  .logo-scroller-item {
+    scroll-snap-align: start;
+    min-width: 33vw;
+  }
 }

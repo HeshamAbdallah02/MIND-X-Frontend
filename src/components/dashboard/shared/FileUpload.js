@@ -1,30 +1,31 @@
-//frontend/src/components/dashboard/shared/FileUpload.js
+// frontend/src/components/dashboard/shared/FileUpload.js
 import React, { useRef, useState } from 'react';
+import { FiUpload } from 'react-icons/fi';
 import { toast } from 'react-hot-toast';
 
-const FileUpload = ({ 
-  onFileSelect, 
-  accept, 
-  label, 
+const FileUpload = ({
+  onUpload,
+  accept,
+  label = 'Upload',
   disabled,
-  maxSize = 5 * 1024 * 1024 
+  maxSize = 5 * 1024 * 1024, // Default: 5MB
 }) => {
   const fileInputRef = useRef(null);
   const [uploadStatus, setUploadStatus] = useState('');
 
-  const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+  const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
   const attemptUpload = async (file, attemptNumber, maxAttempts) => {
     try {
-        await onFileSelect(file);
-        return true;
+      await onUpload(file);
+      return true;
     } catch (error) {
-        if (attemptNumber === maxAttempts) {
-            throw error;
-        }
-        const backoffTime = Math.min(1000 * Math.pow(2, attemptNumber - 1), 10000);
-        await delay(backoffTime);
-        return false;
+      if (attemptNumber === maxAttempts) {
+        throw error;
+      }
+      const backoffTime = Math.min(1000 * 2 ** (attemptNumber - 1), 10000); // Exponential backoff
+      await delay(backoffTime);
+      return false;
     }
   };
 
@@ -44,18 +45,19 @@ const FileUpload = ({
       for (let attempt = 1; attempt <= maxAttempts; attempt++) {
         const success = await attemptUpload(file, attempt, maxAttempts);
         if (success) {
-          setUploadStatus('');
-          break;
+          setUploadStatus('Upload successful');
+          return;
         }
-        
         if (attempt < maxAttempts) {
-          setUploadStatus('Retrying...');
+          setUploadStatus(`Retrying... (attempt ${attempt + 1})`);
         }
       }
     } catch (error) {
-      toast.error('Upload failed');
+      console.error('FileUpload final error:', error);
+      toast.error('Upload failed after multiple attempts');
+      setUploadStatus('Upload failed');
     } finally {
-      setUploadStatus('');
+      setTimeout(() => setUploadStatus(''), 2000);
       e.target.value = '';
     }
   };
@@ -65,11 +67,19 @@ const FileUpload = ({
       <button
         type="button"
         onClick={() => fileInputRef.current?.click()}
-        className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="p-2 border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150"
         disabled={disabled}
       >
-        {disabled ? uploadStatus || 'Uploading...' : label}
+        {disabled ? (
+          uploadStatus || 'Uploading...'
+        ) : (
+          <div className="flex items-center gap-2">
+            <FiUpload className="w-5 h-5 text-gray-600 hover:text-gray-800" />
+            <span className="sr-only">{label}</span>
+          </div>
+        )}
       </button>
+
       <input
         type="file"
         ref={fileInputRef}
@@ -78,6 +88,7 @@ const FileUpload = ({
         className="hidden"
         disabled={disabled}
       />
+
       {uploadStatus && (
         <div className="mt-2">
           <p className="text-sm text-gray-500">{uploadStatus}</p>

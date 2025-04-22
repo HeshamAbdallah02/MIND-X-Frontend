@@ -1,26 +1,29 @@
-// components/LogoManagement/index.js
+// frontend/src/components/dashboard/pages/home/sections/header/components/LogoManagement/index.js
 import React, { useState } from 'react';
 import FileUpload from '../../../../../../shared/FileUpload';
 import LogoPreview from './LogoPreview';
+import { toast } from 'react-hot-toast';
 
 const LogoManagement = ({ logo, onLogoUpload, onLogoDelete, isUploading }) => {
   const [tempPreviewUrl, setTempPreviewUrl] = useState(null);
 
   const handleFileSelect = async (file) => {
-    // Create temporary preview
-    const tempUrl = URL.createObjectURL(file);
-    setTempPreviewUrl(tempUrl);
-
+    let tempUrl;
     try {
-      // Upload file
+      tempUrl = URL.createObjectURL(file);
+      setTempPreviewUrl(tempUrl);
+      
+      // Add delay for state update
+      await new Promise(resolve => setTimeout(resolve, 50));
+      
+      // Call upload handler
       await onLogoUpload(file);
     } catch (error) {
-      // If upload fails, clear preview
       setTempPreviewUrl(null);
+      toast.error('Upload failed: ' + (error.message || 'Unknown error'));
+    } finally {
+      if (tempUrl) URL.revokeObjectURL(tempUrl);
     }
-
-    // Cleanup temporary URL
-    URL.revokeObjectURL(tempUrl);
   };
 
   return (
@@ -28,7 +31,7 @@ const LogoManagement = ({ logo, onLogoUpload, onLogoDelete, isUploading }) => {
       <h2 className="text-xl font-semibold mb-4">Logo Management</h2>
       <div className="space-y-4">
         <FileUpload
-          onFileSelect={handleFileSelect}
+          onUpload={handleFileSelect}
           accept="image/*"
           label="Upload Logo"
           disabled={isUploading}

@@ -1,43 +1,30 @@
 // frontend/src/hooks/useIntersection.js
 import { useEffect, useRef, useState } from 'react';
+import { useIntersectionSystem } from '../context/IntersectionObserverContext';
 
-const useIntersection = (options = {}) => {
+export const useIntersection = (options = {}) => {
   const ref = useRef();
+  const { register } = useIntersectionSystem();
   const [isIntersecting, setIsIntersecting] = useState(false);
-  const observerRef = useRef(null);
-  const hasTriggered = useRef(false);
+  const observedRef = useRef(false);
 
   useEffect(() => {
-    if (hasTriggered.current || !ref.current) return;
+    if (!ref.current || observedRef.current) return;
 
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting && !hasTriggered.current) {
-        setIsIntersecting(true);
-        hasTriggered.current = true;
-        
-        // Cleanup immediately after first intersection
-        if (observerRef.current && ref.current) {
-          observerRef.current.unobserve(ref.current);
-          observerRef.current.disconnect();
+    const cleanup = register(ref.current, (entry) => {
+      if (!observedRef.current) {
+        setIsIntersecting(entry.isIntersecting);
+        if (options.triggerOnce && entry.isIntersecting) {
+          observedRef.current = true;
         }
       }
-    }, {
-      rootMargin: '0px 0px -15% 0px',
-      threshold: 0.15,
-      ...options
-    });
-
-    observerRef.current = observer;
-    observer.observe(ref.current);
+    }, options);
 
     return () => {
-      if (observerRef.current) {
-        observerRef.current.disconnect();
-      }
+      cleanup?.();
+      observedRef.current = false;
     };
-  }, [options]);
+  }, [register, options]);
 
   return [ref, isIntersecting];
 };
-
-export default useIntersection;

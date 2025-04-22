@@ -1,11 +1,14 @@
 // frontend/src/components/home/BrandSection/index.js
 import React from 'react';
-import useIntersection from '../../../hooks/useIntersection';
+import { useIntersection } from '../../../hooks/useIntersection';
 import { motion } from 'framer-motion';
 import { useSettings } from '../../../context/BrandSettingsContext';
 
 const BrandSection = () => {
-  const [sectionRef, isVisible] = useIntersection();
+  const [sectionRef, isVisible] = useIntersection({
+    triggerOnce: true,
+    rootMargin: '0px 0px -25% 0px'
+  });
   const { settings } = useSettings();
 
   const containerVariants = {
@@ -56,7 +59,8 @@ const BrandSection = () => {
           variants={itemVariants}
         >
           <span className="text-[#FBB859]">M</span>essengers of 
-          <span className="text-[#FBB859]"> In</span>spiration and
+          <span className="text-[#FBB859]"> I</span>nspiration
+          a<span className="text-[#FBB859]">n</span>d
           <span className="text-[#FBB859]"> D</span>evelopment
         </motion.h2>
 

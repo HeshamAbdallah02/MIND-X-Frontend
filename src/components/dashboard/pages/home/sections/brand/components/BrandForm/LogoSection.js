@@ -20,7 +20,7 @@ const LogoSection = ({ logo, onFileUpload, isUploading }) => {
 
         <div className="flex-1">
           <FileUpload
-            onFileSelect={onFileUpload}
+            onUpload={onFileUpload}
             accept="image/*"
             label="Upload Logo"
             disabled={isUploading}
