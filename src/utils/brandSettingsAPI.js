@@ -2,7 +2,7 @@
 import axios from 'axios';
 import api from './api'; // Use the configured axios instance
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+const API_URL = process.env.REACT_APP_API_URL || 'https://mind-x-backend.fly.dev';
 
 export const fetchSettings = async () => {
   try {

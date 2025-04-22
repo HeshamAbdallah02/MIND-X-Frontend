@@ -15,7 +15,7 @@ const Hero = () => {
 
   const fetchHeroContents = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/hero');
+      const response = await axios.get('https://mind-x-backend.fly.dev/api/hero');
       setContents(response.data);
     } catch (error) {
       console.error('Error fetching hero contents:', error);
