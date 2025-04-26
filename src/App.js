@@ -50,6 +50,56 @@ function App() {
                         <OurStory />
                       </Layout>
                     } />
+                    <Route path="/events" element={
+                      <Layout>
+                        <div>
+                            <h1 className="text-4xl font-bold text-center mt-10">Events</h1>
+                            <p className="text-lg text-center mt-5">
+                                This Page Is still under development.
+                            </p>
+                        </div>
+                      </Layout>
+                    } />
+                    <Route path="/trainings" element={
+                      <Layout>
+                        <div>
+                            <h1 className="text-4xl font-bold text-center mt-10">Trainings</h1>
+                            <p className="text-lg text-center mt-5">
+                                This Page Is still under development.
+                            </p>
+                        </div>
+                      </Layout>
+                    } />
+                    <Route path="/crew" element={
+                      <Layout>
+                        <div>
+                            <h1 className="text-4xl font-bold text-center mt-10">Crew</h1>
+                            <p className="text-lg text-center mt-5">
+                                This Page Is still under development.
+                            </p>
+                        </div>
+                      </Layout>
+                    } />
+                    <Route path="/daily-life" element={
+                      <Layout>
+                        <div>
+                            <h1 className="text-4xl font-bold text-center mt-10">Daily Life</h1>
+                            <p className="text-lg text-center mt-5">
+                                This Page Is still under development.
+                            </p>
+                        </div>
+                      </Layout>
+                    } />
+                    <Route path="/blog" element={
+                      <Layout>
+                        <div>
+                            <h1 className="text-4xl font-bold text-center mt-10">Blog</h1>
+                            <p className="text-lg text-center mt-5">
+                                This Page Is still under development.
+                            </p>
+                        </div>
+                      </Layout>
+                    } />               
                     <Route path="/dashboard/*" element={
                       <Layout>
                         <PrivateRoute>

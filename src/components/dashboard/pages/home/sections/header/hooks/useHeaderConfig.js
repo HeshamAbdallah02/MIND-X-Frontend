@@ -1,7 +1,7 @@
 //frontend/src/components/dashboard/pages/home/sections/header/hooks/useHeaderConfig.js
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 import { toast } from 'react-hot-toast';
+import api from '../../../../../../../utils/api';
 
 const useHeaderConfig = () => {
   const [config, setConfig] = useState({
@@ -21,7 +21,7 @@ const useHeaderConfig = () => {
   const fetchConfig = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/api/header', {
+      const response = await api.get('/header', {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (response.data) {
@@ -37,8 +37,7 @@ const useHeaderConfig = () => {
     console.log('Updating config with:', newConfig); // Debug log
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.put(
-        'http://localhost:5000/api/header',
+      const response = await api.put('/header',
         newConfig,
         {
           headers: { 

@@ -38,7 +38,7 @@ export const BrandSettingsProvider = ({ children }) => {
         }
       }
     };
-
+  
     loadSettings();
     return () => { isMounted = false; };
   }, [handleError]);

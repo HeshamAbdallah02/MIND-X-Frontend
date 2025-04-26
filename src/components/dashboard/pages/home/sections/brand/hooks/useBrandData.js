@@ -78,8 +78,17 @@ const useBrandData = () => {
 
       // Clean up MongoDB-specific fields
       const { _id, createdAt, updatedAt, __v, ...cleanSettings } = settings;
+
+      // Convert color values to uppercase hex format
+      const processedSettings = {
+        ...cleanSettings,
+        missionBgColor: cleanSettings.missionBgColor?.toUpperCase(),
+        visionBgColor: cleanSettings.visionBgColor?.toUpperCase(),
+        missionTextColor: cleanSettings.missionTextColor?.toUpperCase(),
+        visionTextColor: cleanSettings.visionTextColor?.toUpperCase()
+      };
       
-      const updatedSettings = await updateSettings(cleanSettings, token);
+      const updatedSettings = await updateSettings(processedSettings, token);
       setServerSettings(updatedSettings);
       setHasUnsavedChanges(false);
       

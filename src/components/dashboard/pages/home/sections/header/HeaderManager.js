@@ -116,17 +116,17 @@ const HeaderManager = () => {
   const handleLogoDelete = async () => {
     try {
       let publicIdToDelete = null;
-
+  
       if (tempLogoData?.publicId) {
-        publicIdToDelete = tempLogoData.publicId;
+        publicIdToDelete = encodeURIComponent(tempLogoData.publicId);
       } else if (currentData.logo?.publicId) {
-        publicIdToDelete = currentData.logo.publicId;
+        publicIdToDelete = encodeURIComponent(currentData.logo.publicId);
       }
-
+  
       if (publicIdToDelete) {
         await api.delete(`/upload/${publicIdToDelete}`);
       }
-
+  
       updateData(prev => ({
         ...prev,
         logo: {
@@ -135,12 +135,14 @@ const HeaderManager = () => {
           publicId: null
         }
       }));
-
+  
       setTempLogoData(null);
       toast.success('Logo removed successfully');
     } catch (error) {
-      toast.error('Error removing logo');
-      console.error('Error deleting logo:', error);
+      toast.error(error.response?.data?.error || 'Error removing logo');
+      console.error('Error deleting logo:', {
+        error: error.response?.data || error
+      });
     }
   };
 

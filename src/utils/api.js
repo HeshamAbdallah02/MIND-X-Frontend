@@ -2,7 +2,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'https://mind-x-backend.fly.dev/api'
+  baseURL: process.env.REACT_APP_API_URL + '/api' 
 });
 
 api.interceptors.request.use(config => {
