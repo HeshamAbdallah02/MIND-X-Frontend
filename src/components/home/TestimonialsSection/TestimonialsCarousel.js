@@ -41,7 +41,12 @@ const TestimonialsCarousel = ({ animate }) => {
   
     return (
         <div className="mt-20">
-          <div className="relative h-[400px]">
+          <div className="relative
+            h-[250px]
+            sm:h-[300px]
+            md:h-[400px]
+            lg:h-[500px]
+          ">
             {/* Profile Pictures Carousel */}
             <div className="absolute w-full top-0 left-1/2 -translate-x-1/2">
               {testimonials.map((testimonial, index) => {
@@ -51,7 +56,10 @@ const TestimonialsCarousel = ({ animate }) => {
                 return (
                   <motion.div
                     key={testimonial._id}
-                    className="absolute left-1/2"
+                    className={
+                      `absolute left-1/2
+                      ${!isActive ? 'hidden sm:block' : ''}`
+                    }
                     initial={false}
                     animate={{
                       x: `calc(${style.x}px - 50%)`,
