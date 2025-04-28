@@ -8,12 +8,17 @@ const SplashScreen = ({ progress }) => (
     className="fixed inset-0 z-[9999] bg-white flex flex-col items-center justify-center"
     role="status"
     aria-live="polite"
-    aria-label="Loading application..."
+    aria-label="Application loading screen"
   >
-    <div
-      className="relative w-[min(60vw,400px)] h-[min(60vw,400px)] overflow-visible"
-      // you can keep animate-pulse or remove if you don’t want the glow
-      // className="relative w-[min(60vw,400px)] h-[min(60vw,400px)] overflow-visible animate-pulse"
+    {/* Animation container with responsive sizing */}
+    <div 
+      className="
+        w-[min(75vw,400px)] h-[min(75vw,400px)]
+        md:w-[min(60vw,500px)] md:h-[min(60vw,500px)]
+        lg:w-[min(50vw,600px)] lg:h-[min(50vw,600px)]
+        relative overflow-visible
+        @container/splash
+      "
     >
       <Lottie
         animationData={animationData}
@@ -21,24 +26,61 @@ const SplashScreen = ({ progress }) => (
         autoplay
         className="w-full h-full"
         rendererSettings={{
-          // 'slice' would zoom/crop; 'meet' will letterbox instead
-          preserveAspectRatio: 'xMidYMid meet'
+          preserveAspectRatio: 'xMidYMid meet',
+          progressiveLoad: true // Better for large animations
         }}
+        style={{
+          willChange: 'transform, opacity', // Optimize animations
+          touchAction: 'none' // Prevent scroll interference
+        }}
+        aria-hidden="true"
       />
     </div>
 
+    {/* Responsive progress bar */}
     {typeof progress === 'number' && (
-      <div className="w-48 mt-8 bg-gray-100 rounded-full h-2.5">
+      <div 
+        className="
+          w-[75vw] max-w-[300px] 
+          md:w-[60vw] md:max-w-[400px]
+          lg:w-[50vw] lg:max-w-[500px]
+          mt-[5vmin] h-[1.2vmin] min-h-[6px]
+          bg-gray-100/50 rounded-full
+          overflow-hidden
+          @[400px]/splash:mt-8
+        "
+      >
         <div
-          className="bg-[#FBB859] h-2.5 rounded-full transition-all duration-300"
+          className="
+            h-full bg-[#FBB859] rounded-full
+            transition-all duration-500 ease-out-quad
+          "
           style={{ width: `${progress}%` }}
           role="progressbar"
           aria-valuenow={progress}
           aria-valuemin="0"
           aria-valuemax="100"
-        />
+          aria-label="Loading progress"
+        >
+          {/* Screen reader-only updates */}
+          <span className="sr-only">
+            {progress}% of resources loaded
+          </span>
+        </div>
       </div>
     )}
+
+    {/* Optional: Reduced motion alternative */}
+    <style>{`
+      @media (prefers-reduced-motion: reduce) {
+        .animation-container > div {
+          animation: none !important;
+        }
+        .lottie-animation {
+          animation: pulse 2s infinite;
+        }
+      }
+    `}</style>
   </div>
 );
 
