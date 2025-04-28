@@ -10,10 +10,12 @@ const Header = () => {
   const { admin, logout } = useAuth();
   const { config: headerConfig, loading } = useHeaderConfig();
   const location = useLocation();
+  const dashboardPath = process.env.REACT_APP_DASHBOARD_PATH;
+  const adminPath = process.env.REACT_APP_ADMIN_PATH;
 
   // Check if the current route is part of the dashboard
-  const isDashboardRoute = location.pathname.startsWith('/dashboard');
-  const isAdminLoginPage = location.pathname.match('/admin/login');
+  const isDashboardRoute = location.pathname.startsWith(`/${dashboardPath}`);
+  const isAdminLoginPage = location.pathname.match(`/${adminPath}/access`);
   const isDashboard = !!admin;
 
   useEffect(() => {
@@ -27,13 +29,13 @@ const Header = () => {
   // Define navigation items based on the current route
   const navItems = isDashboardRoute
     ? [
-        { name: 'Home', path: '/dashboard' },
-        { name: 'Our Story', path: '/dashboard/our-story' },
-        { name: 'Events', path: '/dashboard/events' },
-        { name: 'Trainings', path: '/dashboard/trainings' },
-        { name: 'Crew', path: '/dashboard/crew' },
-        { name: 'Daily Life', path: '/dashboard/daily-life' },
-        { name: 'Blog', path: '/dashboard/blog' },
+        { name: 'Home', path: `/${dashboardPath}` },
+        { name: 'Our Story', path: `/${dashboardPath}/our-story` },
+        { name: 'Events', path: `/${dashboardPath}/events` },
+        { name: 'Trainings', path: `/${dashboardPath}/trainings` },
+        { name: 'Crew', path: `/${dashboardPath}/crew` },
+        { name: 'Daily Life', path: `/${dashboardPath}/daily-life` },
+        { name: 'Blog', path: `/${dashboardPath}/blog` },
       ]
     : [
         { name: 'Home', path: '/' },
@@ -51,10 +53,10 @@ const Header = () => {
 
   const isActivePath = (path) => {
     if (isDashboardRoute) {
-      if (path === '/dashboard' && location.pathname === '/dashboard') {
+      if (path === `/${dashboardPath}` && location.pathname === `/${dashboardPath}`) {
         return true;
       }
-      return location.pathname.startsWith(path) && path !== '/dashboard';
+      return location.pathname.startsWith(path) && path !== `/${dashboardPath}`;
     }
     return location.pathname === path;
   };
@@ -81,7 +83,7 @@ const Header = () => {
           {/* Logo */}
           <div className="flex-shrink-0 relative group">
             <Link 
-              to={isDashboardRoute ? '/dashboard' : '/'} 
+              to={isDashboardRoute ? `/${dashboardPath}` : '/'} 
               className="inline-block relative h-16 w-40 hover:scale-105 transition-transform duration-200"
             >
               {headerConfig?.logo?.imageUrl ? (

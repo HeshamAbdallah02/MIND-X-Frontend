@@ -13,7 +13,8 @@ const AdminLogin = () => {
 
   useEffect(() => {
     if (!loading && admin) {
-      navigate('/dashboard');
+      const dashboardPath = process.env.REACT_APP_DASHBOARD_PATH;
+      navigate(`/${dashboardPath}`);
     }
   }, [admin, loading, navigate]);
 
