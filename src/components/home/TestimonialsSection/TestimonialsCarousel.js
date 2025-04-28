@@ -42,10 +42,7 @@ const TestimonialsCarousel = ({ animate }) => {
     return (
         <div className="mt-20">
           <div className="relative
-            h-[250px]
-            sm:h-[300px]
-            md:h-[400px]
-            lg:h-[500px]
+            h-[450px]
             overflow-hidden
             px-16
           ">
