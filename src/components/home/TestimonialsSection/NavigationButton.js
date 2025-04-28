@@ -7,7 +7,7 @@ const TestimonialNavigationButton = ({ direction, onClick }) => {
       onClick={onClick}
       className={`
         absolute -translate-y-1/2
-        ${direction === 'prev' ? '-left-12' : '-right-12'}
+        ${direction === 'prev' ? '-left-0' : '-right-0'}
         w-14 h-14
         flex items-center justify-center
         group

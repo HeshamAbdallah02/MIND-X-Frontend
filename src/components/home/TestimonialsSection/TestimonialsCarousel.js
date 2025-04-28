@@ -30,10 +30,10 @@ const TestimonialsCarousel = ({ animate }) => {
         // Adjusted y values to move inactive cards upward
         const positions = {
           0: { x: 0, y: 0, scale: 1, opacity: 1, zIndex: 5 },          // Center stays at current position
-          1: { x: 300, y: 55, scale: 0.7, opacity: 0.7, zIndex: 4 },  // Right 1 moves up
-          2: { x: 500, y: 90, scale: 0.5, opacity: 0.5, zIndex: 3 },  // Right 2 moves up more
-          [total - 1]: { x: -300, y: 55, scale: 0.7, opacity: 0.7, zIndex: 4 },  // Left 1 moves up
-          [total - 2]: { x: -500, y: 90, scale: 0.5, opacity: 0.5, zIndex: 3 },  // Left 2 moves up more
+          1: { x: 250, y: 55, scale: 0.7, opacity: 0.7, zIndex: 4 },  // Right 1 moves up
+          2: { x: 400, y: 90, scale: 0.5, opacity: 0.5, zIndex: 3 },  // Right 2 moves up more
+          [total - 1]: { x: -250, y: 55, scale: 0.7, opacity: 0.7, zIndex: 4 },  // Left 1 moves up
+          [total - 2]: { x: -400, y: 90, scale: 0.5, opacity: 0.5, zIndex: 3 },  // Left 2 moves up more
         };
       
         return positions[diff] || { x: 0, y: 0, scale: 0, opacity: 0, zIndex: 1 };
@@ -46,9 +46,11 @@ const TestimonialsCarousel = ({ animate }) => {
             sm:h-[300px]
             md:h-[400px]
             lg:h-[500px]
+            overflow-hidden
+            px-16
           ">
             {/* Profile Pictures Carousel */}
-            <div className="absolute w-full top-0 left-1/2 -translate-x-1/2">
+            <div className="absolute w-full top-0 left-1/2 -translate-x-1/2 px-4">
               {testimonials.map((testimonial, index) => {
                 const style = getCardStyle(index);
                 const isActive = index === currentIndex;
