@@ -13,7 +13,8 @@ import PrivateRoute from './components/PrivateRoute';
 import { HeaderConfigProvider } from './context/HeaderConfigContext';
 import { BrandSettingsProvider } from './context/BrandSettingsContext';
 import { Toaster } from 'react-hot-toast';
-import { SpeedInsights } from "@vercel/speed-insights/react"
+import { SpeedInsights } from "@vercel/speed-insights/react";
+import { Analytics } from "@vercel/analytics/react";
 
 const Layout = ({ children, hideHeader = false }) => (
   <div className="min-h-screen bg-white">
@@ -115,6 +116,7 @@ function App() {
           </HeaderConfigProvider>
         </IntersectionObserverProvider>
         <SpeedInsights/>
+        <Analytics />
       </AuthProvider>
     </HelmetProvider>
   );
