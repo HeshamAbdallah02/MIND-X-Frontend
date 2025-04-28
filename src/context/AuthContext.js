@@ -1,6 +1,6 @@
 // frontend/src/context/AuthContext.js
 import React, { createContext, useState, useEffect, useContext } from 'react';
-import api from '../utils/api'; // Use the centralized axios instance
+import api from '../utils/api';
 
 const AuthContext = createContext(null);
 
@@ -32,7 +32,19 @@ export const AuthProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    checkAuth();
+    const initAuth = async () => {
+      await checkAuth();
+      // Signal loading completion to parent
+      if (typeof window !== 'undefined') {
+        sessionStorage.setItem('authInitialized', 'true');
+      }
+    };
+    
+    if (!sessionStorage.getItem('authInitialized')) {
+      initAuth();
+    } else {
+      setLoading(false);
+    }
   }, []);
 
   const login = async (email, password) => {
@@ -53,6 +65,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     localStorage.removeItem('token');
+    sessionStorage.removeItem('authInitialized');
     setAdmin(null);
     setError(null);
   };
@@ -64,7 +77,7 @@ export const AuthProvider = ({ children }) => {
       error,
       login, 
       logout,
-      checkAuth // Optional: export if you need manual revalidation
+      checkAuth
     }}>
       {children}
     </AuthContext.Provider>

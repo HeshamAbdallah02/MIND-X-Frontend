@@ -1,4 +1,4 @@
-// frontend/src/contexts/BrandSettingsContext.js
+// frontend/src/context/BrandSettingsContext.js
 import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import { fetchSettings } from '../utils/brandSettingsAPI';
 import { useErrorHandler } from '../hooks/useErrorHandler';
@@ -11,21 +11,22 @@ export const BrandSettingsProvider = ({ children }) => {
     isLoading: true,
     error: null
   });
+  
   const handleError = useErrorHandler();
 
   useEffect(() => {
     let isMounted = true;
-    
+    const controller = new AbortController();
+
     const loadSettings = async () => {
       try {
-        const data = await fetchSettings();
+        const data = await fetchSettings({ signal: controller.signal });
         if (isMounted) {
-          setState(prev => ({
-            ...prev,
+          setState({
             settings: data,
             isLoading: false,
             error: null
-          }));
+          });
         }
       } catch (error) {
         if (isMounted) {
@@ -38,9 +39,12 @@ export const BrandSettingsProvider = ({ children }) => {
         }
       }
     };
-  
+
     loadSettings();
-    return () => { isMounted = false; };
+    return () => {
+      isMounted = false;
+      controller.abort();
+    };
   }, [handleError]);
 
   const updateSettings = (newSettings) => {

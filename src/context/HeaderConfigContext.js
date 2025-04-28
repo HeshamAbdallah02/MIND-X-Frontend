@@ -9,22 +9,27 @@ export const HeaderConfigProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const fetchConfig = async () => {
+  const fetchConfig = async (signal) => {
     try {
       setLoading(true);
-      const response = await api.get('/header');
+      const response = await api.get('/header', { signal });
       setConfig(response.data);
       setError(null);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to load header config');
-      setConfig(null);
+      if (!signal.aborted) {
+        setError(err.response?.data?.message || 'Failed to load header config');
+      }
     } finally {
-      setLoading(false);
+      if (!signal.aborted) {
+        setLoading(false);
+      }
     }
   };
 
   useEffect(() => {
-    fetchConfig();
+    const controller = new AbortController();
+    fetchConfig(controller.signal);
+    return () => controller.abort();
   }, []);
 
   return (
