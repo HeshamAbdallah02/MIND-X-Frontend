@@ -3,9 +3,11 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import EventCard from './EventCard';
 import NavigationButton from './NavigationButton';
 import useEventData from './hooks/useEventData';
+import useResponsiveCarousel from './useResponsiveCarousel';
 
 const EventsCarousel = ({ animate }) => {
   const { events, loading } = useEventData();
+  const { isMobile, getNavIncrement } = useResponsiveCarousel();
   const [virtualIndex, setVirtualIndex] = useState(2); // Start at original items
   const [transitionEnabled, setTransitionEnabled] = useState(true);
   const [autoScrollPaused, setAutoScrollPaused] = useState(false);
@@ -45,15 +47,16 @@ const EventsCarousel = ({ animate }) => {
     
     isTransitioning.current = true;
     setTransitionEnabled(true);
-    setVirtualIndex(prev => direction === 'next' ? prev + 1 : prev - 1);
-  }, [totalEvents]);
+    const increment = getNavIncrement();
+    setVirtualIndex(prev => direction === 'next' ? prev + increment : prev - increment);
+  }, [totalEvents, getNavIncrement]);
 
   // Optimized auto-scroll
   useEffect(() => {
     if (totalEvents < 3 || autoScrollPaused) return;
     const interval = setInterval(() => navigate('next'), 5000);
     return () => clearInterval(interval);
-  }, [navigate, totalEvents, autoScrollPaused]);
+  }, [navigate, totalEvents, autoScrollPaused, isMobile]);
 
   // Reset transition after index jump
   useEffect(() => {
@@ -114,7 +117,7 @@ const EventsCarousel = ({ animate }) => {
                 <div
                     className="flex transition-transform duration-300 ease-[cubic-bezier(0.25,0.1,0.25,1)]"
                     style={{
-                        transform: `translateX(calc(-${virtualIndex * (100 / 3)}%))`,
+                        transform: isMobile ? `translateX(calc(-${virtualIndex * 100}%))` : `translateX(calc(-${virtualIndex * (100 / 3)}%))`,
                         transition: transitionEnabled ? 'transform 400ms cubic-bezier(0.25,0.1,0.25,1)' : 'none',
                         willChange: 'transform'
                     }}

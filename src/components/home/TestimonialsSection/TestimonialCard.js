@@ -17,7 +17,7 @@ const TestimonialCard = ({ testimonial, isActive, colors, showFeedback = true })
           className={`
             rounded-full overflow-hidden border-4 
             transition-all duration-300 
-            ${isActive ? 'w-40 h-40' : 'w-28 h-28'}
+            ${isActive ? 'w-32 h-32 sm:w-40 sm:h-40' : 'w-24 h-24 sm:w-28 sm:h-28'}
             ${isActive && testimonial.profileUrl ? 'cursor-pointer' : ''}
           `}
           style={{ 

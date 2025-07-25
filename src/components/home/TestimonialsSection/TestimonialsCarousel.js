@@ -44,7 +44,7 @@ const TestimonialsCarousel = ({ animate }) => {
           <div className="relative
             h-[450px]
             overflow-hidden
-            px-16
+            px-4 sm:px-16
           ">
             {/* Profile Pictures Carousel */}
             <div className="absolute w-full top-0 left-1/2 -translate-x-1/2 px-4">
@@ -84,7 +84,7 @@ const TestimonialsCarousel = ({ animate }) => {
             </div>
     
             {/* Static Feedback Container with Navigation */}
-            <div className="absolute w-full top-[175px] left-1/2 -translate-x-1/2">
+            <div className="absolute w-full top-[150px] sm:top-[175px] left-1/2 -translate-x-1/2">
               {/* Navigation Buttons */}
               {testimonials.length > 1 && (
                 <>
@@ -104,7 +104,7 @@ const TestimonialsCarousel = ({ animate }) => {
               )}
     
               <motion.div
-                className="text-center"
+                className="text-center w-full px-4 sm:px-0"
                 animate={{ opacity: 1 }}
                 initial={{ opacity: 0 }}
               >
@@ -130,13 +130,15 @@ const TestimonialsCarousel = ({ animate }) => {
                       {testimonials[currentIndex].position}
                     </p>
                     <div 
-                      className="mt-6 p-6 rounded-xl relative before:content-[''] before:absolute before:top-0 before:left-1/2 before:-translate-x-1/2 before:-translate-y-3 before:w-6 before:h-6 before:rotate-45"
+                      className="mt-6 p-4 sm:p-6 rounded-xl relative before:content-[''] before:absolute before:top-0 before:left-1/2 before:-translate-x-1/2 before:-translate-y-3 before:w-6 before:h-6 before:rotate-45"
                       style={{ 
                         backgroundColor: colors.feedbackBackground,
                         border: `2px solid ${colors.feedbackBorderColor}`,
                         boxShadow: '0 10px 20px rgba(0,0,0,0.05)',
-                        maxWidth: '500px',
-                        margin: '0 auto'
+                        maxWidth: '350px',
+                        width: '100%',
+                        margin: '0 auto',
+                        overflowWrap: 'break-word'
                       }}
                     >
                       <p 
