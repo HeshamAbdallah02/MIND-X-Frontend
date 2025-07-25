@@ -32,7 +32,7 @@ const EventCard = React.memo(({ event, className }) => {
       tabIndex={event.url ? 0 : -1}
       onClick={handleCardClick}
       onKeyDown={handleCardClick}
-      className={`relative rounded-lg overflow-hidden shadow-lg h-full flex flex-col 
+      className={`relative rounded-lg overflow-hidden shadow-lg h-full flex flex-col event-card
         transition-all duration-300 ease-[cubic-bezier(0.33,1,0.68,1)]
         hover:scale-[0.97] hover:shadow-xl 
         active:scale-95 focus:scale-[0.97] focus:outline-none

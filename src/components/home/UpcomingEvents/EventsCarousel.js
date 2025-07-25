@@ -98,10 +98,7 @@ const EventsCarousel = ({ animate }) => {
 
     return (
         <div 
-          className={`relative px-4 group transition-opacity duration-500 ${
-            animate ? 'opacity-100' : 'opacity-0'
-          }`}
-          style={{ transitionDelay: '200ms' }}
+          className="relative px-4 group events-carousel"
           onMouseEnter={() => setAutoScrollPaused(true)}
           onMouseLeave={() => setAutoScrollPaused(false)}
           ref={containerRef}
