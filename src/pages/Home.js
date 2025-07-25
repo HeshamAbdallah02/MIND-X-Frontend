@@ -10,7 +10,7 @@ import Footer from '../components/home/Footer';
 
 const Home = () => {
   return (
-    <div>
+    <main style={{ maxWidth: '100vw', overflowX: 'hidden' }}>
       <Hero />
       <BrandSection />
       <StatsSection />
@@ -18,7 +18,7 @@ const Home = () => {
       <TestimonialsSection />
       <SponsorsSection />
       <Footer />
-    </div>
+    </main>
   );
 };
 

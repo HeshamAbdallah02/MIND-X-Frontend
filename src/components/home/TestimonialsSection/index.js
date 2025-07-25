@@ -16,7 +16,7 @@ const TestimonialsSection = () => {
     return (
       <section 
         ref={sectionRef}
-        className="py-20 min-h-screen"
+        className="py-20 lg:min-h-screen"
         style={{ backgroundColor: colors.sectionBackground }}
         data-visible={isVisible.toString()}
       >

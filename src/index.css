@@ -147,6 +147,30 @@ code {
     scroll-snap-align: center;
     scroll-margin: 0 1rem;
   }
+  
+  html {
+    overflow-x: hidden;
+  }
+  
+  body {
+    overflow-x: hidden;
+    width: 100%;
+  }
+  
+  #root {
+    overflow-x: hidden;
+    width: 100%;
+  }
+  
+  .testimonials-carousel {
+    height: auto !important;
+    min-height: 0 !important;
+  }
+  
+  section {
+    min-height: 0;
+    height: auto;
+  }
 }
 
 /* Scrollbar Management */
