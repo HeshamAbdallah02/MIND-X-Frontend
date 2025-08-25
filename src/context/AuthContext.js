@@ -1,6 +1,6 @@
 // frontend/src/context/AuthContext.js
-import React, { createContext, useState, useEffect, useContext } from 'react';
-import api from '../utils/api';
+import React, { createContext, useState, useEffect, useContext, useCallback } from 'react';
+import api, { tokenUtils } from '../utils/api';
 
 const AuthContext = createContext(null);
 
@@ -9,9 +9,9 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const checkAuth = async () => {
+  const checkAuth = useCallback(async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = tokenUtils.getToken();
       if (!token) {
         setLoading(false);
         return;
@@ -22,14 +22,14 @@ export const AuthProvider = ({ children }) => {
       setError(null);
     } catch (error) {
       if (error.response?.status === 401) {
-        localStorage.removeItem('token');
+        tokenUtils.removeToken();
       }
       setError(error.response?.data?.message || 'Session expired');
       setAdmin(null);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     const initAuth = async () => {
@@ -47,12 +47,12 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
-  const login = async (email, password) => {
+  const login = useCallback(async (email, password) => {
     try {
       setLoading(true);
       setError(null);
       const response = await api.post('/auth/login', { email, password });
-      localStorage.setItem('token', response.data.token);
+      tokenUtils.setToken(response.data.token);
       await checkAuth();
     } catch (err) {
       const message = err.response?.data?.message || 'Login failed';
@@ -61,14 +61,14 @@ export const AuthProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [checkAuth]);
 
-  const logout = () => {
-    localStorage.removeItem('token');
+  const logout = useCallback(() => {
+    tokenUtils.removeToken();
     sessionStorage.removeItem('authInitialized');
     setAdmin(null);
     setError(null);
-  };
+  }, []);
 
   return (
     <AuthContext.Provider value={{ 

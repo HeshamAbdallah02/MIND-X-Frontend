@@ -1,5 +1,5 @@
 //frontend/src/components/home/TestimonialsSection/TestimonialsCarousel.js
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import TestimonialCard from './TestimonialCard';
 import useTestimonialData from './hooks/useTestimonialData';
@@ -11,15 +11,53 @@ const TestimonialsCarousel = ({ animate }) => {
     const { testimonials, loading } = useTestimonialData();
     const { settings } = useSettings();
     const colors = settings?.testimonialsColors || {};
+    const timerRef = useRef(null);
+    const isMountedRef = useRef(true);
   
-    useEffect(() => {
-      if (testimonials.length > 0) {
-        const timer = setInterval(() => {
-          setCurrentIndex(prev => (prev + 1) % testimonials.length);
-        }, 5000);
-        return () => clearInterval(timer);
+    // Memoized navigation functions
+    const goToNext = useCallback(() => {
+      if (isMountedRef.current) {
+        setCurrentIndex(prev => (prev + 1) % testimonials.length);
       }
     }, [testimonials.length]);
+
+    const goToPrev = useCallback(() => {
+      if (isMountedRef.current) {
+        setCurrentIndex(prev => prev === 0 ? testimonials.length - 1 : prev - 1);
+      }
+    }, [testimonials.length]);
+
+    useEffect(() => {
+      isMountedRef.current = true;
+      
+      return () => {
+        isMountedRef.current = false;
+        if (timerRef.current) {
+          clearInterval(timerRef.current);
+        }
+      };
+    }, []);
+
+    useEffect(() => {
+      // Clear existing timer
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+
+      if (testimonials.length > 1) {
+        timerRef.current = setInterval(() => {
+          if (isMountedRef.current) {
+            goToNext();
+          }
+        }, 5000);
+      }
+
+      return () => {
+        if (timerRef.current) {
+          clearInterval(timerRef.current);
+        }
+      };
+    }, [testimonials.length, goToNext]);
   
     if (loading || !testimonials.length) return null;
   
@@ -88,17 +126,13 @@ const TestimonialsCarousel = ({ animate }) => {
               {/* Navigation Buttons */}
               {testimonials.length > 1 && (
                 <>
-                  <TestimonialNavigationButton 
-                    direction="prev" 
-                    onClick={() => setCurrentIndex(prev => 
-                      prev === 0 ? testimonials.length - 1 : prev - 1
-                    )} 
+                  <TestimonialNavigationButton
+                    direction="prev"
+                    onClick={goToPrev}
                   />
-                  <TestimonialNavigationButton 
-                    direction="next" 
-                    onClick={() => setCurrentIndex(prev => 
-                      (prev + 1) % testimonials.length
-                    )} 
+                  <TestimonialNavigationButton
+                    direction="next"
+                    onClick={goToNext}
                   />
                 </>
               )}

@@ -37,16 +37,44 @@ const Footer = () => {
               Follow us:
             </h4>
             <div className="flex gap-4">
-              <a href="#" style={{ color: c.linkColor }} className="text-2xl hover:opacity-80 transition-opacity">
+              <a 
+                href="https://facebook.com/mindxstudentactivities" 
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: c.linkColor }} 
+                className="text-2xl hover:opacity-80 transition-opacity"
+                aria-label="Visit our Facebook page"
+              >
                 <FaFacebook />
               </a>
-              <a href="#" style={{ color: c.linkColor }} className="text-2xl hover:opacity-80 transition-opacity">
+              <a 
+                href="https://instagram.com/mindxstudentactivities" 
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: c.linkColor }} 
+                className="text-2xl hover:opacity-80 transition-opacity"
+                aria-label="Visit our Instagram page"
+              >
                 <FaInstagram />
               </a>
-              <a href="#" style={{ color: c.linkColor }} className="text-2xl hover:opacity-80 transition-opacity">
+              <a 
+                href="https://youtube.com/@mindxstudentactivities" 
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: c.linkColor }} 
+                className="text-2xl hover:opacity-80 transition-opacity"
+                aria-label="Visit our YouTube channel"
+              >
                 <FaYoutube />
               </a>
-              <a href="#" style={{ color: c.linkColor }} className="text-2xl hover:opacity-80 transition-opacity">
+              <a 
+                href="https://linkedin.com/company/mindxstudentactivities" 
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: c.linkColor }} 
+                className="text-2xl hover:opacity-80 transition-opacity"
+                aria-label="Visit our LinkedIn page"
+              >
                 <FaLinkedin />
               </a>
             </div>

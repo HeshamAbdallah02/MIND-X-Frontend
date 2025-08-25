@@ -1,52 +1,62 @@
 //frontend/src/components/home/Hero.js
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import axios from 'axios';
 import { Link } from 'react-router-dom';
+import { useHeroContents } from '../../hooks/queries/useHeroData';
 
 const Hero = () => {
-  const [contents, setContents] = useState([]);
+  const { data: contents = [], isLoading, error } = useHeroContents();
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isTransitioning, setIsTransitioning] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const videoRefs = useRef({});
+  const timeoutRef = useRef(null);
+  const isMountedRef = useRef(true);
 
   useEffect(() => {
-    fetchHeroContents();
+    isMountedRef.current = true;
+    
+    return () => {
+      isMountedRef.current = false;
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
   }, []);
 
-  const fetchHeroContents = async () => {
-    try {
-      const response = await axios.get('https://mind-x-backend.fly.dev/api/hero');
-      setContents(response.data);
-    } catch (error) {
-      console.error('Error fetching hero contents:', error);
-    }
-  };
-
   const handleNext = useCallback(() => {
+    if (!isMountedRef.current) return;
+    
     setIsTransitioning(true);
-    const videoElement = videoRefs.current[contents[currentIndex]._id];
+    const videoElement = videoRefs.current[contents[currentIndex]?._id];
     if (videoElement) {
       videoElement.pause();
     }
-    setTimeout(() => {
-      setCurrentIndex((prev) => (prev + 1) % contents.length);
-      setIsTransitioning(false);
+    
+    timeoutRef.current = setTimeout(() => {
+      if (isMountedRef.current) {
+        setCurrentIndex((prev) => (prev + 1) % contents.length);
+        setIsTransitioning(false);
+      }
     }, 300);
   }, [currentIndex, contents]);
 
   useEffect(() => {
-    if (contents.length === 0) return;
+    if (contents.length === 0 || !isMountedRef.current) return;
   
     const content = contents[currentIndex];
-    let timeout;
-  
-    if (content.mediaType === 'image') {
-      timeout = setTimeout(() => {
-        handleNext();
-      }, content.displayDuration);
+    
+    if (content?.mediaType === 'image') {
+      timeoutRef.current = setTimeout(() => {
+        if (isMountedRef.current) {
+          handleNext();
+        }
+      }, content.displayDuration || 5000);
     }
   
-    return () => clearTimeout(timeout);
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
   }, [currentIndex, contents, handleNext]);
 
   useEffect(() => {
@@ -71,18 +81,27 @@ const Hero = () => {
     }
   }, [currentIndex, contents]);
 
-  const handleDotClick = (index) => {
-    if (index === currentIndex) return;
+  const handleDotClick = useCallback((index) => {
+    if (index === currentIndex || !isMountedRef.current) return;
+    
+    // Clear any existing timeout
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    
     setIsTransitioning(true);
-    const videoElement = videoRefs.current[contents[currentIndex]._id];
+    const videoElement = videoRefs.current[contents[currentIndex]?._id];
     if (videoElement) {
       videoElement.pause();
     }
-    setTimeout(() => {
-      setCurrentIndex(index);
-      setIsTransitioning(false);
+    
+    timeoutRef.current = setTimeout(() => {
+      if (isMountedRef.current) {
+        setCurrentIndex(index);
+        setIsTransitioning(false);
+      }
     }, 300);
-  };
+  }, [currentIndex, contents]);
 
   const handleVideoEnd = () => {
     handleNext();
@@ -122,9 +141,14 @@ const Hero = () => {
               loading="eager"
               onLoad={() => {
                 // Move to next slide after GIF duration
-                setTimeout(() => {
-                  handleNext();
-                }, content.displayDuration || 5000); // Default 5 seconds if not specified
+                if (timeoutRef.current) {
+                  clearTimeout(timeoutRef.current);
+                }
+                timeoutRef.current = setTimeout(() => {
+                  if (isMountedRef.current) {
+                    handleNext();
+                  }
+                }, content.displayDuration || 5000);
               }}
               onError={(e) => {
                 console.error('GIF error:', e);
@@ -189,7 +213,32 @@ const Hero = () => {
     );
   };
 
-  if (contents.length === 0) return null;
+  // Loading state
+  if (isLoading) {
+    return (
+      <section className="relative h-[calc(100vh-64px)] overflow-hidden bg-black flex items-center justify-center">
+        <div className="text-white text-xl">Loading...</div>
+      </section>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <section className="relative h-[calc(100vh-64px)] overflow-hidden bg-black flex items-center justify-center">
+        <div className="text-white text-xl">Failed to load hero content</div>
+      </section>
+    );
+  }
+
+  // No content state
+  if (contents.length === 0) {
+    return (
+      <section className="relative h-[calc(100vh-64px)] overflow-hidden bg-black flex items-center justify-center">
+        <div className="text-white text-xl">No hero content available</div>
+      </section>
+    );
+  }
 
   return (
     <section className="relative h-[calc(100vh-64px)] overflow-hidden bg-black">

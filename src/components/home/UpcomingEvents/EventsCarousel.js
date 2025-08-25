@@ -13,6 +13,20 @@ const EventsCarousel = ({ animate }) => {
   const [autoScrollPaused, setAutoScrollPaused] = useState(false);
   const containerRef = useRef(null);
   const isTransitioning = useRef(false);
+  const intervalRef = useRef(null);
+  const isMountedRef = useRef(true);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    isMountedRef.current = true;
+    
+    return () => {
+      isMountedRef.current = false;
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, []);
 
   // Clone events for infinite loop (front: 2 items, back: 2 items)
   const totalEvents = events?.length || 0;
@@ -23,9 +37,9 @@ const EventsCarousel = ({ animate }) => {
   ] : [];
 
   // Normalized index calculation
-  const normalizedIndex = useCallback((index) => {
-    return ((index - 2) % totalEvents + totalEvents) % totalEvents;
-  }, [totalEvents]);
+  // const normalizedIndex = useCallback((index) => {
+  //   return ((index - 2) % totalEvents + totalEvents) % totalEvents;
+  // }, [totalEvents]);
 
   // Handle index reset after transition
   const handleTransitionEnd = () => {
@@ -43,7 +57,7 @@ const EventsCarousel = ({ animate }) => {
 
   // Navigation handler with momentum effect
   const navigate = useCallback((direction) => {
-    if (totalEvents < 3 || isTransitioning.current) return;
+    if (totalEvents < 3 || isTransitioning.current || !isMountedRef.current) return;
     
     isTransitioning.current = true;
     setTransitionEnabled(true);
@@ -51,11 +65,26 @@ const EventsCarousel = ({ animate }) => {
     setVirtualIndex(prev => direction === 'next' ? prev + increment : prev - increment);
   }, [totalEvents, getNavIncrement]);
 
-  // Optimized auto-scroll
+  // Optimized auto-scroll with proper cleanup
   useEffect(() => {
+    // Clear existing interval
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
+
     if (totalEvents < 3 || autoScrollPaused) return;
-    const interval = setInterval(() => navigate('next'), 5000);
-    return () => clearInterval(interval);
+    
+    intervalRef.current = setInterval(() => {
+      if (isMountedRef.current) {
+        navigate('next');
+      }
+    }, 5000);
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
   }, [navigate, totalEvents, autoScrollPaused, isMobile]);
 
   // Reset transition after index jump

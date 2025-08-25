@@ -11,7 +11,6 @@ const LogoScroller = ({ items = [], speed = 80 }) => {
 
   const containerRef = useRef(null);
   const scrollerRef = useRef(null);
-  const [containerWidth, setContainerWidth] = useState(0);
   const [scrollerWidth, setScrollerWidth] = useState(0);
   const animationRef = useRef({});
   const scrollPositionRef = useRef(0);
@@ -21,11 +20,9 @@ const LogoScroller = ({ items = [], speed = 80 }) => {
   // Measure container width and calculate total scroller width
   const measureWidths = useCallback(() => {
     if (!containerRef.current || !scrollerRef.current || items.length === 0) return;
-    const newContainerWidth = containerRef.current.offsetWidth;
     const firstChild = scrollerRef.current.firstElementChild;
     if (firstChild) {
-      const itemWidth = firstChild.offsetWidth + 64; // Adjust gap if needed
-      setContainerWidth(newContainerWidth);
+      const itemWidth = firstChild.offsetWidth + 128; // Updated to match mx-16 (64px margin each side = 128px total)
       setScrollerWidth(itemWidth * items.length);
     }
   }, [items.length]);
@@ -133,7 +130,7 @@ const LogoScroller = ({ items = [], speed = 80 }) => {
     return (
       <div
         key={scrollKey || `${item._id}-${index}`}
-        className="logo-scroller-item group mx-8 flex-shrink-0 w-32 h-32 flex items-center justify-center"
+        className="logo-scroller-item group mx-16 flex-shrink-0 w-32 h-32 flex items-center justify-center"
       >
         <a
           href={item.website}
