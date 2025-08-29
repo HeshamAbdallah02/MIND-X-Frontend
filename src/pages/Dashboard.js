@@ -5,6 +5,7 @@ import { ChangeTrackerProvider } from '../components/dashboard/context/ChangeTra
 import SaveChangesBar from '../components/dashboard/shared/SaveChangesBar';
 import HomeManager from '../components/dashboard/pages/home/HomeManager';
 import BlogManager from '../components/dashboard/pages/blog/BlogManager';
+import OurStoryManager from '../components/dashboard/pages/our-story/OurStoryManager';
 
 const Dashboard = () => {
   return (
@@ -12,7 +13,7 @@ const Dashboard = () => {
       <div className="h-[calc(100vh-64px)] bg-gray-50 overflow-hidden">
         <Routes>
           <Route path="/" element={<HomeManager />} />
-          <Route path="/our-story" element={<div>Our Story Page</div>} />
+          <Route path="/our-story" element={<OurStoryManager />} />
           <Route path="/events" element={<div>Events Page</div>} />
           <Route path="/trainings" element={<div>Trainings Page</div>} />
           <Route path="/crew" element={<div>Crew Page</div>} />

@@ -1,5 +1,5 @@
-import React from 'react';
-import Hero from '../components/our-story/Hero';
+import React, { useRef } from 'react';
+import HeroSection from '../components/our-story/HeroSection';
 import BeginningSection from '../components/our-story/BeginningSection';
 import JourneyTimeline from '../components/our-story/JourneyTimeline';
 import AwardsSection from '../components/our-story/AwardsSection';
@@ -8,10 +8,23 @@ import JoinCTA from '../components/our-story/JoinCTA';
 import Footer from '../components/home/Footer/index';
 
 const OurStory = () => {
+  const beginningRef = useRef(null);
+
+  const handleScrollToNext = () => {
+    if (beginningRef.current) {
+      beginningRef.current.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+  };
+
   return (
-    <div className="bg-white min-h-screen">
-      <Hero />
-      <BeginningSection />
+    <div className="w-full overflow-x-hidden">
+      <HeroSection onScrollToNext={handleScrollToNext} />
+      <div ref={beginningRef}>
+        <BeginningSection />
+      </div>
       <JourneyTimeline />
       <AwardsSection />
       <SeasonSection />

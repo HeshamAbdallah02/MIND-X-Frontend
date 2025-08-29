@@ -10,7 +10,7 @@ import { FiPlus, FiEdit, FiTrash } from 'react-icons/fi';
 
 const StatsManager = () => {
   const { settings, updateSettings } = useSettings();
-  const { stats, mutate } = useStatsData();
+  const { stats, deleteStat, createStat, updateStat } = useStatsData();
   const [activeStat, setActiveStat] = useState(null);
   const [isAddingNew, setIsAddingNew] = useState(false);
   const [isSavingColors, setIsSavingColors] = useState(false);
@@ -35,15 +35,14 @@ const StatsManager = () => {
     }
   };
 
-  // Handle deleting a stat
+  // Handle deleting a stat using the mutation hook
   const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this stat?')) return;
     try {
-      await api.delete(`/stats/${id}`);
-      await mutate();
+      await deleteStat.mutateAsync(id);
       toast.success('Stat deleted');
     } catch (error) {
-      toast.error('Delete failed');
+      toast.error(error?.response?.data?.message || 'Delete failed');
     }
   };
 
@@ -134,9 +133,9 @@ const StatsManager = () => {
                 <div className="pt-4 mt-4 border-t border-[#606161]/10">
                   <StatsForm
                     initialData={stat}
+                    updateStat={updateStat}
                     onSuccess={() => {
                       setActiveStat(null);
-                      mutate();
                     }}
                     onCancel={() => setActiveStat(null)}
                   />
@@ -177,9 +176,9 @@ const StatsManager = () => {
             <div className="col-span-full mt-6 p-6 border-2 border-[#81C99C] rounded-2xl bg-[#81C99C]/05">
               <StatsForm
                 initialData={null}
+                createStat={createStat}
                 onSuccess={() => {
                   setIsAddingNew(false);
-                  mutate();
                 }}
                 onCancel={() => setIsAddingNew(false)}
               />

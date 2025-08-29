@@ -81,6 +81,8 @@ export const useCreateSponsor = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.sponsors });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.sponsorsActive });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.sponsorsAdmin });
     },
     onError: handleError,
   });
@@ -98,6 +100,8 @@ export const useUpdateSponsor = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.sponsors });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.sponsorsActive });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.sponsorsAdmin });
     },
     onError: handleError,
   });
@@ -115,6 +119,8 @@ export const useDeleteSponsor = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.sponsors });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.sponsorsActive });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.sponsorsAdmin });
     },
     onError: handleError,
   });

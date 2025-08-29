@@ -1,7 +1,6 @@
 // frontend/src/components/dashboard/pages/home/sections/stats/components/StatsForm.js
 import React from 'react';
 import { Formik, Field } from 'formik';
-import api from '../../../../../../../utils/api';
 import { toast } from 'react-hot-toast';
 import { 
   FaUsers, FaChalkboardTeacher, FaChartLine, FaAward, 
@@ -33,7 +32,7 @@ const iconSet = {
   FaAward: { component: FaAward, label: 'Achievements' }
 };
 
-const StatsForm = ({ initialData, onSuccess, onCancel }) => {
+const StatsForm = ({ initialData, onSuccess, onCancel, createStat, updateStat }) => {
   const isEdit = !!initialData;
 
   return (
@@ -51,15 +50,18 @@ const StatsForm = ({ initialData, onSuccess, onCancel }) => {
       }}
       onSubmit={async (values, { setSubmitting, resetForm }) => {
         try {
-          const method = isEdit ? 'put' : 'post';
-          const url = isEdit ? `/stats/${initialData._id}` : '/stats';
-          
-          await api[method](url, values);
+          if (isEdit) {
+            await updateStat.mutateAsync({ id: initialData._id, data: values });
+            toast.success('Stat updated');
+          } else {
+            await createStat.mutateAsync(values);
+            toast.success('Stat created');
+          }
           onSuccess();
           resetForm();
-          toast.success(`Stat ${isEdit ? 'updated' : 'created'}`);
         } catch (error) {
-          toast.error('Operation failed');
+          const errorMessage = error?.response?.data?.message || `Failed to ${isEdit ? 'update' : 'create'} stat`;
+          toast.error(errorMessage);
         } finally {
           setSubmitting(false);
         }

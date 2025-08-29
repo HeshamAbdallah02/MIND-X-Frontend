@@ -12,7 +12,7 @@ import { FaSpinner } from 'react-icons/fa';
 
 const SponsorsManager = () => {
   const { settings, updateSettings } = useSettings();
-  const { sponsors, partners, mutate } = useSponsorsData();
+  const { sponsors, partners, mutate, deleteSponsor, createSponsor, updateSponsor } = useSponsorsData();
   const [activeSponsor, setActiveSponsor] = useState(null);
   const [isAddingNew, setIsAddingNew] = useState(false);
   const [activeTab, setActiveTab] = useState('sponsors');
@@ -52,11 +52,10 @@ const SponsorsManager = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this sponsor?')) {
       try {
-        await api.delete(`/sponsors/${id}`);
-        await mutate();
+        await deleteSponsor.mutateAsync(id);
         toast.success('Sponsor deleted');
       } catch (error) {
-        toast.error('Delete failed');
+        toast.error(error?.response?.data?.message || 'Delete failed');
       }
     }
   };
@@ -292,9 +291,9 @@ const SponsorsManager = () => {
                             <SponsorForm 
                               type={activeTab.slice(0, -1)}
                               initialData={sponsor}
+                              updateSponsor={updateSponsor}
                               onSuccess={() => {
                                 setActiveSponsor(null);
-                                mutate();
                               }}
                               onCancel={() => setActiveSponsor(null)}
                             />
@@ -323,9 +322,9 @@ const SponsorsManager = () => {
               <SponsorForm 
                 type={activeTab.slice(0, -1)}
                 initialData={null}
+                createSponsor={createSponsor}
                 onSuccess={() => {
                   setIsAddingNew(false);
-                  mutate();
                 }}
                 onCancel={() => setIsAddingNew(false)}
               />

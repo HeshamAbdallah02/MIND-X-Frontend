@@ -3,9 +3,9 @@ import React, { useState } from 'react';
 import { Formik, Field } from 'formik';
 import * as Yup from 'yup';
 import { FaSpinner } from 'react-icons/fa';
-import api from '../../../../../../../utils/api';
 import { toast } from 'react-hot-toast';
 import FileUpload from '../../../../../shared/FileUpload';
+import api from '../../../../../../../utils/api';
 
 const validationSchema = Yup.object().shape({
   name: Yup.string().required('Required'),
@@ -18,7 +18,7 @@ const validationSchema = Yup.object().shape({
   active: Yup.boolean()
 });
 
-const SponsorForm = ({ type, initialData, onSuccess, onCancel }) => {
+const SponsorForm = ({ type, initialData, onSuccess, onCancel, createSponsor, updateSponsor }) => {
   const isEdit = !!initialData;
   const [isUploading, setIsUploading] = useState(false);
 
@@ -29,7 +29,11 @@ const SponsorForm = ({ type, initialData, onSuccess, onCancel }) => {
     try {
       const formData = new FormData();
       formData.append('file', file);
-      const response = await api.post('/upload', formData);
+      const response = await api.post('/upload', formData, {
+        headers: {
+          'Content-Type': undefined // Let axios set the correct multipart/form-data header
+        }
+      });
       setFieldValue('logo.url', response.data.url);
     } catch (error) {
       toast.error('Image upload failed');
@@ -53,14 +57,17 @@ const SponsorForm = ({ type, initialData, onSuccess, onCancel }) => {
       validationSchema={validationSchema}
       onSubmit={async (values, { setSubmitting }) => {
         try {
-          const method = isEdit ? 'put' : 'post';
-          const url = isEdit ? `/sponsors/${initialData._id}` : '/sponsors';
-          
-          await api[method](url, values);
+          if (isEdit) {
+            await updateSponsor.mutateAsync({ id: initialData._id, data: values });
+            toast.success('Sponsor updated');
+          } else {
+            await createSponsor.mutateAsync(values);
+            toast.success('Sponsor created');
+          }
           onSuccess();
-          toast.success(`Sponsor ${isEdit ? 'updated' : 'created'}`);
         } catch (error) {
-          toast.error('Operation failed');
+          const errorMessage = error?.response?.data?.message || `Failed to ${isEdit ? 'update' : 'create'} sponsor`;
+          toast.error(errorMessage);
         } finally {
           setSubmitting(false);
         }

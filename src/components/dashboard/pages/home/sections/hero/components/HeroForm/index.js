@@ -21,6 +21,7 @@ const HeroForm = React.forwardRef(({
   useEffect(() => {
     setInitialFormState(formData);
     setIsFormChanged(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isEditing]); // Remove formData from dependencies
 
   // Track actual changes by comparing with initial state

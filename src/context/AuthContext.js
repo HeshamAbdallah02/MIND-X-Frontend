@@ -45,7 +45,7 @@ export const AuthProvider = ({ children }) => {
     } else {
       setLoading(false);
     }
-  }, []);
+  }, [checkAuth]);
 
   const login = useCallback(async (email, password) => {
     try {
