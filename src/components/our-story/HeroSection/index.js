@@ -8,8 +8,10 @@ const HeroSection = ({ onScrollToNext }) => {
   const { settings } = useSettings();
   const { data: heroData, isLoading, error } = useStoryHero();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [scrollY, setScrollY] = useState(0);
   const timeoutRef = useRef(null);
   const isMountedRef = useRef(true);
+  const heroRef = useRef(null);
 
   useEffect(() => {
     isMountedRef.current = true;
@@ -19,6 +21,40 @@ const HeroSection = ({ onScrollToNext }) => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }
+    };
+  }, []);
+
+  // Parallax scroll effect
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!isMountedRef.current) return;
+      
+      const scrollPosition = window.pageYOffset;
+      const heroElement = heroRef.current;
+      
+      if (heroElement) {
+        const heroRect = heroElement.getBoundingClientRect();
+        const heroTop = scrollPosition + heroRect.top;
+        const heroHeight = heroRect.height;
+        
+        // Only apply parallax when hero is in viewport
+        if (scrollPosition < heroTop + heroHeight && scrollPosition + window.innerHeight > heroTop) {
+          // Calculate parallax offset (slower movement than scroll)
+          const parallaxSpeed = 0.5; // Adjust this value to control parallax intensity
+          const yPos = (scrollPosition - heroTop) * parallaxSpeed;
+          setScrollY(yPos);
+        }
+      }
+    };
+
+    // Add scroll listener
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    
+    // Initial calculation
+    handleScroll();
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
     };
   }, []);
 
@@ -120,8 +156,11 @@ const HeroSection = ({ onScrollToNext }) => {
   }
 
   return (
-    <section className="relative w-full overflow-hidden bg-black md:h-[calc(100vh-64px)]">
-      {/* Desktop: Full viewport background images - UNCHANGED */}
+    <section 
+      ref={heroRef}
+      className="relative w-full overflow-hidden bg-black md:h-[calc(100vh-64px)]"
+    >
+      {/* Desktop: Full viewport background images with parallax effect */}
       <div className="hidden md:block absolute inset-0 w-full h-full">
         {activeHeroData.images.map((image, index) => (
           <div
@@ -130,7 +169,9 @@ const HeroSection = ({ onScrollToNext }) => {
               index === currentImageIndex ? 'opacity-100' : 'opacity-0'
             }`}
             style={{
-              zIndex: index === currentImageIndex ? 2 : 1
+              zIndex: index === currentImageIndex ? 2 : 1,
+              transform: `translateY(${scrollY}px)`, // Parallax effect
+              willChange: 'transform' // Optimize for transforms
             }}
           >
             <img
@@ -139,7 +180,7 @@ const HeroSection = ({ onScrollToNext }) => {
               className="w-full h-full object-cover"
               loading={index === 0 ? "eager" : "lazy"}
               style={{
-                transform: index === currentImageIndex ? 'scale(1)' : 'scale(1.05)',
+                transform: `scale(${index === currentImageIndex ? 1.1 : 1.15})`, // Slightly larger to prevent white gaps during parallax
                 transition: 'transform 8000ms ease-out, opacity 2000ms ease-in-out'
               }}
             />
