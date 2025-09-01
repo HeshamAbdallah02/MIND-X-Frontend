@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import HeroSection from '../components/our-story/HeroSection';
-import BeginningSection from '../components/our-story/BeginningSection';
+import FoundationSection from '../components/our-story/FoundationSection';
 import JourneyTimeline from '../components/our-story/JourneyTimeline';
 import AwardsSection from '../components/our-story/AwardsSection';
 import SeasonSection from '../components/our-story/SeasonSection';
@@ -23,7 +23,7 @@ const OurStory = () => {
     <div className="w-full overflow-x-hidden">
       <HeroSection onScrollToNext={handleScrollToNext} />
       <div ref={beginningRef}>
-        <BeginningSection />
+        <FoundationSection />
       </div>
       <JourneyTimeline />
       <AwardsSection />

@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import StoryHeroManager from './sections/hero/StoryHeroManager';
+import AwardsManager from './sections/awards/AwardsManager';
 
 const OurStoryManager = () => {
   const [activeSection, setActiveSection] = useState('hero');
@@ -11,7 +12,7 @@ const OurStoryManager = () => {
     { id: 'hero', name: 'Hero Section', component: StoryHeroManager },
     { id: 'beginning', name: 'Our Beginning', component: null }, // Future implementation
     { id: 'journey', name: 'Journey Timeline', component: null }, // Future implementation
-    { id: 'awards', name: 'Awards & Recognition', component: null }, // Future implementation
+    { id: 'awards', name: 'Awards & Recognition', component: AwardsManager },
     { id: 'season', name: 'Season Highlights', component: null }, // Future implementation
     { id: 'join', name: 'Join Us CTA', component: null }, // Future implementation
   ];
