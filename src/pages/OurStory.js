@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import HeroSection from '../components/our-story/HeroSection';
 import FoundationSection from '../components/our-story/FoundationSection';
-import JourneyTimeline from '../components/our-story/JourneyTimeline';
+import OurJourney from '../components/our-story/OurJourney';
 import AwardsSection from '../components/our-story/AwardsSection';
 import SeasonSection from '../components/our-story/SeasonSection';
 import JoinCTA from '../components/our-story/JoinCTA';
@@ -25,7 +25,7 @@ const OurStory = () => {
       <div ref={beginningRef}>
         <FoundationSection />
       </div>
-      <JourneyTimeline />
+      <OurJourney />
       <AwardsSection />
       <SeasonSection />
       <JoinCTA />

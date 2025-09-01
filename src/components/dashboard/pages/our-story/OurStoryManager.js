@@ -10,7 +10,6 @@ const OurStoryManager = () => {
   // Sections configuration
   const sections = [
     { id: 'hero', name: 'Hero Section', component: StoryHeroManager },
-    { id: 'beginning', name: 'Our Beginning', component: null }, // Future implementation
     { id: 'journey', name: 'Journey Timeline', component: null }, // Future implementation
     { id: 'awards', name: 'Awards & Recognition', component: AwardsManager },
     { id: 'season', name: 'Season Highlights', component: null }, // Future implementation

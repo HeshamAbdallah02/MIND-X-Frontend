@@ -30,11 +30,16 @@ export const BrandSettingsProvider = ({ children }) => {
         }
       } catch (error) {
         if (isMounted) {
-          handleError(error);
+          // Only log error in development, don't use handleError to avoid UI errors
+          if (process.env.NODE_ENV === 'development') {
+            console.warn('Brand settings API unavailable, using defaults');
+          } else {
+            handleError(error);
+          }
           setState(prev => ({
             ...prev,
             isLoading: false,
-            error: error.message
+            error: process.env.NODE_ENV === 'development' ? null : error.message
           }));
         }
       }
