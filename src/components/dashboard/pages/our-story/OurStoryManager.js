@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import StoryHeroManager from './sections/hero/StoryHeroManager';
 import AwardsManager from './sections/awards/AwardsManager';
+import JourneyTimelineManager from './sections/journey/JourneyTimelineManager';
 
 const OurStoryManager = () => {
   const [activeSection, setActiveSection] = useState('hero');
@@ -10,7 +11,7 @@ const OurStoryManager = () => {
   // Sections configuration
   const sections = [
     { id: 'hero', name: 'Hero Section', component: StoryHeroManager },
-    { id: 'journey', name: 'Journey Timeline', component: null }, // Future implementation
+    { id: 'journey', name: 'Journey Timeline', component: JourneyTimelineManager },
     { id: 'awards', name: 'Awards & Recognition', component: AwardsManager },
     { id: 'season', name: 'Season Highlights', component: null }, // Future implementation
     { id: 'join', name: 'Join Us CTA', component: null }, // Future implementation
