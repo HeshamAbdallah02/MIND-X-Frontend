@@ -46,7 +46,7 @@ const TimelineImage = ({ imageUrl, imageAlt, isVisible }) => {
         <motion.div
           variants={placeholderVariants}
           animate="loading"
-          className="w-full h-48 sm:h-56 lg:h-64 bg-gray-200 rounded-xl flex items-center justify-center"
+          className="w-full h-48 bg-gray-200 rounded-xl flex items-center justify-center"
         >
           <div className="text-gray-400">
             <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
@@ -60,7 +60,7 @@ const TimelineImage = ({ imageUrl, imageAlt, isVisible }) => {
       <img
         src={imageUrl}
         alt={imageAlt}
-        className={`w-full h-48 sm:h-56 lg:h-64 object-cover rounded-xl transition-all duration-500 group-hover:scale-105 ${
+        className={`w-full h-auto object-contain rounded-xl transition-all duration-500 group-hover:scale-105 ${
           isLoaded ? 'opacity-100' : 'opacity-0 absolute inset-0'
         }`}
         onLoad={() => setIsLoaded(true)}

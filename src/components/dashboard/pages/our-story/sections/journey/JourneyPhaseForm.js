@@ -7,32 +7,41 @@ const JourneyPhaseForm = ({ phase, onSubmit, onCancel, isSubmitting }) => {
     headline: '',
     description: '',
     imageUrl: '',
-    imageAlt: '',
     backgroundColor: '#ffffff',
     textColor: '#1e293b',
     accentColor: '#81C99C',
-    position: 'auto',
+    position: 'left', // Always left
     isActive: true,
-    expandable: false
+    expandable: true // Always expandable
   });
 
   const [errors, setErrors] = useState({});
+  const [imagePreview, setImagePreview] = useState(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
+
+  // Generate year options from 2000 to current year + 5
+  const currentYear = new Date().getFullYear();
+  const yearOptions = [];
+  for (let year = 2000; year <= currentYear + 5; year++) {
+    yearOptions.push(year);
+  }
 
   useEffect(() => {
     if (phase) {
+      const imageUrl = phase.imageUrl || phase.image?.url || '';
       setFormData({
         year: phase.year || '',
         headline: phase.headline || '',
         description: phase.description || '',
-        imageUrl: phase.imageUrl || phase.image?.url || '',
-        imageAlt: phase.imageAlt || '',
-        backgroundColor: phase.backgroundColor || '#ffffff',
-        textColor: phase.textColor || '#1e293b',
-        accentColor: phase.accentColor || '#81C99C',
-        position: phase.position || 'auto',
+        imageUrl: imageUrl,
+        backgroundColor: '#ffffff', // Default values for colors
+        textColor: '#1e293b',
+        accentColor: '#81C99C',
+        position: 'left', // Always left
         isActive: phase.isActive !== false,
-        expandable: phase.expandable || false
+        expandable: true // Always expandable
       });
+      setImagePreview(imageUrl);
     }
   }, [phase]);
 
@@ -69,6 +78,80 @@ const JourneyPhaseForm = ({ phase, onSubmit, onCancel, isSubmitting }) => {
     }
   };
 
+  const handleFileSelect = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        setErrors(prev => ({ ...prev, image: 'Please select a valid image file' }));
+        return;
+      }
+      
+      // Validate file size (max 10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        setErrors(prev => ({ ...prev, image: 'Image size must be less than 10MB' }));
+        return;
+      }
+      
+      // Clear any previous image errors
+      setErrors(prev => ({ ...prev, image: null }));
+      
+      // Create preview
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setImagePreview(e.target.result);
+      };
+      reader.readAsDataURL(file);
+      
+      // Upload to Cloudinary
+      uploadToCloudinary(file);
+    }
+  };
+
+  const uploadToCloudinary = async (file) => {
+    setUploadingImage(true);
+    
+    try {
+      const formData = new FormData();
+      formData.append('file', file); // Use 'file' as the field name to match backend
+      
+      const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+      const response = await fetch(`${apiUrl}/api/upload`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: formData
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: 'Failed to upload image' }));
+        throw new Error(errorData.message || 'Failed to upload image');
+      }
+      
+      const data = await response.json();
+      
+      // Update form data with the uploaded image URL
+      handleChange('imageUrl', data.url);
+      
+    } catch (error) {
+      console.error('Image upload error:', error);
+      setErrors(prev => ({ ...prev, image: 'Failed to upload image. Please try again.' }));
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
+  const removeImage = () => {
+    setImagePreview(null);
+    handleChange('imageUrl', '');
+    // Reset file input
+    const fileInput = document.getElementById('image-upload');
+    if (fileInput) {
+      fileInput.value = '';
+    }
+  };
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
@@ -85,31 +168,19 @@ const JourneyPhaseForm = ({ phase, onSubmit, onCancel, isSubmitting }) => {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Year *
               </label>
-              <input
-                type="text"
+              <select
                 value={formData.year}
                 onChange={(e) => handleChange('year', e.target.value)}
                 className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#81C99C] focus:border-transparent ${
                   errors.year ? 'border-red-300' : 'border-gray-300'
                 }`}
-                placeholder="e.g., 2024"
-              />
-              {errors.year && <p className="text-red-500 text-xs mt-1">{errors.year}</p>}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Position
-              </label>
-              <select
-                value={formData.position}
-                onChange={(e) => handleChange('position', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#81C99C] focus:border-transparent"
               >
-                <option value="auto">Auto</option>
-                <option value="left">Left</option>
-                <option value="right">Right</option>
+                <option value="">Select a year</option>
+                {yearOptions.map(year => (
+                  <option key={year} value={year.toString()}>{year}</option>
+                ))}
               </select>
+              {errors.year && <p className="text-red-500 text-xs mt-1">{errors.year}</p>}
             </div>
           </div>
 
@@ -145,99 +216,77 @@ const JourneyPhaseForm = ({ phase, onSubmit, onCancel, isSubmitting }) => {
             {errors.description && <p className="text-red-500 text-xs mt-1">{errors.description}</p>}
           </div>
 
-          {/* Image Information */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Image URL
-              </label>
-              <input
-                type="url"
-                value={formData.imageUrl}
-                onChange={(e) => handleChange('imageUrl', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#81C99C] focus:border-transparent"
-                placeholder="https://example.com/image.jpg"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Image Alt Text
-              </label>
-              <input
-                type="text"
-                value={formData.imageAlt}
-                onChange={(e) => handleChange('imageAlt', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#81C99C] focus:border-transparent"
-                placeholder="Describe the image"
-              />
-            </div>
-          </div>
-
-          {/* Color Customization */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Background Color
-              </label>
-              <div className="flex items-center space-x-2">
+          {/* Image Upload */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Image Upload
+            </label>
+            
+            {!imagePreview ? (
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors">
                 <input
-                  type="color"
-                  value={formData.backgroundColor}
-                  onChange={(e) => handleChange('backgroundColor', e.target.value)}
-                  className="w-10 h-10 border border-gray-300 rounded"
+                  id="image-upload"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileSelect}
+                  className="hidden"
                 />
-                <input
-                  type="text"
-                  value={formData.backgroundColor}
-                  onChange={(e) => handleChange('backgroundColor', e.target.value)}
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#81C99C] focus:border-transparent"
-                  placeholder="#ffffff"
-                />
+                <label
+                  htmlFor="image-upload"
+                  className="cursor-pointer flex flex-col items-center space-y-2"
+                >
+                  <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                  </svg>
+                  <span className="text-sm text-gray-600">
+                    {uploadingImage ? 'Uploading...' : 'Click to upload image'}
+                  </span>
+                  <span className="text-xs text-gray-400">PNG, JPG, GIF up to 10MB</span>
+                </label>
               </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Text Color
-              </label>
-              <div className="flex items-center space-x-2">
-                <input
-                  type="color"
-                  value={formData.textColor}
-                  onChange={(e) => handleChange('textColor', e.target.value)}
-                  className="w-10 h-10 border border-gray-300 rounded"
+            ) : (
+              <div className="relative">
+                <img
+                  src={imagePreview}
+                  alt="Preview"
+                  className="w-full h-auto object-contain rounded-lg border border-gray-300 max-h-64"
                 />
-                <input
-                  type="text"
-                  value={formData.textColor}
-                  onChange={(e) => handleChange('textColor', e.target.value)}
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#81C99C] focus:border-transparent"
-                  placeholder="#1e293b"
-                />
+                <button
+                  type="button"
+                  onClick={removeImage}
+                  className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
+                  title="Remove image"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+                <div className="mt-2 flex justify-center">
+                  <label
+                    htmlFor="image-upload"
+                    className="text-sm text-[#81C99C] hover:text-[#6BA57A] cursor-pointer"
+                  >
+                    Change image
+                  </label>
+                  <input
+                    id="image-upload"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileSelect}
+                    className="hidden"
+                  />
+                </div>
               </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Accent Color
-              </label>
-              <div className="flex items-center space-x-2">
-                <input
-                  type="color"
-                  value={formData.accentColor}
-                  onChange={(e) => handleChange('accentColor', e.target.value)}
-                  className="w-10 h-10 border border-gray-300 rounded"
-                />
-                <input
-                  type="text"
-                  value={formData.accentColor}
-                  onChange={(e) => handleChange('accentColor', e.target.value)}
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#81C99C] focus:border-transparent"
-                  placeholder="#81C99C"
-                />
+            )}
+            
+            {uploadingImage && (
+              <div className="mt-2 flex items-center space-x-2 text-sm text-gray-600">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-[#81C99C]"></div>
+                <span>Uploading image...</span>
               </div>
-            </div>
+            )}
+            
+            {errors.image && <p className="text-red-500 text-xs mt-1">{errors.image}</p>}
           </div>
 
           {/* Settings */}
@@ -250,16 +299,6 @@ const JourneyPhaseForm = ({ phase, onSubmit, onCancel, isSubmitting }) => {
                 className="rounded border-gray-300 text-[#81C99C] focus:ring-[#81C99C]"
               />
               <span className="ml-2 text-sm text-gray-700">Active</span>
-            </label>
-
-            <label className="flex items-center">
-              <input
-                type="checkbox"
-                checked={formData.expandable}
-                onChange={(e) => handleChange('expandable', e.target.checked)}
-                className="rounded border-gray-300 text-[#81C99C] focus:ring-[#81C99C]"
-              />
-              <span className="ml-2 text-sm text-gray-700">Expandable</span>
             </label>
           </div>
 

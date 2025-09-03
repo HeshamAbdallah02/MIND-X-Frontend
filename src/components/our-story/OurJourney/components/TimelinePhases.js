@@ -23,16 +23,8 @@ const TimelinePhases = React.memo(({ phases, section, activePhaseId, onPhaseActi
   // Determine layout positions for desktop - memoized to prevent recalculations
   const phasesWithPositions = useMemo(() => {
     return phases.map((phase, index) => {
-      let position = phase.position;
-      
-      // Auto-calculate position if not explicitly set
-      if (!position || position === 'auto') {
-        if (window.innerWidth < 640) {
-          position = 'center'; // Mobile: always center
-        } else {
-          position = index % 2 === 0 ? 'left' : 'right'; // Alternating for tablet/desktop
-        }
-      }
+      // Always use left position as per requirements
+      let position = 'left';
       
       return { ...phase, calculatedPosition: position };
     });

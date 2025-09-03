@@ -158,7 +158,7 @@ const TimelineItem = memo(({ phase, index }) => {
               <img 
                 src={phase.imageUrl} 
                 alt={phase.imageAlt}
-                className="w-full max-w-2xl h-48 object-cover rounded-lg shadow-sm"
+                className="w-full max-w-2xl h-auto object-contain rounded-lg shadow-sm"
                 loading="lazy"
               />
             </motion.div>
