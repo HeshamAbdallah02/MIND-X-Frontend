@@ -1,6 +1,6 @@
 // frontend/src/components/dashboard/pages/our-story/sections/seasons/components/BoardMembersManager.js
 import React, { useState } from 'react';
-import { FiPlus, FiEdit, FiTrash, FiStar, FiUser } from 'react-icons/fi';
+import { FiPlus, FiEdit, FiTrash, FiStar, FiUser, FiExternalLink } from 'react-icons/fi';
 import { useSeasonBoardMembers, useSeasonsMutations } from '../../../../../../../hooks/useSeasonsQueries';
 import LoadingSpinner from '../../../../../../shared/LoadingSpinner';
 import ConfirmDialog from '../../../../../shared/ConfirmDialog';
@@ -203,22 +203,37 @@ const BoardMembersManager = ({ seasonId }) => {
 
 // Member Card Component
 const MemberCard = ({ member, onEdit, onDelete, onToggleLeader }) => {
+  // Debug avatar data
+  console.log('Member avatar data:', { 
+    name: member.name, 
+    avatar: member.avatar, 
+    avatarUrl: member.avatar?.url,
+    fullMember: member 
+  });
+  
   return (
     <div className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
       {/* Member Avatar */}
       <div className="flex items-center space-x-3 mb-3">
         <div className="relative">
-          {member.avatar ? (
+          {(member.avatar?.url || member.avatar) ? (
             <img
-              src={member.avatar}
+              src={member.avatar?.url || member.avatar}
               alt={member.name}
               className="w-12 h-12 rounded-full object-cover"
+              onError={(e) => {
+                console.error('Avatar image failed to load:', member.avatar);
+                e.target.style.display = 'none';
+                e.target.nextSibling.style.display = 'flex';
+              }}
             />
-          ) : (
-            <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
-              <FiUser className="w-6 h-6 text-gray-400" />
-            </div>
-          )}
+          ) : null}
+          <div 
+            className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center"
+            style={{ display: (member.avatar?.url || member.avatar) ? 'none' : 'flex' }}
+          >
+            <FiUser className="w-6 h-6 text-gray-400" />
+          </div>
           {member.isLeader && (
             <div className="absolute -top-1 -right-1 bg-yellow-400 rounded-full p-1">
               <FiStar className="w-3 h-3 text-white" />
@@ -231,9 +246,19 @@ const MemberCard = ({ member, onEdit, onDelete, onToggleLeader }) => {
         </div>
       </div>
 
-      {/* Member Bio (if available) */}
-      {member.bio && (
-        <p className="text-sm text-gray-600 mb-3 line-clamp-2">{member.bio}</p>
+      {/* Profile URL (if available) */}
+      {member.profileUrl && (
+        <div className="mb-3">
+          <a 
+            href={member.profileUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm text-blue-600 hover:text-blue-800 flex items-center transition-colors"
+          >
+            <FiExternalLink className="w-3 h-3 mr-1" />
+            View Profile
+          </a>
+        </div>
       )}
 
       {/* Actions */}

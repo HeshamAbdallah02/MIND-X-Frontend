@@ -8,7 +8,7 @@ const BoardMemberForm = ({ seasonId, member, onClose, onSubmit }) => {
   const [formData, setFormData] = useState({
     name: '',
     position: '',
-    bio: '',
+    profileUrl: '',
     isLeader: false
   });
 
@@ -31,10 +31,10 @@ const BoardMemberForm = ({ seasonId, member, onClose, onSubmit }) => {
       setFormData({
         name: member.name || '',
         position: member.position || '',
-        bio: member.bio || '',
+        profileUrl: member.profileUrl || '',
         isLeader: member.isLeader || false
       });
-      setAvatarPreview(member.avatar || '');
+      setAvatarPreview(member.avatar?.url || member.avatar || '');
     }
   }, [member]);
 
@@ -246,6 +246,7 @@ const BoardMemberForm = ({ seasonId, member, onClose, onSubmit }) => {
                       <h4 className="text-sm font-medium text-gray-700 mb-3">Crop Your Avatar</h4>
                       <AvatarCropper
                         onCrop={handleAvatarCrop}
+                        onCancel={() => setShowCropper(false)}
                         initialImage={uploadedImage}
                       />
                     </div>
@@ -294,19 +295,22 @@ const BoardMemberForm = ({ seasonId, member, onClose, onSubmit }) => {
               )}
             </div>
 
-            {/* Bio */}
+            {/* Profile URL */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Bio
+                Profile URL
               </label>
-              <textarea
-                name="bio"
-                value={formData.bio}
+              <input
+                type="url"
+                name="profileUrl"
+                value={formData.profileUrl}
                 onChange={handleInputChange}
-                rows={4}
-                placeholder="Brief description of the member's background, role, and contributions..."
+                placeholder="The volunteer's MIND-X profile"
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#81C99C] focus:border-transparent"
               />
+              <p className="mt-1 text-xs text-gray-500">
+                Optional: Link to their LinkedIn, personal website, or professional profile
+              </p>
             </div>
 
             {/* Leader Status */}
