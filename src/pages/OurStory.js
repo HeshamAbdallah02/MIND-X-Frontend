@@ -3,8 +3,8 @@ import HeroSection from '../components/our-story/HeroSection';
 import FoundationSection from '../components/our-story/FoundationSection';
 import OurJourney from '../components/our-story/OurJourney';
 import AwardsSection from '../components/our-story/AwardsSection';
-import SeasonSection from '../components/our-story/SeasonSection';
-import JoinCTA from '../components/our-story/JoinCTA';
+import SeasonsSection from '../components/our-story/SeasonsSection';
+// import JoinCTA from '../components/our-story/JoinCTA';
 import Footer from '../components/home/Footer/index';
 
 const OurStory = () => {
@@ -27,8 +27,8 @@ const OurStory = () => {
       </div>
       <OurJourney />
       <AwardsSection />
-      <SeasonSection />
-      <JoinCTA />
+      <SeasonsSection />
+      {/* <JoinCTA /> */}
       <Footer />
     </div>
   );
