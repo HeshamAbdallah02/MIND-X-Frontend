@@ -3,7 +3,8 @@ import {
   useAdminSponsors, 
   useCreateSponsor, 
   useUpdateSponsor, 
-  useDeleteSponsor 
+  useDeleteSponsor,
+  useReorderSponsors
 } from '../../../../../../../hooks/queries/useSponsorsData';
 
 const useSponsorsData = () => {
@@ -17,6 +18,7 @@ const useSponsorsData = () => {
   const createSponsor = useCreateSponsor();
   const updateSponsor = useUpdateSponsor();
   const deleteSponsor = useDeleteSponsor();
+  const reorderSponsors = useReorderSponsors();
   
   return {
     sponsors: data?.sponsors || [],
@@ -26,7 +28,8 @@ const useSponsorsData = () => {
     mutate,
     createSponsor,
     updateSponsor,
-    deleteSponsor
+    deleteSponsor,
+    reorderSponsors
   };
 };
 

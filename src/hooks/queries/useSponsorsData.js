@@ -126,4 +126,77 @@ export const useDeleteSponsor = () => {
   });
 };
 
+// Reorder sponsors with optimistic updates
+export const useReorderSponsors = () => {
+  const queryClient = useQueryClient();
+  const handleError = useErrorHandler();
+
+  return useMutation({
+    mutationFn: async (reorderData) => {
+      // reorderData: { sponsors: [{id, order}], partners: [{id, order}] } or just [{id, order}]
+      const updates = Array.isArray(reorderData) 
+        ? reorderData 
+        : [...(reorderData.sponsors || []), ...(reorderData.partners || [])];
+      
+      await Promise.all(
+        updates.map(item =>
+          api.patch(`/sponsors/${item.id}/order`, { order: item.order })
+        )
+      );
+      return reorderData;
+    },
+    onMutate: async (reorderData) => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey: QUERY_KEYS.sponsorsAdmin });
+
+      // Snapshot the previous value
+      const previousData = queryClient.getQueryData(QUERY_KEYS.sponsorsAdmin);
+
+      // Optimistically update to the new value
+      if (previousData) {
+        const updates = Array.isArray(reorderData) 
+          ? reorderData 
+          : [...(reorderData.sponsors || []), ...(reorderData.partners || [])];
+        
+        const optimisticSponsors = previousData.sponsors.map(sponsor => {
+          const update = updates.find(u => u.id === sponsor._id);
+          return update ? { ...sponsor, order: update.order } : sponsor;
+        }).sort((a, b) => (a.order || 0) - (b.order || 0));
+
+        const optimisticPartners = previousData.partners.map(partner => {
+          const update = updates.find(u => u.id === partner._id);
+          return update ? { ...partner, order: update.order } : partner;
+        }).sort((a, b) => (a.order || 0) - (b.order || 0));
+
+        queryClient.setQueryData(QUERY_KEYS.sponsorsAdmin, {
+          ...previousData,
+          sponsors: optimisticSponsors,
+          partners: optimisticPartners
+        });
+      }
+
+      return { previousData };
+    },
+    onError: (err, reorderData, context) => {
+      // Rollback on error
+      if (context?.previousData) {
+        queryClient.setQueryData(QUERY_KEYS.sponsorsAdmin, context.previousData);
+      }
+      handleError(err);
+    },
+    onSuccess: () => {
+      // Show success message
+      import('react-hot-toast').then(({ toast }) => {
+        toast.success('Order updated successfully');
+      });
+    },
+    onSettled: () => {
+      // Always refetch to ensure consistency
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.sponsors });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.sponsorsActive });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.sponsorsAdmin });
+    },
+  });
+};
+
 export { QUERY_KEYS };

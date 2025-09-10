@@ -69,24 +69,26 @@ const BoardMemberAvatar = ({
          style={{ 
            minHeight: 'fit-content' // Allow natural height expansion for text
          }}>
-      <div className={`${config.container} rounded-full overflow-hidden bg-gray-200 mb-2 shadow-md hover:shadow-lg transition-all duration-200 relative hover:scale-105 flex-shrink-0`}>
-        {!imageError && member.avatar ? (
-          <img
-            src={member.avatar}
-            alt={member.name}
-            className="w-full h-full object-cover"
-            onError={handleImageError}
-          />
-        ) : (
-          <div className={`w-full h-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold ${config.text}`}>
-            {getInitials(member.name)}
-          </div>
-        )}
+      <div className="relative"> {/* Wrapper for avatar and badge positioning */}
+        <div className={`${config.container} rounded-full overflow-hidden bg-gray-200 mb-2 shadow-md hover:shadow-lg transition-all duration-200 relative hover:scale-105 flex-shrink-0`}>
+          {!imageError && member.avatar ? (
+            <img
+              src={member.avatar}
+              alt={member.name}
+              className="w-full h-full object-cover"
+              onError={handleImageError}
+            />
+          ) : (
+            <div className={`w-full h-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold ${config.text}`}>
+              {getInitials(member.name)}
+            </div>
+          )}
+        </div>
         
-        {/* Leader Badge */}
+        {/* Leader Badge - Positioned outside avatar container */}
         {isLeader && (
-          <div className="absolute -top-1 -right-1 w-6 h-6 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center shadow-lg border-2 border-white">
-            <FaStar className="w-3 h-3 text-white" />
+          <div className="absolute -top-1 -right-1 w-7 h-7 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center shadow-xl border-2 border-white z-20">
+            <FaStar className="w-3.5 h-3.5 text-white drop-shadow-sm" />
           </div>
         )}
       </div>

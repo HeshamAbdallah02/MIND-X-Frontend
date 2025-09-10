@@ -9,7 +9,8 @@ const HeroManager = () => {
     isLoading, 
     fetchContents, 
     deleteContent, 
-    updateOrder 
+    updateOrder,
+    isReordering
   } = useHeroData();
 
   if (isLoading) {
@@ -33,6 +34,7 @@ const HeroManager = () => {
           onDelete={deleteContent}
           onReorder={updateOrder}
           onSuccess={fetchContents}
+          isReordering={isReordering}
         />
       </div>
     </div>

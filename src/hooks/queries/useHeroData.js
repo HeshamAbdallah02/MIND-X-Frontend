@@ -83,4 +83,49 @@ export const useDeleteHeroContent = () => {
   });
 };
 
+// Reorder hero contents with optimistic updates
+export const useReorderHeroContents = () => {
+  const queryClient = useQueryClient();
+  const handleError = useErrorHandler();
+
+  return useMutation({
+    mutationFn: async ({ contentId, newIndex }) => {
+      // The backend expects a single PATCH request with the new index position
+      await api.patch(`/hero/${contentId}/order`, { order: newIndex });
+      return { contentId, newIndex };
+    },
+    onMutate: async ({ contentId, newIndex, optimisticContents }) => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey: QUERY_KEYS.hero });
+
+      // Snapshot the previous value
+      const previousData = queryClient.getQueryData(QUERY_KEYS.hero);
+
+      // Set optimistic data immediately
+      if (optimisticContents) {
+        queryClient.setQueryData(QUERY_KEYS.hero, optimisticContents);
+      }
+
+      return { previousData };
+    },
+    onError: (err, { contentId, newIndex }, context) => {
+      // Rollback on error
+      if (context?.previousData) {
+        queryClient.setQueryData(QUERY_KEYS.hero, context.previousData);
+      }
+      handleError(err);
+    },
+    onSuccess: () => {
+      // Show success message
+      import('react-hot-toast').then(({ toast }) => {
+        toast.success('Order updated successfully');
+      });
+    },
+    onSettled: () => {
+      // Always refetch to ensure consistency
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.hero });
+    },
+  });
+};
+
 export { QUERY_KEYS };

@@ -12,12 +12,11 @@ import { FaSpinner } from 'react-icons/fa';
 
 const SponsorsManager = () => {
   const { settings, updateSettings } = useSettings();
-  const { sponsors, partners, mutate, deleteSponsor, createSponsor, updateSponsor } = useSponsorsData();
+  const { sponsors, partners, mutate, deleteSponsor, createSponsor, updateSponsor, reorderSponsors } = useSponsorsData();
   const [activeSponsor, setActiveSponsor] = useState(null);
   const [isAddingNew, setIsAddingNew] = useState(false);
   const [activeTab, setActiveTab] = useState('sponsors');
   const [loadingStates, setLoadingStates] = useState({});
-  const [isReordering, setIsReordering] = useState(false);
   const [isSavingSettings, setIsSavingSettings] = useState(false);
 
   const handleSaveSettings = async (newSettings) => {
@@ -76,34 +75,26 @@ const SponsorsManager = () => {
   const handleDragEnd = useCallback(async (result) => {
     if (!result.destination) return;
 
-    setIsReordering(true);
-    try {
-      const items = Array.from(activeTab === 'sponsors' ? sponsors : partners);
-      const [movedItem] = items.splice(result.source.index, 1);
-      items.splice(result.destination.index, 0, movedItem);
-
-      // Create new array maintaining original data structure
-      const optimisticData = activeTab === 'sponsors' 
-        ? [...items, ...partners] 
-        : [...sponsors, ...items];
-
-      // Preserve array structure for SWR
-      mutate(optimisticData, false);
-
-      await Promise.all(
-        items.map((sponsor, index) =>
-          api.patch(`/sponsors/${sponsor._id}/order`, { order: index })
-        )
-      );
-      await mutate();
-      toast.success('Order updated successfully');
-    } catch (error) {
-      toast.error('Failed to save new order');
-      mutate(); // Revert to server state
-    } finally {
-      setIsReordering(false);
+    const { source, destination } = result;
+    
+    if (source.index === destination.index) {
+      return; // Item dropped in the same position
     }
-  }, [activeTab, sponsors, partners, mutate]);
+
+    // Get the current items being reordered
+    const items = Array.from(activeTab === 'sponsors' ? sponsors : partners);
+    const [movedItem] = items.splice(source.index, 1);
+    items.splice(destination.index, 0, movedItem);
+
+    // Create the reorder data for the API
+    const reorderData = items.map((item, index) => ({
+      id: item._id,
+      order: index
+    }));
+
+    // Execute reorder using React Query optimistic updates
+    reorderSponsors.mutate(reorderData);
+  }, [activeTab, sponsors, partners, reorderSponsors]);
 
   const currentItems = activeTab === 'sponsors' ? sponsors : partners;
 
@@ -199,7 +190,7 @@ const SponsorsManager = () => {
                     key={sponsor._id}
                     draggableId={sponsor._id}
                     index={index}
-                    isDragDisabled={isReordering}
+                    isDragDisabled={reorderSponsors.isPending}
                   >
                     {(provided, snapshot) => (
                       <div
@@ -221,7 +212,7 @@ const SponsorsManager = () => {
                             {...provided.dragHandleProps}
                             className="cursor-move hover:bg-[#606161]/10 p-1 rounded-lg"
                           >
-                            {isReordering ? (
+                            {reorderSponsors.isPending ? (
                               <FaSpinner className="w-5 h-5 text-[#606161] animate-spin" />
                             ) : (
                               <FiGrid className="w-5 h-5 text-[#606161]" />

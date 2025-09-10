@@ -11,11 +11,32 @@ import { FiPlus, FiEdit, FiTrash, FiToggleLeft, FiToggleRight } from 'react-icon
 
 const TestimonialsManager = () => {
   const { settings, updateSettings } = useSettings();
-  const { testimonials, mutate } = useTestimonialsData();
+  const { testimonials, mutate, isLoading, error } = useTestimonialsData();
   const [activeTestimonial, setActiveTestimonial] = useState(null);
   const [isAddingNew, setIsAddingNew] = useState(false);
 
   const activeCount = testimonials?.filter(t => t.active).length || 0;
+
+  // Debug logging
+  console.log('Testimonials data:', { testimonials, isLoading, error, count: testimonials?.length });
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[200px]">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#FBB859]"></div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+        <p className="text-red-800">Error loading testimonials: {error.message}</p>
+      </div>
+    );
+  }
 
   const handleSaveColors = async (newColors) => {
     try {
@@ -153,6 +174,15 @@ const TestimonialsManager = () => {
                 ref={provided.innerRef}
                 className="grid grid-cols-1 gap-4"
               >
+                {testimonials && testimonials.length === 0 && (
+                  <div className="text-center py-8">
+                    <p className="text-gray-500 text-lg">No testimonials found</p>
+                    <p className="text-gray-400 text-sm mt-2">
+                      Add your first testimonial below or check your database connection
+                    </p>
+                  </div>
+                )}
+                
                 {testimonials?.map((testimonial, index) => (
                   <Draggable 
                     key={testimonial._id}

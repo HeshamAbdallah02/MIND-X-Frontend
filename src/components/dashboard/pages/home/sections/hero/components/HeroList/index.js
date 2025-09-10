@@ -5,13 +5,26 @@ import { FiPlus } from 'react-icons/fi';
 import HeroCard from './HeroCard';
 import useHeroConfig from '../../hooks/useHeroConfig';
 
-const HeroList = ({ contents = [], onDelete, onReorder, onSuccess }) => {
+const HeroList = ({ contents = [], onDelete, onReorder, onSuccess, isReordering = false }) => {
   const [activeCardId, setActiveCardId] = useState(null);
   const heroConfig = useHeroConfig({ fetchContents: onSuccess });
 
   const handleDragEnd = (result) => {
     if (!result.destination) return;
-    onReorder(result.draggableId, result.destination.index);
+    
+    const { source, destination } = result;
+    
+    if (source.index === destination.index) {
+      return; // Item dropped in the same position
+    }
+
+    // Create reordered array
+    const reorderedContents = Array.from(contents);
+    const [movedContent] = reorderedContents.splice(source.index, 1);
+    reorderedContents.splice(destination.index, 0, movedContent);
+
+    // Pass the full reordered array to the parent
+    onReorder(reorderedContents);
   };
 
   const handleAddNew = () => {
@@ -74,7 +87,7 @@ const HeroList = ({ contents = [], onDelete, onReorder, onSuccess }) => {
                   key={content._id}
                   draggableId={content._id.toString()}
                   index={index}
-                  isDragDisabled={activeCardId !== null}
+                  isDragDisabled={activeCardId !== null || isReordering}
                 >
                   {(provided, snapshot) => (
                     <HeroCard

@@ -75,15 +75,41 @@ export const useSeasonsMutations = () => {
     },
   });
 
-  // Reorder seasons
+  // Reorder seasons with optimistic updates
   const reorderSeasonsMutation = useMutation({
     mutationFn: seasonsAPI.reorderSeasons,
+    onMutate: async (newSeasonsOrder) => {
+      // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
+      await queryClient.cancelQueries(['admin-seasons']);
+
+      // Snapshot the previous value
+      const previousSeasons = queryClient.getQueryData(['admin-seasons']);
+
+      // Optimistically update to the new value
+      if (previousSeasons) {
+        const optimisticSeasons = previousSeasons.map(season => {
+          const updatedSeason = newSeasonsOrder.find(s => s.id === season._id);
+          return updatedSeason ? { ...season, order: updatedSeason.order } : season;
+        });
+        queryClient.setQueryData(['admin-seasons'], optimisticSeasons);
+      }
+
+      // Return a context object with the snapshotted value
+      return { previousSeasons };
+    },
+    onError: (err, newSeasonsOrder, context) => {
+      // If the mutation fails, use the context returned from onMutate to roll back
+      if (context?.previousSeasons) {
+        queryClient.setQueryData(['admin-seasons'], context.previousSeasons);
+      }
+      toast.error(err.response?.data?.message || 'Failed to reorder seasons');
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries(['admin-seasons']);
       toast.success('Seasons reordered successfully!');
     },
-    onError: (error) => {
-      toast.error(error.response?.data?.message || 'Failed to reorder seasons');
+    onSettled: () => {
+      // Always refetch after error or success to ensure we have latest data
+      queryClient.invalidateQueries(['admin-seasons']);
     },
   });
 
