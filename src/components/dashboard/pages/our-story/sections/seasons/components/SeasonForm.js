@@ -11,10 +11,7 @@ const SeasonForm = ({ season, onClose, onSubmit }) => {
   const [formData, setFormData] = useState({
     academicYear: '',
     theme: '',
-    description: '',
-    badgeColor: '#606161',
-    isActive: true,
-    order: 0
+    badgeColor: '#606161'
   });
 
   const [coverImage, setCoverImage] = useState(null);
@@ -35,10 +32,7 @@ const SeasonForm = ({ season, onClose, onSubmit }) => {
       setFormData({
         academicYear: season.academicYear || '',
         theme: season.theme || '',
-        description: season.description || '',
-        badgeColor: season.badgeColor || '#606161',
-        isActive: season.isActive ?? true,
-        order: season.order || 0
+        badgeColor: season.badgeColor || '#606161'
       });
       setCoverImagePreview(season.coverImage?.url || '');
     }
@@ -236,26 +230,6 @@ const SeasonForm = ({ season, onClose, onSubmit }) => {
                   )}
                 </div>
 
-                {/* Description */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Description *
-                  </label>
-                  <textarea
-                    name="description"
-                    value={formData.description}
-                    onChange={handleInputChange}
-                    rows={4}
-                    placeholder="Describe the key focus and achievements of this season..."
-                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#81C99C] focus:border-transparent ${
-                      errors.description ? 'border-red-300' : 'border-gray-300'
-                    }`}
-                  />
-                  {errors.description && (
-                    <p className="mt-1 text-sm text-red-600">{errors.description}</p>
-                  )}
-                </div>
-
                 {/* Cover Image */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -343,44 +317,6 @@ const SeasonForm = ({ season, onClose, onSubmit }) => {
                         {formData.badgeColor}
                       </span>
                     </div>
-                  </div>
-                </div>
-
-                {/* Settings */}
-                <div className="grid grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Display Order
-                    </label>
-                    <input
-                      type="number"
-                      name="order"
-                      value={formData.order}
-                      onChange={handleInputChange}
-                      min="0"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#81C99C] focus:border-transparent"
-                    />
-                    <p className="mt-1 text-xs text-gray-500">
-                      Lower numbers appear first
-                    </p>
-                  </div>
-
-                  <div className="flex items-center">
-                    <label className="flex items-center space-x-3">
-                      <input
-                        type="checkbox"
-                        name="isActive"
-                        checked={formData.isActive}
-                        onChange={handleInputChange}
-                        className="rounded border-gray-300 text-[#81C99C] focus:ring-[#81C99C]"
-                      />
-                      <span className="text-sm font-medium text-gray-700">
-                        Active Season
-                      </span>
-                    </label>
-                    <p className="ml-3 text-xs text-gray-500">
-                      Show on website
-                    </p>
                   </div>
                 </div>
 
