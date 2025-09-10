@@ -28,10 +28,20 @@ const TestimonialForm = ({ initialData, onSuccess, onCancel }) => {
     try {
       const formData = new FormData();
       formData.append('file', file);
-      const response = await api.post('/upload', formData);
+      const response = await api.post('/upload', formData, {
+        headers: {
+          'Content-Type': undefined // Let browser set the correct multipart/form-data with boundary
+        },
+        timeout: 60000 // 60 seconds for file uploads
+      });
       setFieldValue('image.url', response.data.url);
     } catch (error) {
-      toast.error('Image upload failed');
+      console.error('Upload error:', error);
+      if (error.code === 'ECONNABORTED') {
+        toast.error('Upload timeout - file may be too large or connection is slow');
+      } else {
+        toast.error('Image upload failed');
+      }
     } finally {
       setIsUploading(false);
     }

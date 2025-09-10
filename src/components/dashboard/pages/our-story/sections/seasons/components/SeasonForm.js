@@ -35,6 +35,14 @@ const SeasonForm = ({ season, onClose, onSubmit }) => {
         badgeColor: season.badgeColor || '#606161'
       });
       setCoverImagePreview(season.coverImage?.url || '');
+    } else {
+      // Reset form for new season
+      setFormData({
+        academicYear: '',
+        theme: '',
+        badgeColor: '#606161'
+      });
+      setCoverImagePreview('');
     }
   }, [season]);
 
@@ -52,18 +60,19 @@ const SeasonForm = ({ season, onClose, onSubmit }) => {
   const validateForm = () => {
     const newErrors = {};
 
-    if (!formData.academicYear.trim()) {
+    // Helper function to safely check string values
+    const isValidString = (value) => {
+      return value && typeof value === 'string' && value.trim().length > 0;
+    };
+
+    if (!isValidString(formData.academicYear)) {
       newErrors.academicYear = 'Academic year is required';
     } else if (!/^\d{4}-\d{4}$/.test(formData.academicYear.trim())) {
       newErrors.academicYear = 'Academic year must be in format YYYY-YYYY (e.g., 2023-2024)';
     }
 
-    if (!formData.theme.trim()) {
+    if (!isValidString(formData.theme)) {
       newErrors.theme = 'Theme is required';
-    }
-
-    if (!formData.description.trim()) {
-      newErrors.description = 'Description is required';
     }
 
     setErrors(newErrors);
@@ -115,7 +124,7 @@ const SeasonForm = ({ season, onClose, onSubmit }) => {
     const { name, value, type, checked } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: type === 'checkbox' ? checked : (value || '')
     }));
 
     // Clear error when user starts typing

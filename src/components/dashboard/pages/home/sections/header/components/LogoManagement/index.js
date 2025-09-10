@@ -8,6 +8,13 @@ const LogoManagement = ({ logo, onLogoUpload, onLogoDelete, isUploading }) => {
   const [tempPreviewUrl, setTempPreviewUrl] = useState(null);
 
   const handleFileSelect = async (file) => {
+    console.log('LogoManagement handleFileSelect called with:', {
+      file: file,
+      fileName: file?.name,
+      fileSize: file?.size,
+      fileType: file?.type
+    });
+    
     let tempUrl;
     try {
       tempUrl = URL.createObjectURL(file);
@@ -16,9 +23,11 @@ const LogoManagement = ({ logo, onLogoUpload, onLogoDelete, isUploading }) => {
       // Add delay for state update
       await new Promise(resolve => setTimeout(resolve, 50));
       
+      console.log('Calling onLogoUpload with file:', file);
       // Call upload handler
       await onLogoUpload(file);
     } catch (error) {
+      console.error('handleFileSelect error:', error);
       setTempPreviewUrl(null);
       toast.error('Upload failed: ' + (error.message || 'Unknown error'));
     } finally {

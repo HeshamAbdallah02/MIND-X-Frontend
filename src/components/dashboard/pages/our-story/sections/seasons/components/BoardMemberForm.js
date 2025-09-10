@@ -1,6 +1,6 @@
 // frontend/src/components/dashboard/pages/our-story/sections/seasons/components/BoardMemberForm.js
 import React, { useState, useEffect } from 'react';
-import { FiX, FiSave, FiUser, FiStar, FiUpload } from 'react-icons/fi';
+import { FiX, FiSave, FiUser, FiStar, FiUpload, FiEdit } from 'react-icons/fi';
 import { useSeasonsMutations } from '../../../../../../../hooks/useSeasonsQueries';
 import AvatarCropper from '../../../../../../shared/AvatarCropper';
 
@@ -35,17 +35,31 @@ const BoardMemberForm = ({ seasonId, member, onClose, onSubmit }) => {
         isLeader: member.isLeader || false
       });
       setAvatarPreview(member.avatar?.url || member.avatar || '');
+    } else {
+      // Ensure form is reset for new members
+      setFormData({
+        name: '',
+        position: '',
+        profileUrl: '',
+        isLeader: false
+      });
+      setAvatarPreview('');
     }
   }, [member]);
 
   const validateForm = () => {
     const newErrors = {};
 
-    if (!formData.name.trim()) {
+    // Helper function to safely check string values
+    const isValidString = (value) => {
+      return value && typeof value === 'string' && value.trim().length > 0;
+    };
+
+    if (!isValidString(formData.name)) {
       newErrors.name = 'Name is required';
     }
 
-    if (!formData.position.trim()) {
+    if (!isValidString(formData.position)) {
       newErrors.position = 'Position is required';
     }
 
@@ -119,7 +133,7 @@ const BoardMemberForm = ({ seasonId, member, onClose, onSubmit }) => {
     const { name, value, type, checked } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: type === 'checkbox' ? checked : (value || '')
     }));
 
     // Clear error when user starts typing
@@ -128,17 +142,11 @@ const BoardMemberForm = ({ seasonId, member, onClose, onSubmit }) => {
     }
   };
 
-  const handleAvatarCrop = (croppedImageUrl) => {
-    // Convert data URL to blob for upload
-    fetch(croppedImageUrl)
-      .then(res => res.blob())
-      .then(blob => {
-        setCroppedAvatarBlob(blob);
-        setAvatarPreview(croppedImageUrl);
-      })
-      .catch(error => {
-        console.error('Error converting cropped image:', error);
-      });
+  const handleAvatarCrop = (croppedImageUrl, croppedBlob) => {
+    // Store the cropped image data
+    setCroppedAvatarBlob(croppedBlob);
+    setAvatarPreview(croppedImageUrl);
+    setShowCropper(false);
   };
 
   const handleFileSelect = (e) => {
@@ -167,6 +175,50 @@ const BoardMemberForm = ({ seasonId, member, onClose, onSubmit }) => {
         setShowCropper(true);
       };
       reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRecropAvatar = async () => {
+    if (!avatarPreview) return;
+    
+    try {
+      // If it's already a data URL, use it directly
+      if (avatarPreview.startsWith('data:')) {
+        setUploadedImage(avatarPreview);
+        setShowCropper(true);
+        return;
+      }
+      
+      // For external URLs (like Cloudinary), convert to data URL to avoid CORS issues
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = img.width;
+        canvas.height = img.height;
+        
+        ctx.drawImage(img, 0, 0);
+        
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+        setUploadedImage(dataUrl);
+        setShowCropper(true);
+      };
+      
+      img.onerror = () => {
+        // Fallback: try to use the original URL
+        setUploadedImage(avatarPreview);
+        setShowCropper(true);
+      };
+      
+      img.src = avatarPreview;
+    } catch (error) {
+      console.error('Error preparing image for recrop:', error);
+      // Fallback: use original URL
+      setUploadedImage(avatarPreview);
+      setShowCropper(true);
     }
   };
 
@@ -235,21 +287,21 @@ const BoardMemberForm = ({ seasonId, member, onClose, onSubmit }) => {
                     </p>
                   </div>
 
+                  {/* Recrop Button for Existing Avatar */}
+                  {avatarPreview && (
+                    <button
+                      type="button"
+                      onClick={handleRecropAvatar}
+                      className="w-full px-3 py-2 text-sm font-medium text-[#81C99C] border border-[#81C99C] rounded-lg hover:bg-[#81C99C] hover:text-white transition-colors flex items-center justify-center mb-4"
+                    >
+                      <FiEdit className="w-4 h-4 mr-2" />
+                      Edit Current Avatar
+                    </button>
+                  )}
+
                   {/* File Upload Error */}
                   {errors.file && (
                     <p className="text-sm text-red-600 mb-4">{errors.file}</p>
-                  )}
-                  
-                  {/* Avatar Cropper - Only show after upload */}
-                  {showCropper && (
-                    <div className="border border-gray-200 rounded-lg p-4">
-                      <h4 className="text-sm font-medium text-gray-700 mb-3">Crop Your Avatar</h4>
-                      <AvatarCropper
-                        onCrop={handleAvatarCrop}
-                        onCancel={() => setShowCropper(false)}
-                        initialImage={uploadedImage}
-                      />
-                    </div>
                   )}
                 </div>
               </div>
@@ -372,6 +424,15 @@ const BoardMemberForm = ({ seasonId, member, onClose, onSubmit }) => {
           </form>
         </div>
       </div>
+      
+      {/* Avatar Cropper Modal - Rendered outside main modal */}
+      {showCropper && (
+        <AvatarCropper
+          onCrop={handleAvatarCrop}
+          onCancel={() => setShowCropper(false)}
+          initialImage={uploadedImage}
+        />
+      )}
     </div>
   );
 };

@@ -30,7 +30,8 @@ const BlogManager = () => {
     try {
       const token = localStorage.getItem('token');
       const config = {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
+        timeout: 60000 // 60 seconds for file uploads
       };
 
       if (isEditing) {

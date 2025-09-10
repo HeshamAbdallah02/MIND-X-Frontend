@@ -31,6 +31,14 @@ const FileUpload = ({
 
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
+    console.log('FileUpload handleFileChange called with file:', {
+      file: file,
+      fileName: file?.name,
+      fileSize: file?.size,
+      fileType: file?.type,
+      filesLength: e.target.files.length
+    });
+    
     if (!file) return;
 
     if (file.size > maxSize) {
@@ -43,6 +51,7 @@ const FileUpload = ({
 
     try {
       for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+        console.log(`FileUpload attempt ${attempt}, calling onUpload with file:`, file);
         const success = await attemptUpload(file, attempt, maxAttempts);
         if (success) {
           setUploadStatus('Upload successful');

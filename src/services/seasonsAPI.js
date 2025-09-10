@@ -141,8 +141,9 @@ export const uploadCoverImage = async (seasonId, imageFile) => {
       formData,
       {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          'Content-Type': undefined, // Let browser set the correct multipart/form-data with boundary
         },
+        timeout: 60000 // 60 seconds for file uploads
       }
     );
     return response.data;
@@ -174,8 +175,9 @@ export const uploadMemberAvatar = async (seasonId, memberId, imageFile) => {
       formData,
       {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          'Content-Type': undefined, // Let browser set the correct multipart/form-data with boundary
         },
+        timeout: 60000 // 60 seconds for file uploads
       }
     );
     return response.data;

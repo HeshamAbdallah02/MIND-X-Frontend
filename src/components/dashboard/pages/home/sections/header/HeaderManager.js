@@ -81,15 +81,34 @@ const HeaderManager = () => {
 
   // Updated handleLogoUpload
   const handleLogoUpload = async (file) => {
+    console.log('HeaderManager handleLogoUpload called with:', {
+      file: file,
+      fileName: file?.name,
+      fileSize: file?.size,
+      fileType: file?.type
+    });
+    
     setIsUploading(true);
     
     try {
+      // Validate file exists
+      if (!file) {
+        throw new Error('No file provided');
+      }
+      
       // Create FormData identical to sponsor form
       const formData = new FormData();
       formData.append('file', file); // Must match sponsor form's field name
+      
+      console.log('FormData created, file appended as "file"');
   
       // Use API instance with default headers
-      const response = await api.post('/upload', formData);
+      const response = await api.post('/upload', formData, {
+        headers: {
+          'Content-Type': undefined, // Let browser set the correct multipart/form-data with boundary
+        },
+        timeout: 60000 // 60 seconds for file uploads
+      });
   
       // Update state with response
       const newData = {

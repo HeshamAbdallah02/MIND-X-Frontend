@@ -115,8 +115,9 @@ export const timelinePhasesAPI = {
   uploadPhaseImage: async (id, formData) => {
     const response = await adminTimelineAPI.post(`/timeline/phases/${id}/image`, formData, {
       headers: {
-        'Content-Type': 'multipart/form-data',
+        'Content-Type': undefined, // Let browser set the correct multipart/form-data with boundary
       },
+      timeout: 60000 // 60 seconds for file uploads
     });
     return response.data;
   },

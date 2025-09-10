@@ -101,8 +101,9 @@ const AwardsSettings = ({ settings, onUpdate, isLoading }) => {
 
       const response = await api.post('/api/upload/image', formData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          'Content-Type': undefined, // Let browser set the correct multipart/form-data with boundary
         },
+        timeout: 60000 // 60 seconds for file uploads
       });
 
       const imageUrl = response.data.secure_url;

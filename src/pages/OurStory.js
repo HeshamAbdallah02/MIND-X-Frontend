@@ -4,7 +4,7 @@ import FoundationSection from '../components/our-story/FoundationSection';
 import OurJourney from '../components/our-story/OurJourney';
 import AwardsSection from '../components/our-story/AwardsSection';
 import SeasonsSection from '../components/our-story/SeasonsSection';
-// import JoinCTA from '../components/our-story/JoinCTA';
+import JoinCTA from '../components/our-story/JoinCTA';
 import Footer from '../components/home/Footer/index';
 
 const OurStory = () => {
@@ -28,7 +28,7 @@ const OurStory = () => {
       <OurJourney />
       <AwardsSection />
       <SeasonsSection />
-      {/* <JoinCTA /> */}
+      <JoinCTA />
       <Footer />
     </div>
   );

@@ -32,7 +32,8 @@ const SponsorForm = ({ type, initialData, onSuccess, onCancel, createSponsor, up
       const response = await api.post('/upload', formData, {
         headers: {
           'Content-Type': undefined // Let axios set the correct multipart/form-data header
-        }
+        },
+        timeout: 60000 // 60 seconds for file uploads
       });
       setFieldValue('logo.url', response.data.url);
     } catch (error) {

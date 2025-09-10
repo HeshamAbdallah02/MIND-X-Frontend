@@ -160,8 +160,9 @@ const useHeroConfig = ({fetchContents}) => {
     try {
       const response = await api.post('/upload', formData, {
         headers: {
-          'Content-Type': 'multipart/form-data'
-        }
+          'Content-Type': undefined // Let browser set the correct multipart/form-data with boundary
+        },
+        timeout: 60000 // 60 seconds for file uploads
       });
 
       const duration = Date.now() - startTime;

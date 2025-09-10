@@ -53,7 +53,12 @@ const useEventsConfig = ({ fetchEvents }) => {
       const formData = new FormData();
       formData.append('file', file);
       
-      const response = await api.post('/upload', formData);
+      const response = await api.post('/upload', formData, {
+        headers: {
+          'Content-Type': undefined, // Let browser set the correct multipart/form-data with boundary
+        },
+        timeout: 60000 // 60 seconds for file uploads
+      });
       setFormData(prev => ({
         ...prev,
         coverImage: {
@@ -62,7 +67,8 @@ const useEventsConfig = ({ fetchEvents }) => {
         }
       }));
     } catch (error) {
-      toast.error('Failed to upload image');
+      console.error('Events file upload error:', error);
+      toast.error('Failed to upload image: ' + (error.response?.data?.error || error.message));
     } finally {
       setIsUploading(false);
     }
