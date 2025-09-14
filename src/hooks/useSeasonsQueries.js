@@ -140,8 +140,9 @@ export const useSeasonsMutations = () => {
   // Add board member
   const addBoardMemberMutation = useMutation({
     mutationFn: ({ seasonId, memberData }) => seasonsAPI.addBoardMember(seasonId, memberData),
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
       queryClient.invalidateQueries(['admin-seasons']);
+      queryClient.invalidateQueries(['season-board-members', variables.seasonId]);
       toast.success('Board member added successfully!');
     },
     onError: (error) => {
@@ -153,11 +154,17 @@ export const useSeasonsMutations = () => {
   const updateBoardMemberMutation = useMutation({
     mutationFn: ({ seasonId, memberId, memberData }) => 
       seasonsAPI.updateBoardMember(seasonId, memberId, memberData),
-    onSuccess: () => {
+    onMutate: (variables) => {
+      console.log('updateBoardMemberMutation starting with:', variables);
+    },
+    onSuccess: (data, variables) => {
+      console.log('updateBoardMemberMutation success:', data);
       queryClient.invalidateQueries(['admin-seasons']);
+      queryClient.invalidateQueries(['season-board-members', variables.seasonId]);
       toast.success('Board member updated successfully!');
     },
-    onError: (error) => {
+    onError: (error, variables) => {
+      console.error('updateBoardMemberMutation error:', error);
       toast.error(error.response?.data?.message || 'Failed to update board member');
     },
   });
@@ -165,8 +172,9 @@ export const useSeasonsMutations = () => {
   // Delete board member
   const deleteBoardMemberMutation = useMutation({
     mutationFn: ({ seasonId, memberId }) => seasonsAPI.deleteBoardMember(seasonId, memberId),
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
       queryClient.invalidateQueries(['admin-seasons']);
+      queryClient.invalidateQueries(['season-board-members', variables.seasonId]);
       toast.success('Board member deleted successfully!');
     },
     onError: (error) => {
@@ -177,8 +185,9 @@ export const useSeasonsMutations = () => {
   // Reorder board members
   const reorderBoardMembersMutation = useMutation({
     mutationFn: ({ seasonId, members }) => seasonsAPI.reorderBoardMembers(seasonId, members),
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
       queryClient.invalidateQueries(['admin-seasons']);
+      queryClient.invalidateQueries(['season-board-members', variables.seasonId]);
       toast.success('Board members reordered successfully!');
     },
     onError: (error) => {
@@ -189,8 +198,9 @@ export const useSeasonsMutations = () => {
   // Set leader
   const setLeaderMutation = useMutation({
     mutationFn: ({ seasonId, memberId }) => seasonsAPI.setLeader(seasonId, memberId),
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
       queryClient.invalidateQueries(['admin-seasons']);
+      queryClient.invalidateQueries(['season-board-members', variables.seasonId]);
       toast.success('Leader updated successfully!');
     },
     onError: (error) => {
@@ -202,8 +212,9 @@ export const useSeasonsMutations = () => {
   const uploadMemberAvatarMutation = useMutation({
     mutationFn: ({ seasonId, memberId, imageFile }) => 
       seasonsAPI.uploadMemberAvatar(seasonId, memberId, imageFile),
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
       queryClient.invalidateQueries(['admin-seasons']);
+      queryClient.invalidateQueries(['season-board-members', variables.seasonId]);
       toast.success('Avatar uploaded successfully!');
     },
     onError: (error) => {

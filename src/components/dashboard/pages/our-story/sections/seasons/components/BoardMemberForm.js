@@ -1,16 +1,47 @@
 // frontend/src/components/dashboard/pages/our-story/sections/seasons/components/BoardMemberForm.js
 import React, { useState, useEffect } from 'react';
 import { FiX, FiSave, FiUser, FiStar, FiUpload, FiEdit } from 'react-icons/fi';
-import { useSeasonsMutations } from '../../../../../../../hooks/useSeasonsQueries';
+import { useSeasonsMutations, useSeasonBoardMembers } from '../../../../../../../hooks/useSeasonsQueries';
 import AvatarCropper from '../../../../../../shared/AvatarCropper';
 
+// Available positions for non-leader members
+const POSITION_OPTIONS = [
+  'Vice Team Leader',
+  'Human Resources (HR)',
+  'Public Relations (PR)',
+  'Training & Coordination',
+  'Event Management',
+  'Graphic Design',
+  'Marketing',
+  'Photography',
+  'Video Editing'
+];
+
 const BoardMemberForm = ({ seasonId, member, onClose, onSubmit }) => {
+  // Fetch current board members to check for existing leader
+  const { data: currentMembers = [] } = useSeasonBoardMembers(seasonId);
+  
   const [formData, setFormData] = useState({
     name: '',
     position: '',
     profileUrl: '',
     isLeader: false
   });
+
+  // Check if there's already a leader (excluding current member being edited)
+  const hasExistingLeader = currentMembers.some(m => 
+    m.isLeader && (!member || m._id !== member._id)
+  );
+
+  // Update position automatically when isLeader changes
+  useEffect(() => {
+    if (formData.isLeader) {
+      setFormData(prev => ({ ...prev, position: 'Team Leader' }));
+    } else if (formData.position === 'Team Leader') {
+      // If unchecking leader and position was Team Leader, reset to first option
+      setFormData(prev => ({ ...prev, position: POSITION_OPTIONS[0] }));
+    }
+  }, [formData.isLeader, formData.position]);
 
   const [avatarPreview, setAvatarPreview] = useState('');
   const [croppedAvatarBlob, setCroppedAvatarBlob] = useState(null);
@@ -30,7 +61,7 @@ const BoardMemberForm = ({ seasonId, member, onClose, onSubmit }) => {
     if (member) {
       setFormData({
         name: member.name || '',
-        position: member.position || '',
+        position: member.isLeader ? 'Team Leader' : (member.position || POSITION_OPTIONS[0]),
         profileUrl: member.profileUrl || '',
         isLeader: member.isLeader || false
       });
@@ -39,7 +70,7 @@ const BoardMemberForm = ({ seasonId, member, onClose, onSubmit }) => {
       // Ensure form is reset for new members
       setFormData({
         name: '',
-        position: '',
+        position: POSITION_OPTIONS[0], // Default to first position option
         profileUrl: '',
         isLeader: false
       });
@@ -332,18 +363,36 @@ const BoardMemberForm = ({ seasonId, member, onClose, onSubmit }) => {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Position *
               </label>
-              <input
-                type="text"
-                name="position"
-                value={formData.position}
-                onChange={handleInputChange}
-                placeholder="e.g., President, Vice President, Secretary"
-                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#81C99C] focus:border-transparent ${
-                  errors.position ? 'border-red-300' : 'border-gray-300'
-                }`}
-              />
+              {formData.isLeader ? (
+                // Show read-only Team Leader for leaders
+                <div className="w-full px-4 py-2 bg-yellow-50 border border-yellow-200 rounded-lg flex items-center">
+                  <FiStar className="w-4 h-4 text-yellow-500 mr-2" />
+                  <span className="text-gray-700 font-medium">Team Leader</span>
+                </div>
+              ) : (
+                // Show dropdown for non-leaders
+                <select
+                  name="position"
+                  value={formData.position}
+                  onChange={handleInputChange}
+                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#81C99C] focus:border-transparent ${
+                    errors.position ? 'border-red-300' : 'border-gray-300'
+                  }`}
+                >
+                  {POSITION_OPTIONS.map((option) => (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </select>
+              )}
               {errors.position && (
                 <p className="mt-1 text-sm text-red-600">{errors.position}</p>
+              )}
+              {formData.isLeader && (
+                <p className="mt-1 text-xs text-yellow-600">
+                  Position is automatically set to "Team Leader" for leadership roles
+                </p>
               )}
             </div>
 
@@ -373,7 +422,8 @@ const BoardMemberForm = ({ seasonId, member, onClose, onSubmit }) => {
                   name="isLeader"
                   checked={formData.isLeader}
                   onChange={handleInputChange}
-                  className="rounded border-gray-300 text-yellow-500 focus:ring-yellow-500"
+                  disabled={hasExistingLeader && !formData.isLeader}
+                  className="rounded border-gray-300 text-yellow-500 focus:ring-yellow-500 disabled:opacity-50 disabled:cursor-not-allowed"
                 />
                 <div className="flex items-center space-x-2">
                   <FiStar className="w-4 h-4 text-yellow-500" />
@@ -382,9 +432,22 @@ const BoardMemberForm = ({ seasonId, member, onClose, onSubmit }) => {
                   </span>
                 </div>
               </label>
-              <p className="ml-7 text-xs text-gray-500">
-                Leaders are displayed prominently and have special badges
-              </p>
+              
+              {hasExistingLeader && !formData.isLeader ? (
+                <p className="ml-7 text-xs text-red-500">
+                  There can only be one team leader per season. Another member is already assigned as leader.
+                </p>
+              ) : (
+                <p className="ml-7 text-xs text-gray-500">
+                  Leaders are displayed prominently and have special badges. Position will be automatically set to "Team Leader".
+                </p>
+              )}
+              
+              {formData.isLeader && (
+                <p className="ml-7 text-xs text-yellow-600 font-medium">
+                  ⭐ This member will be designated as the Team Leader
+                </p>
+              )}
             </div>
 
             {/* Submit Errors */}

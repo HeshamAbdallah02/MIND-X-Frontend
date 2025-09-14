@@ -2,6 +2,9 @@
 import React, { useState } from 'react';
 import { useAdminStoryHero, useUpdateStoryHero, useAddStoryHeroImage, useRemoveStoryHeroImage } from '../../../../../../hooks/queries/useStoryHeroData';
 import { useChangeTracker } from '../../../../context/ChangeTrackerContext';
+import ImageUploader from '../../../../../shared/ImageUploader';
+import { toast } from 'react-hot-toast';
+import api from '../../../../../../utils/api';
 
 const StoryHeroManager = () => {
   const { data: storyHero, isLoading, error } = useAdminStoryHero();
@@ -17,7 +20,7 @@ const StoryHeroManager = () => {
     showIndicators: false,
   });
 
-  const [newImageUrl, setNewImageUrl] = useState('');
+  const [isUploading, setIsUploading] = useState(false);
 
   // Update form data when storyHero data loads
   React.useEffect(() => {
@@ -45,17 +48,44 @@ const StoryHeroManager = () => {
     }
   };
 
-  const handleAddImage = async () => {
-    if (!newImageUrl.trim()) return;
+  const handleAddImage = async (file) => {
+    setIsUploading(true);
     
     try {
-      await addImage.mutateAsync({
-        url: newImageUrl.trim(),
-        alt: 'Story hero background'
+      // First upload the file to get URL
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      const uploadResponse = await api.post('/upload', formData, {
+        headers: {
+          'Content-Type': undefined, // Let browser set the correct multipart/form-data with boundary
+        },
+        timeout: 60000 // 60 seconds for file uploads
       });
-      setNewImageUrl('');
+      
+      // Then add the image to story hero with the uploaded URL
+      await addImage.mutateAsync({
+        url: uploadResponse.data.url,
+        alt: `Story hero background - ${file.name}`
+      });
+      
+      toast.success('Background image uploaded successfully!');
     } catch (error) {
-      console.error('Failed to add image:', error);
+      console.error('Failed to upload and add image:', error);
+      
+      // More specific error messages
+      if (error.response?.status === 413) {
+        toast.error('Image is too large. Maximum size is 10MB');
+      } else if (error.response?.status === 415) {
+        toast.error('Invalid file type. Please upload JPG, PNG, or WebP images');
+      } else if (error.response?.data?.code === 'CLOUDINARY_ERROR' && 
+                 error.response?.data?.message?.includes('file size too large')) {
+        toast.error('Image is too large for our storage service. Please use an image under 10MB or compress your image.');
+      } else {
+        toast.error('Failed to upload image: ' + (error.response?.data?.error || 'Please try again'));
+      }
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -178,29 +208,41 @@ const StoryHeroManager = () => {
         {/* Add New Image */}
         <div className="mb-8 p-6 bg-gray-50 rounded-lg">
           <h4 className="text-lg font-medium text-gray-700 mb-4">Add New Background Image</h4>
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="flex-1">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Image URL
-              </label>
-              <input
-                type="url"
-                value={newImageUrl}
-                onChange={(e) => setNewImageUrl(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FBB859] focus:border-transparent"
-                placeholder="https://example.com/image.jpg"
-              />
+          
+          <ImageUploader
+            onImageSelect={handleAddImage}
+            acceptedTypes={['image/jpeg', 'image/png', 'image/webp']}
+            maxSize={10 * 1024 * 1024} // 10MB (Cloudinary free plan limit)
+            className="w-full"
+          >
+            <div className={`
+              border-2 border-dashed rounded-lg p-8 text-center transition-all duration-200
+              ${isUploading || addImage.isPending 
+                ? 'border-gray-300 bg-gray-100 cursor-not-allowed' 
+                : 'border-gray-300 hover:border-[#FBB859] hover:bg-orange-50 cursor-pointer'
+              }
+            `}>
+              {isUploading || addImage.isPending ? (
+                <div className="flex flex-col items-center">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#FBB859] mb-3"></div>
+                  <p className="text-gray-600">Uploading image...</p>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center">
+                  <svg className="w-12 h-12 text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                  </svg>
+                  <p className="text-lg font-medium text-gray-700 mb-2">
+                    Drag & drop an image here, or click to browse
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    Supports JPG, PNG, WebP up to 10MB
+                  </p>
+                </div>
+              )}
             </div>
-            <div className="flex-shrink-0 self-end">
-              <button
-                onClick={handleAddImage}
-                disabled={!newImageUrl.trim() || addImage.isPending}
-                className="w-full sm:w-auto px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                {addImage.isPending ? 'Adding...' : 'Add Image'}
-              </button>
-            </div>
-          </div>
+          </ImageUploader>
+          
           <p className="text-xs text-gray-500 mt-2">
             Background images will auto-scroll behind the constant text content above.
           </p>

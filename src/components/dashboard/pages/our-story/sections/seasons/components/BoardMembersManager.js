@@ -10,6 +10,7 @@ const BoardMembersManager = ({ seasonId }) => {
   const [showForm, setShowForm] = useState(false);
   const [editingMember, setEditingMember] = useState(null);
   const [deleteMember, setDeleteMember] = useState(null);
+  const [leaderReplaceDialog, setLeaderReplaceDialog] = useState(null);
 
   // Fetch board members
   const { data: members = [], isLoading, error } = useSeasonBoardMembers(seasonId);
@@ -45,11 +46,61 @@ const BoardMembersManager = ({ seasonId }) => {
   };
 
   const handleToggleLeader = (member) => {
-    updateBoardMemberMutation.mutate({
-      seasonId,
-      memberId: member._id,
-      data: { isLeader: !member.isLeader }
-    });
+    console.log('handleToggleLeader called for:', member.name, 'current isLeader:', member.isLeader);
+    
+    // If member is already a leader, just remove leader status
+    if (member.isLeader) {
+      console.log('Removing leader status from:', member.name);
+      updateBoardMemberMutation.mutate({
+        seasonId,
+        memberId: member._id,
+        memberData: { isLeader: false }
+      });
+      return;
+    }
+
+    // Check if there's already a leader
+    const currentLeader = members.find(m => m.isLeader && m._id !== member._id);
+    console.log('Current leader found:', currentLeader ? currentLeader.name : 'None');
+    
+    if (currentLeader) {
+      // Show confirmation dialog to replace current leader
+      console.log('Showing confirmation dialog to replace leader');
+      setLeaderReplaceDialog({
+        newLeader: member,
+        currentLeader: currentLeader
+      });
+    } else {
+      // No existing leader, proceed directly
+      console.log('Setting new leader:', member.name);
+      updateBoardMemberMutation.mutate({
+        seasonId,
+        memberId: member._id,
+        memberData: { isLeader: true }
+      });
+    }
+  };
+
+  const confirmLeaderReplace = () => {
+    if (leaderReplaceDialog) {
+      console.log('Confirming leader replacement:', leaderReplaceDialog.newLeader.name, 'replacing', leaderReplaceDialog.currentLeader.name);
+      
+      // First, update the current leader to Vice Team Leader
+      updateBoardMemberMutation.mutate({
+        seasonId,
+        memberId: leaderReplaceDialog.currentLeader._id,
+        memberData: { isLeader: false, position: 'Vice Team Leader' }
+      });
+
+      // Then, set the new leader
+      updateBoardMemberMutation.mutate({
+        seasonId,
+        memberId: leaderReplaceDialog.newLeader._id,
+        memberData: { isLeader: true }
+      });
+      
+      setLeaderReplaceDialog(null);
+    }
   };
 
   const handleFormSubmit = () => {
@@ -197,6 +248,21 @@ const BoardMembersManager = ({ seasonId }) => {
         confirmText="Remove Member"
         type="danger"
       />
+
+      {/* Leader Replace Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={!!leaderReplaceDialog}
+        onClose={() => setLeaderReplaceDialog(null)}
+        onConfirm={confirmLeaderReplace}
+        title="Replace Team Leader"
+        message={
+          leaderReplaceDialog 
+            ? `"${leaderReplaceDialog.currentLeader.name}" is currently the Team Leader. Do you want to replace them with "${leaderReplaceDialog.newLeader.name}" as the new Team Leader?`
+            : ''
+        }
+        confirmText="Replace Leader"
+        type="warning"
+      />
     </>
   );
 };
@@ -268,8 +334,9 @@ const MemberCard = ({ member, onEdit, onDelete, onToggleLeader }) => {
           className={`flex items-center text-xs px-2 py-1 rounded transition-colors ${
             member.isLeader
               ? 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200'
-              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              : 'bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-800'
           }`}
+          title={member.isLeader ? 'Remove leadership status' : 'Make this member the team leader'}
         >
           <FiStar className="w-3 h-3 mr-1" />
           {member.isLeader ? 'Leader' : 'Make Leader'}
