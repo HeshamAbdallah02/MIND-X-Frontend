@@ -15,37 +15,43 @@ const mockSeasonsData = [
         name: 'Ahmed Hassan',
         position: 'President',
         avatar: '/images/board/ahmed-hassan.jpg',
-        isLeader: true
+        isLeader: true,
+        profileUrl: 'https://linkedin.com/in/ahmed-hassan'
       },
       {
         id: 2,
         name: 'Fatima Al-Zahra',
         position: 'Vice President',
-        avatar: '/images/board/fatima-alzahra.jpg'
+        avatar: '/images/board/fatima-alzahra.jpg',
+        profileUrl: 'https://linkedin.com/in/fatima-alzahra'
       },
       {
         id: 3,
         name: 'Omar Mansour',
         position: 'Technical Lead',
-        avatar: '/images/board/omar-mansour.jpg'
+        avatar: '/images/board/omar-mansour.jpg',
+        profileUrl: 'https://github.com/omar-mansour'
       },
       {
         id: 4,
         name: 'Sara Ibrahim',
         position: 'Marketing Director',
-        avatar: '/images/board/sara-ibrahim.jpg'
+        avatar: '/images/board/sara-ibrahim.jpg',
+        profileUrl: 'https://twitter.com/sara_ibrahim'
       },
       {
         id: 5,
         name: 'Mohamed Ali',
         position: 'Events Coordinator',
-        avatar: '/images/board/mohamed-ali.jpg'
+        avatar: '/images/board/mohamed-ali.jpg',
+        profileUrl: ''
       },
       {
         id: 6,
         name: 'Nour El-Din',
         position: 'Community Manager',
-        avatar: '/images/board/nour-eldin.jpg'
+        avatar: '/images/board/nour-eldin.jpg',
+        profileUrl: 'https://instagram.com/nour_eldin'
       }
     ],
     highlights: [
@@ -67,37 +73,43 @@ const mockSeasonsData = [
         name: 'Youssef Ahmed',
         position: 'President',
         avatar: '/images/board/youssef-ahmed.jpg',
-        isLeader: true
+        isLeader: true,
+        profileUrl: 'https://linkedin.com/in/youssef-ahmed'
       },
       {
         id: 8,
         name: 'Lina Mahmoud',
         position: 'Vice President',
-        avatar: '/images/board/lina-mahmoud.jpg'
+        avatar: '/images/board/lina-mahmoud.jpg',
+        profileUrl: 'https://twitter.com/lina_mahmoud'
       },
       {
         id: 9,
         name: 'Kareem Osama',
         position: 'CTO',
-        avatar: '/images/board/kareem-osama.jpg'
+        avatar: '/images/board/kareem-osama.jpg',
+        profileUrl: 'https://github.com/kareem-osama'
       },
       {
         id: 10,
         name: 'Dina Salah',
         position: 'Creative Director',
-        avatar: '/images/board/dina-salah.jpg'
+        avatar: '/images/board/dina-salah.jpg',
+        profileUrl: 'https://behance.net/dina_salah'
       },
       {
         id: 11,
         name: 'Amr Khaled',
         position: 'Operations Manager',
-        avatar: '/images/board/amr-khaled.jpg'
+        avatar: '/images/board/amr-khaled.jpg',
+        profileUrl: ''
       },
       {
         id: 12,
         name: 'Rana Mostafa',
         position: 'PR Specialist',
-        avatar: '/images/board/rana-mostafa.jpg'
+        avatar: '/images/board/rana-mostafa.jpg',
+        profileUrl: 'https://instagram.com/rana_mostafa'
       }
     ],
     highlights: [
@@ -178,7 +190,8 @@ const fetchSeasonsData = async () => {
         position: member.position,
         avatar: member.avatar?.url || '/images/board/default-avatar.jpg',
         isLeader: member.isLeader || false,
-        bio: member.bio
+        bio: member.bio,
+        profileUrl: member.profileUrl || ''
       })),
       highlights: season.highlights.map(highlight => ({
         id: highlight._id,

@@ -9,6 +9,14 @@ const BoardMemberAvatar = ({
 }) => {
   const [imageError, setImageError] = useState(false);
 
+  // Debug log to check member data
+  console.log('BoardMemberAvatar - Member data:', {
+    name: member.name,
+    profileUrl: member.profileUrl,
+    avatar: member.avatar,
+    fullMember: member
+  });
+
   const handleImageError = () => {
     setImageError(true);
   };
@@ -70,20 +78,43 @@ const BoardMemberAvatar = ({
            minHeight: 'fit-content' // Allow natural height expansion for text
          }}>
       <div className="relative"> {/* Wrapper for avatar and badge positioning */}
-        <div className={`${config.container} rounded-full overflow-hidden bg-gray-200 mb-2 shadow-md hover:shadow-lg transition-all duration-200 relative hover:scale-105 flex-shrink-0`}>
-          {!imageError && member.avatar ? (
-            <img
-              src={member.avatar}
-              alt={member.name}
-              className="w-full h-full object-cover"
-              onError={handleImageError}
-            />
-          ) : (
-            <div className={`w-full h-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold ${config.text}`}>
-              {getInitials(member.name)}
-            </div>
-          )}
-        </div>
+        {member.profileUrl ? (
+          <a
+            href={member.profileUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`block ${config.container} rounded-full overflow-hidden bg-gray-200 mb-2 shadow-md hover:shadow-lg transition-all duration-200 relative hover:scale-105 flex-shrink-0 cursor-pointer`}
+            title={`Visit ${member.name}'s profile`}
+          >
+            {!imageError && (member.avatar?.url || member.avatar) ? (
+              <img
+                src={member.avatar?.url || member.avatar}
+                alt={member.name}
+                className="w-full h-full object-cover"
+                onError={handleImageError}
+              />
+            ) : (
+              <div className={`w-full h-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold ${config.text}`}>
+                {getInitials(member.name)}
+              </div>
+            )}
+          </a>
+        ) : (
+          <div className={`${config.container} rounded-full overflow-hidden bg-gray-200 mb-2 shadow-md hover:shadow-lg transition-all duration-200 relative hover:scale-105 flex-shrink-0`}>
+            {!imageError && (member.avatar?.url || member.avatar) ? (
+              <img
+                src={member.avatar?.url || member.avatar}
+                alt={member.name}
+                className="w-full h-full object-cover"
+                onError={handleImageError}
+              />
+            ) : (
+              <div className={`w-full h-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold ${config.text}`}>
+                {getInitials(member.name)}
+              </div>
+            )}
+          </div>
+        )}
         
         {/* Leader Badge - Positioned outside avatar container */}
         {isLeader && (
