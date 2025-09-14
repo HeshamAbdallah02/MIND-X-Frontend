@@ -5,6 +5,7 @@ import StoryHeroManager from './sections/hero/StoryHeroManager';
 import AwardsManager from './sections/awards/AwardsManager';
 import JourneyTimelineManager from './sections/journey/JourneyTimelineManager';
 import SeasonsManager from './sections/seasons/SeasonsManager';
+import SingleCTAManager from '../../../admin/SingleCTAManager';
 
 const OurStoryManager = () => {
   const [activeSection, setActiveSection] = useState('hero');
@@ -15,7 +16,7 @@ const OurStoryManager = () => {
     { id: 'journey', name: 'Journey Timeline', component: JourneyTimelineManager },
     { id: 'awards', name: 'Awards & Recognition', component: AwardsManager },
     { id: 'seasons', name: 'Seasons & Board', component: SeasonsManager },
-    { id: 'join', name: 'Join Us CTA', component: null }, // Future implementation
+    { id: 'cta', name: 'Call-to-Action', component: SingleCTAManager },
   ];
 
   const renderContent = () => {

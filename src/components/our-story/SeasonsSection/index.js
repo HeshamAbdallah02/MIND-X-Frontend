@@ -18,7 +18,7 @@ const SeasonsSection = () => {
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Our Seasons & Board
+              Our Seasons & Leadership Boards
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Each academic year brings new leadership, fresh ideas, and remarkable achievements.
@@ -44,7 +44,7 @@ const SeasonsSection = () => {
         <div className="container mx-auto px-4">
           <div className="text-center">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Our Seasons & Board
+              Our Seasons & Leadership Boards
             </h2>
             <p className="text-xl text-gray-600 mb-8">
               Unable to load seasons data. Please try again later.
@@ -72,7 +72,7 @@ const SeasonsSection = () => {
           viewport={{ once: true }}
         >
           <h2 className="text-4xl font-bold text-gray-900 mb-4">
-            Our Seasons & Board
+            Our Seasons & Leadership Boards
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             Each academic year brings new leadership, fresh ideas, and remarkable achievements.
