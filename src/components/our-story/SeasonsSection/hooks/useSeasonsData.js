@@ -196,6 +196,7 @@ const fetchSeasonsData = async () => {
       highlights: season.highlights.map(highlight => ({
         id: highlight._id,
         title: highlight.title,
+        url: highlight.url || '',
         description: highlight.description,
         image: highlight.image?.url
       }))

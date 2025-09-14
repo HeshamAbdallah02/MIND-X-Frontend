@@ -1,25 +1,20 @@
 // frontend/src/components/dashboard/pages/our-story/sections/seasons/components/HighlightForm.js
 import React, { useState, useEffect } from 'react';
-import { FiX, FiSave, FiUpload } from 'react-icons/fi';
+import { FiX, FiSave, FiExternalLink } from 'react-icons/fi';
 import { useSeasonsMutations } from '../../../../../../../hooks/useSeasonsQueries';
-import ImageUploader from '../../../../../../shared/ImageUploader';
 
 const HighlightForm = ({ seasonId, highlight, onClose, onSubmit }) => {
   const [formData, setFormData] = useState({
     title: '',
-    description: '',
-    displayOrder: 0
+    url: ''
   });
 
-  const [image, setImage] = useState(null);
-  const [imagePreview, setImagePreview] = useState('');
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
     createHighlightMutation,
     updateHighlightMutation,
-    uploadHighlightImageMutation,
   } = useSeasonsMutations();
 
   // Populate form data when editing
@@ -27,10 +22,8 @@ const HighlightForm = ({ seasonId, highlight, onClose, onSubmit }) => {
     if (highlight) {
       setFormData({
         title: highlight.title || '',
-        description: highlight.description || '',
-        displayOrder: highlight.displayOrder || 0
+        url: highlight.url || ''
       });
-      setImagePreview(highlight.image || '');
     }
   }, [highlight]);
 
@@ -41,8 +34,13 @@ const HighlightForm = ({ seasonId, highlight, onClose, onSubmit }) => {
       newErrors.title = 'Title is required';
     }
 
-    if (!formData.description.trim()) {
-      newErrors.description = 'Description is required';
+    // Validate URL format if provided
+    if (formData.url.trim()) {
+      try {
+        new URL(formData.url);
+      } catch {
+        newErrors.url = 'Please enter a valid URL (e.g., https://example.com)';
+      }
     }
 
     setErrors(newErrors);
@@ -59,33 +57,21 @@ const HighlightForm = ({ seasonId, highlight, onClose, onSubmit }) => {
     setIsSubmitting(true);
 
     try {
-      let imageUrl = imagePreview;
-
-      // Upload image if new file is selected
-      if (image) {
-        const uploadResult = await uploadHighlightImageMutation.mutateAsync({
-          seasonId,
-          file: image,
-          field: 'image'
-        });
-        imageUrl = uploadResult.url;
-      }
-
       const highlightData = {
-        ...formData,
-        image: imageUrl
+        title: formData.title.trim(),
+        url: formData.url.trim()
       };
 
       if (highlight) {
         await updateHighlightMutation.mutateAsync({
           seasonId,
           highlightId: highlight._id,
-          data: highlightData
+          highlightData: highlightData
         });
       } else {
         await createHighlightMutation.mutateAsync({
           seasonId,
-          data: highlightData
+          highlightData: highlightData
         });
       }
       
@@ -111,21 +97,9 @@ const HighlightForm = ({ seasonId, highlight, onClose, onSubmit }) => {
     }
   };
 
-  const handleImageSelect = (file) => {
-    setImage(file);
-    const reader = new FileReader();
-    reader.onload = (e) => setImagePreview(e.target.result);
-    reader.readAsDataURL(file);
-  };
-
-  const handleRemoveImage = () => {
-    setImage(null);
-    setImagePreview('');
-  };
-
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] flex flex-col">
+      <div className="bg-white rounded-xl max-w-lg w-full">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b">
           <h2 className="text-xl font-bold text-gray-900">
@@ -140,57 +114,12 @@ const HighlightForm = ({ seasonId, highlight, onClose, onSubmit }) => {
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-6">
+        <div className="p-6">
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Image Upload */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-3">
-                Highlight Image
-              </label>
-              <div className="space-y-4">
-                {/* Image Preview */}
-                {imagePreview && (
-                  <div className="relative inline-block">
-                    <img
-                      src={imagePreview}
-                      alt="Highlight preview"
-                      className="w-full max-w-md h-48 object-cover rounded-lg border-2 border-gray-200"
-                    />
-                    <button
-                      type="button"
-                      onClick={handleRemoveImage}
-                      className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
-                    >
-                      <FiX className="w-4 h-4" />
-                    </button>
-                  </div>
-                )}
-
-                {/* Upload Area */}
-                <ImageUploader
-                  onImageSelect={handleImageSelect}
-                  onRemove={handleRemoveImage}
-                  acceptedTypes={['image/jpeg', 'image/png', 'image/webp']}
-                  maxSize={10 * 1024 * 1024}
-                  className="w-full"
-                >
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-gray-400 transition-colors cursor-pointer">
-                    <FiUpload className="w-8 h-8 text-gray-400 mx-auto mb-3" />
-                    <p className="text-lg text-gray-600 mb-2">
-                      Click to upload or drag & drop
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      PNG, JPG, WebP up to 10MB
-                    </p>
-                  </div>
-                </ImageUploader>
-              </div>
-            </div>
-
             {/* Title */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Title *
+                Highlight Title *
               </label>
               <input
                 type="text"
@@ -198,7 +127,7 @@ const HighlightForm = ({ seasonId, highlight, onClose, onSubmit }) => {
                 value={formData.title}
                 onChange={handleInputChange}
                 placeholder="e.g., National Competition Winner"
-                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#81C99C] focus:border-transparent ${
+                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#81C99C] focus:border-transparent ${
                   errors.title ? 'border-red-300' : 'border-gray-300'
                 }`}
               />
@@ -207,41 +136,29 @@ const HighlightForm = ({ seasonId, highlight, onClose, onSubmit }) => {
               )}
             </div>
 
-            {/* Description */}
+            {/* URL */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Description *
+                URL (Optional)
               </label>
-              <textarea
-                name="description"
-                value={formData.description}
-                onChange={handleInputChange}
-                rows={4}
-                placeholder="Describe the achievement, event, or milestone in detail..."
-                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#81C99C] focus:border-transparent ${
-                  errors.description ? 'border-red-300' : 'border-gray-300'
-                }`}
-              />
-              {errors.description && (
-                <p className="mt-1 text-sm text-red-600">{errors.description}</p>
+              <div className="relative">
+                <input
+                  type="url"
+                  name="url"
+                  value={formData.url}
+                  onChange={handleInputChange}
+                  placeholder="https://example.com/article"
+                  className={`w-full px-4 py-3 pr-10 border rounded-lg focus:ring-2 focus:ring-[#81C99C] focus:border-transparent ${
+                    errors.url ? 'border-red-300' : 'border-gray-300'
+                  }`}
+                />
+                <FiExternalLink className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              </div>
+              {errors.url && (
+                <p className="mt-1 text-sm text-red-600">{errors.url}</p>
               )}
-            </div>
-
-            {/* Display Order */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Display Order
-              </label>
-              <input
-                type="number"
-                name="displayOrder"
-                value={formData.displayOrder}
-                onChange={handleInputChange}
-                min="0"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#81C99C] focus:border-transparent"
-              />
               <p className="mt-1 text-xs text-gray-500">
-                Lower numbers appear first. You can also drag & drop to reorder.
+                If provided, the highlight will be clickable and open this URL
               </p>
             </div>
 

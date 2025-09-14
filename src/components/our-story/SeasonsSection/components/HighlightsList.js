@@ -1,6 +1,6 @@
 // frontend/src/components/our-story/SeasonsSection/components/HighlightsList.js
 import React from 'react';
-import { FiStar } from 'react-icons/fi';
+import { FiStar, FiExternalLink } from 'react-icons/fi';
 
 const HighlightsList = ({ highlights }) => {
   if (!highlights || highlights.length === 0) {
@@ -19,15 +19,34 @@ const HighlightsList = ({ highlights }) => {
         Season Highlights
       </h3>
       <ul className="space-y-4">
-        {highlights.map((highlight, index) => (
-          <li key={index} className="flex items-start">
-            {/* Custom golden bullet point */}
-            <div className="flex-shrink-0 w-3 h-3 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full mt-2 mr-4 shadow-sm"></div>
-            <p className="text-gray-700 leading-relaxed text-base">
-              {highlight}
-            </p>
-          </li>
-        ))}
+        {highlights.map((highlight, index) => {
+          // Handle both old format (strings) and new format (objects)
+          const title = typeof highlight === 'string' ? highlight : highlight.title;
+          const url = typeof highlight === 'object' ? highlight.url : null;
+          
+          return (
+            <li key={highlight.id || index} className="flex items-start">
+              {/* Custom golden bullet point */}
+              <div className="flex-shrink-0 w-3 h-3 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full mt-2 mr-4 shadow-sm"></div>
+              
+              {url ? (
+                <a
+                  href={url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-700 leading-relaxed text-base hover:text-blue-600 transition-colors cursor-pointer group flex items-start"
+                >
+                  <span className="flex-1">{title}</span>
+                  <FiExternalLink className="w-4 h-4 ml-2 mt-0.5 text-gray-400 group-hover:text-blue-600 transition-colors flex-shrink-0" />
+                </a>
+              ) : (
+                <p className="text-gray-700 leading-relaxed text-base">
+                  {title}
+                </p>
+              )}
+            </li>
+          );
+        })}
       </ul>
     </div>
   );

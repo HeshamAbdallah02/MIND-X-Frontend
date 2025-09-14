@@ -225,8 +225,9 @@ export const useSeasonsMutations = () => {
   // Add highlight
   const addHighlightMutation = useMutation({
     mutationFn: ({ seasonId, highlightData }) => seasonsAPI.addHighlight(seasonId, highlightData),
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
       queryClient.invalidateQueries(['admin-seasons']);
+      queryClient.invalidateQueries(['season-highlights', variables.seasonId]);
       toast.success('Highlight added successfully!');
     },
     onError: (error) => {
@@ -238,8 +239,9 @@ export const useSeasonsMutations = () => {
   const updateHighlightMutation = useMutation({
     mutationFn: ({ seasonId, highlightId, highlightData }) => 
       seasonsAPI.updateHighlight(seasonId, highlightId, highlightData),
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
       queryClient.invalidateQueries(['admin-seasons']);
+      queryClient.invalidateQueries(['season-highlights', variables.seasonId]);
       toast.success('Highlight updated successfully!');
     },
     onError: (error) => {
@@ -250,8 +252,9 @@ export const useSeasonsMutations = () => {
   // Delete highlight
   const deleteHighlightMutation = useMutation({
     mutationFn: ({ seasonId, highlightId }) => seasonsAPI.deleteHighlight(seasonId, highlightId),
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
       queryClient.invalidateQueries(['admin-seasons']);
+      queryClient.invalidateQueries(['season-highlights', variables.seasonId]);
       toast.success('Highlight deleted successfully!');
     },
     onError: (error) => {
@@ -262,8 +265,9 @@ export const useSeasonsMutations = () => {
   // Reorder highlights
   const reorderHighlightsMutation = useMutation({
     mutationFn: ({ seasonId, highlights }) => seasonsAPI.reorderHighlights(seasonId, highlights),
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
       queryClient.invalidateQueries(['admin-seasons']);
+      queryClient.invalidateQueries(['season-highlights', variables.seasonId]);
       toast.success('Highlights reordered successfully!');
     },
     onError: (error) => {

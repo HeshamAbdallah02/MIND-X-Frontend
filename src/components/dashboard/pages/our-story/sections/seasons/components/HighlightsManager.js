@@ -1,23 +1,10 @@
 // frontend/src/components/dashboard/pages/our-story/sections/seasons/components/HighlightsManager.js
 import React, { useState } from 'react';
-import { FiPlus, FiEdit, FiTrash, FiImage, FiMove } from 'react-icons/fi';
+import { FiPlus, FiEdit, FiTrash, FiStar, FiExternalLink } from 'react-icons/fi';
 import { useSeasonHighlights, useSeasonsMutations } from '../../../../../../../hooks/useSeasonsQueries';
 import LoadingSpinner from '../../../../../../shared/LoadingSpinner';
 import ConfirmDialog from '../../../../../shared/ConfirmDialog';
 import HighlightForm from './HighlightForm';
-// Using react-beautiful-dnd for drag and drop (will be replaced with @dnd-kit in the future)
-let DragDropContext, Droppable, Draggable;
-try {
-  const dnd = require('react-beautiful-dnd');
-  DragDropContext = dnd.DragDropContext;
-  Droppable = dnd.Droppable;
-  Draggable = dnd.Draggable;
-} catch (e) {
-  // Fallback if drag-and-drop library is not available
-  DragDropContext = ({ children, onDragEnd }) => <div>{children}</div>;
-  Droppable = ({ children }) => <div>{children({ droppableProps: {}, innerRef: () => {} })}</div>;
-  Draggable = ({ children, index }) => <div>{children({ innerRef: () => {}, draggableProps: {}, dragHandleProps: {} }, {})}</div>;
-}
 
 const HighlightsManager = ({ seasonId }) => {
   const [showForm, setShowForm] = useState(false);
@@ -30,7 +17,6 @@ const HighlightsManager = ({ seasonId }) => {
   // Get mutations
   const {
     deleteHighlightMutation,
-    reorderHighlightsMutation,
   } = useSeasonsMutations();
 
   const handleCreateHighlight = () => {
@@ -60,28 +46,6 @@ const HighlightsManager = ({ seasonId }) => {
   const handleFormSubmit = () => {
     setShowForm(false);
     setEditingHighlight(null);
-  };
-
-  const handleDragEnd = (result) => {
-    if (!result.destination) return;
-
-    const { source, destination } = result;
-    if (source.index === destination.index) return;
-
-    const reorderedHighlights = Array.from(highlights);
-    const [removed] = reorderedHighlights.splice(source.index, 1);
-    reorderedHighlights.splice(destination.index, 0, removed);
-
-    // Update display orders
-    const updates = reorderedHighlights.map((highlight, index) => ({
-      id: highlight._id,
-      displayOrder: index
-    }));
-
-    reorderHighlightsMutation.mutate({
-      seasonId,
-      updates
-    });
   };
 
   if (isLoading) {
@@ -126,16 +90,16 @@ const HighlightsManager = ({ seasonId }) => {
           </div>
           <div className="bg-green-50 rounded-lg p-4">
             <div className="text-2xl font-bold text-green-600">
-              {highlights.filter(h => h.image).length}
+              {highlights.filter(h => h.url).length}
             </div>
-            <div className="text-sm text-green-800">With Images</div>
+            <div className="text-sm text-green-800">With Links</div>
           </div>
         </div>
 
         {/* Highlights List */}
         {highlights.length === 0 ? (
           <div className="bg-gray-50 rounded-lg p-8 text-center">
-            <FiImage className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+            <FiStar className="w-12 h-12 text-gray-400 mx-auto mb-4" />
             <h4 className="text-lg font-medium text-gray-900 mb-2">No highlights yet</h4>
             <p className="text-gray-600 mb-4">
               Start showcasing your achievements by adding highlights.
@@ -150,39 +114,18 @@ const HighlightsManager = ({ seasonId }) => {
           </div>
         ) : (
           <div className="bg-white border border-gray-200 rounded-lg">
-            <DragDropContext onDragEnd={handleDragEnd}>
-              <Droppable droppableId="highlights">
-                {(provided) => (
-                  <div {...provided.droppableProps} ref={provided.innerRef}>
-                    {highlights.map((highlight, index) => (
-                      <Draggable
-                        key={highlight._id}
-                        draggableId={highlight._id}
-                        index={index}
-                      >
-                        {(provided, snapshot) => (
-                          <div
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            className={`p-4 border-b border-gray-200 last:border-b-0 transition-colors ${
-                              snapshot.isDragging ? 'bg-blue-50 shadow-lg' : 'hover:bg-gray-50'
-                            }`}
-                          >
-                            <HighlightCard
-                              highlight={highlight}
-                              onEdit={handleEditHighlight}
-                              onDelete={handleDeleteHighlight}
-                              dragHandleProps={provided.dragHandleProps}
-                            />
-                          </div>
-                        )}
-                      </Draggable>
-                    ))}
-                    {provided.placeholder}
-                  </div>
-                )}
-              </Droppable>
-            </DragDropContext>
+            {highlights.map((highlight, index) => (
+              <div
+                key={highlight._id}
+                className="p-4 border-b border-gray-200 last:border-b-0 hover:bg-gray-50 transition-colors"
+              >
+                <HighlightCard
+                  highlight={highlight}
+                  onEdit={handleEditHighlight}
+                  onDelete={handleDeleteHighlight}
+                />
+              </div>
+            ))}
           </div>
         )}
       </div>
@@ -216,39 +159,34 @@ const HighlightsManager = ({ seasonId }) => {
 };
 
 // Highlight Card Component
-const HighlightCard = ({ highlight, onEdit, onDelete, dragHandleProps }) => {
+const HighlightCard = ({ highlight, onEdit, onDelete }) => {
   return (
     <div className="flex items-center space-x-4">
-      {/* Drag Handle */}
-      <div
-        {...dragHandleProps}
-        className="p-2 text-gray-400 hover:text-gray-600 cursor-move"
-        title="Drag to reorder"
-      >
-        <FiMove className="w-4 h-4" />
+      {/* Highlight Icon */}
+      <div className="w-12 h-12 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-lg flex items-center justify-center">
+        <FiStar className="w-6 h-6 text-white" />
       </div>
-
-      {/* Highlight Image */}
-      {highlight.image ? (
-        <img
-          src={highlight.image}
-          alt={highlight.title}
-          className="w-16 h-16 rounded-lg object-cover"
-        />
-      ) : (
-        <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center">
-          <FiImage className="w-6 h-6 text-gray-400" />
-        </div>
-      )}
 
       {/* Highlight Content */}
       <div className="flex-1 min-w-0">
-        <h5 className="font-medium text-gray-900 truncate">{highlight.title}</h5>
-        <p className="text-sm text-gray-600 truncate">{highlight.description}</p>
-        <div className="flex items-center space-x-4 mt-1 text-xs text-gray-500">
-          <span>Order: {highlight.displayOrder || 0}</span>
-          {highlight.image && <span>Has Image</span>}
+        <div className="flex items-center space-x-2">
+          <h5 className="font-medium text-gray-900 truncate">{highlight.title}</h5>
+          {highlight.url && (
+            <FiExternalLink className="w-4 h-4 text-blue-500 flex-shrink-0" title="Has link" />
+          )}
         </div>
+        {highlight.url && (
+          <p className="text-sm text-blue-600 truncate mt-1">
+            <a 
+              href={highlight.url} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="hover:underline"
+            >
+              {highlight.url}
+            </a>
+          </p>
+        )}
       </div>
 
       {/* Actions */}
