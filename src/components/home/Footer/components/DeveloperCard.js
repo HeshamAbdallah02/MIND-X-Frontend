@@ -1,6 +1,6 @@
 // frontend/src/components/home/Footer/components/DeveloperCard.js
 import React from 'react';
-import { FaGlobe, FaFacebook, FaInstagram, FaLinkedin, FaYoutube } from 'react-icons/fa';
+import { FaGlobe, FaFacebook, FaWhatsapp, FaLinkedin } from 'react-icons/fa';
 import DawwarLogo from '../assets/Dawwar-Logo.png';
 
 const DeveloperCard = () => (
@@ -36,22 +36,13 @@ const DeveloperCard = () => (
           <FaGlobe />
         </a>
         <a
-          href="https://facebook.com/dawwar"
+          href="https://www.facebook.com/Dawwar.Software"
           target="_blank"
           rel="noreferrer"
           className="text-white/70 hover:text-white text-lg transition-colors"
           title="Facebook"
         >
           <FaFacebook />
-        </a>
-        <a
-          href="https://instagram.com/dawwar"
-          target="_blank"
-          rel="noreferrer"
-          className="text-white/70 hover:text-white text-lg transition-colors"
-          title="Instagram"
-        >
-          <FaInstagram />
         </a>
         <a
           href="https://linkedin.com/company/dawwar"
@@ -63,13 +54,13 @@ const DeveloperCard = () => (
           <FaLinkedin />
         </a>
         <a
-          href="https://youtube.com/@dawwar"
+          href="https://wa.me/201091655373"
           target="_blank"
           rel="noreferrer"
           className="text-white/70 hover:text-white text-lg transition-colors"
-          title="YouTube"
+          title="WhatsApp"
         >
-          <FaYoutube />
+          <FaWhatsapp />
         </a>
       </div>
     </div>

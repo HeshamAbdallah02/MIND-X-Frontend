@@ -38,7 +38,7 @@ const Footer = () => {
             </h4>
             <div className="flex gap-4">
               <a 
-                href="https://facebook.com/mindxstudentactivities" 
+                href="https://www.facebook.com/MindxEgy/" 
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{ color: c.linkColor }} 
@@ -48,7 +48,7 @@ const Footer = () => {
                 <FaFacebook />
               </a>
               <a 
-                href="https://instagram.com/mindxstudentactivities" 
+                href="https://www.instagram.com/mind_x199/" 
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{ color: c.linkColor }} 
@@ -57,7 +57,7 @@ const Footer = () => {
               >
                 <FaInstagram />
               </a>
-              <a 
+              {/* <a 
                 href="https://youtube.com/@mindxstudentactivities" 
                 target="_blank"
                 rel="noopener noreferrer"
@@ -66,9 +66,9 @@ const Footer = () => {
                 aria-label="Visit our YouTube channel"
               >
                 <FaYoutube />
-              </a>
+              </a> */}
               <a 
-                href="https://linkedin.com/company/mindxstudentactivities" 
+                href="https://www.linkedin.com/company/mindxegy" 
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{ color: c.linkColor }} 
@@ -89,10 +89,10 @@ const Footer = () => {
           >
             Quick Links
           </h3>
-          {['Home','Events','Trainings','Blog','Contact'].map(link => (
+          {['Home','Events','Trainings','Blog'].map(link => (
             <a
               key={link}
-              href={`/${link.toLowerCase()}`}
+              href={link === 'Home' ? '/' : `/${link.toLowerCase()}`}
               className="text-base hover:opacity-80 transition-opacity"
               style={{ color: c.linkColor }}
             >
@@ -107,7 +107,7 @@ const Footer = () => {
             className="text-lg font-semibold"
             style={{ color: c.titleColor }}
           >
-            Resources
+            Hot Topics
           </h3>
           {['FAQs','Support','Privacy Policy','Terms'].map(link => (
             <a
