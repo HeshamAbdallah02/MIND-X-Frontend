@@ -10,9 +10,9 @@ const DeveloperCard = () => (
     
     {/* Developer section with improved vertical layout */}
     <div className="flex flex-col gap-1 min-w-[280px] w-full">
-      {/* "Developed by" text centered but aligned with other headlines */}
+      {/* "Crafted by" text centered but aligned with other headlines */}
       <div className="text-lg font-semibold text-[#FBB859] text-center mb-2">
-        Developed by
+        Crafted by
       </div>
       
       {/* Company logo centered with minimal 2-3px spacing */}
