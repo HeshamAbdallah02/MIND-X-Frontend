@@ -4,6 +4,8 @@ import { Routes, Route } from 'react-router-dom';
 import Header from './components/layout/Header';
 import Home from './pages/Home';
 import OurStory from './pages/OurStory';
+import EventsPage from './pages/EventsPage';
+import EventDetailsPage from './pages/EventDetailsPage';
 import AdminLogin from './pages/AdminLogin';
 import Dashboard from './pages/Dashboard';
 import PrivateRoute from './components/PrivateRoute';
@@ -53,7 +55,8 @@ export default function AppContent() {
         } />
         <Route path="/" element={<Layout><Home /></Layout>} />
         <Route path="/our-story" element={<Layout><OurStory /></Layout>} />
-        <Route path="/events" element={<Layout><DevelopmentPage title="Events" /></Layout>} />
+        <Route path="/events" element={<Layout><EventsPage /></Layout>} />
+        <Route path="/events/:eventId" element={<EventDetailsPage />} />
         <Route path="/trainings" element={<Layout><DevelopmentPage title="Trainings" /></Layout>} />
         <Route path="/crew" element={<Layout><DevelopmentPage title="Crew" /></Layout>} />
         <Route path="/daily-life" element={<Layout><DevelopmentPage title="Daily Life" /></Layout>} />
