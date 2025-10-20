@@ -8,6 +8,7 @@ import HeroSection from '../components/eventDetails/HeroSection';
 import OverviewSection from '../components/eventDetails/OverviewSection';
 import SpeakersSection from '../components/eventDetails/SpeakersSection';
 import ScheduleSection from '../components/eventDetails/ScheduleSection';
+import GallerySection from '../components/eventDetails/GallerySection';
 import Footer from '../components/home/Footer';
 import EventDetailsSkeleton from '../components/eventDetails/EventDetailsSkeleton';
 import ErrorState from '../components/eventDetails/ErrorState';
@@ -180,16 +181,16 @@ const EventDetailsPage = () => {
           />
         </section>
 
-        {/* Gallery Section - Placeholder for future implementation */}
+        {/* Gallery Section */}
         <section
           id="gallery"
           ref={(el) => (sectionsRef.current.gallery = el)}
-          className="scroll-mt-16 bg-gray-50 py-20"
+          className="scroll-mt-16 bg-gray-50"
         >
-          <div className="container mx-auto px-4 max-w-6xl text-center">
-            <h2 className="text-3xl font-bold text-black mb-4">Event Gallery</h2>
-            <p className="text-[#606161] text-lg">Gallery coming soon...</p>
-          </div>
+          <GallerySection 
+            galleryAlbums={event.galleryAlbums}
+            headline={event.galleryHeadline}
+          />
         </section>
 
         {/* Reviews Section - Placeholder for future implementation */}
