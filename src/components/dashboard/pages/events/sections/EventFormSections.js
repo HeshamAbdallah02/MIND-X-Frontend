@@ -560,12 +560,12 @@ export const RegistrationSection = ({ formData, setFormData, SectionCard, expand
             </label>
             <input
               type="number"
-              value={formData.registration.spots.available}
+              value={formData.registration?.spots?.available || 0}
               onChange={(e) => setFormData(prev => ({
                 ...prev,
                 registration: {
                   ...prev.registration,
-                  spots: { ...prev.registration.spots, available: parseInt(e.target.value) || 0 }
+                  spots: { ...(prev.registration?.spots || {}), available: parseInt(e.target.value) || 0 }
                 }
               }))}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FBB859] focus:border-transparent"
@@ -578,12 +578,12 @@ export const RegistrationSection = ({ formData, setFormData, SectionCard, expand
             </label>
             <input
               type="number"
-              value={formData.registration.spots.total}
+              value={formData.registration?.spots?.total || 0}
               onChange={(e) => setFormData(prev => ({
                 ...prev,
                 registration: {
                   ...prev.registration,
-                  spots: { ...prev.registration.spots, total: parseInt(e.target.value) || 0 }
+                  spots: { ...(prev.registration?.spots || {}), total: parseInt(e.target.value) || 0 }
                 }
               }))}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FBB859] focus:border-transparent"
