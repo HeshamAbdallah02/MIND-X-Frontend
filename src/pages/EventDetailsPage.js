@@ -9,6 +9,8 @@ import OverviewSection from '../components/eventDetails/OverviewSection';
 import SpeakersSection from '../components/eventDetails/SpeakersSection';
 import ScheduleSection from '../components/eventDetails/ScheduleSection';
 import GallerySection from '../components/eventDetails/GallerySection';
+import RegisterSection from '../components/eventDetails/RegisterSection';
+import TestimonialsSection from '../components/eventDetails/TestimonialsSection';
 import Footer from '../components/home/Footer';
 import EventDetailsSkeleton from '../components/eventDetails/EventDetailsSkeleton';
 import ErrorState from '../components/eventDetails/ErrorState';
@@ -105,14 +107,20 @@ const EventDetailsPage = () => {
     );
   }
 
-  // Define navigation sections
+  // Check if event is past or upcoming
+  const eventDate = new Date(event.eventDate);
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+  const isPastEvent = eventDate < now;
+
+  // Define navigation sections dynamically based on event date
   const navSections = [
     { id: 'hero', label: 'Home' },
     { id: 'overview', label: 'Overview' },
     { id: 'speakers', label: 'Speakers' },
     { id: 'schedule', label: 'Schedule' },
     { id: 'gallery', label: 'Gallery' },
-    { id: 'reviews', label: 'Reviews' }
+    { id: isPastEvent ? 'testimonials' : 'register', label: isPastEvent ? 'Reviews' : 'Register' }
   ];
 
   return (
@@ -193,17 +201,35 @@ const EventDetailsPage = () => {
           />
         </section>
 
-        {/* Reviews Section - Placeholder for future implementation */}
-        <section
-          id="reviews"
-          ref={(el) => (sectionsRef.current.reviews = el)}
-          className="scroll-mt-16 py-20"
-        >
-          <div className="container mx-auto px-4 max-w-6xl text-center">
-            <h2 className="text-3xl font-bold text-black mb-4">Reviews & Testimonials</h2>
-            <p className="text-[#606161] text-lg">Reviews coming soon...</p>
-          </div>
-        </section>
+        {/* Conditional Section - Register OR Testimonials based on event date */}
+        {isPastEvent ? (
+          // Testimonials Section - for past events
+          <section
+            id="testimonials"
+            ref={(el) => (sectionsRef.current.testimonials = el)}
+            className="scroll-mt-16"
+          >
+            <TestimonialsSection 
+              testimonials={event.testimonials}
+              headline={event.testimonialsHeadline}
+            />
+          </section>
+        ) : (
+          // Register Section - for upcoming events
+          <section
+            id="register"
+            ref={(el) => (sectionsRef.current.register = el)}
+            className="scroll-mt-16"
+          >
+            <RegisterSection 
+              registration={event.registration}
+              price={event.price}
+              registrationLink={event.registrationLink}
+              maxAttendees={event.maxAttendees}
+              attendeeCount={event.attendeeCount}
+            />
+          </section>
+        )}
       </motion.div>
 
       {/* Footer */}

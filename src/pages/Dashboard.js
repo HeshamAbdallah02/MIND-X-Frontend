@@ -6,6 +6,9 @@ import SaveChangesBar from '../components/dashboard/shared/SaveChangesBar';
 import HomeManager from '../components/dashboard/pages/home/HomeManager';
 import BlogManager from '../components/dashboard/pages/blog/BlogManager';
 import OurStoryManager from '../components/dashboard/pages/our-story/OurStoryManager';
+import EventsManager from '../components/dashboard/pages/events/EventsManager';
+import FormsManager from '../components/dashboard/pages/forms/FormsManager';
+import FormResponses from '../components/dashboard/pages/forms/sections/FormResponses';
 
 const Dashboard = () => {
   return (
@@ -14,7 +17,9 @@ const Dashboard = () => {
         <Routes>
           <Route path="/" element={<HomeManager />} />
           <Route path="/our-story" element={<OurStoryManager />} />
-          <Route path="/events" element={<div>Events Page</div>} />
+          <Route path="/events" element={<EventsManager />} />
+          <Route path="/forms" element={<FormsManager />} />
+          <Route path="/forms/:id/responses" element={<FormResponses />} />
           <Route path="/trainings" element={<div>Trainings Page</div>} />
           <Route path="/crew" element={<div>Crew Page</div>} />
           <Route path="/daily-life" element={<div>Daily Life Page</div>} />
