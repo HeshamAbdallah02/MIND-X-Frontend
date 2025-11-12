@@ -32,19 +32,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    const initAuth = async () => {
-      await checkAuth();
-      // Signal loading completion to parent
-      if (typeof window !== 'undefined') {
-        sessionStorage.setItem('authInitialized', 'true');
-      }
-    };
-    
-    if (!sessionStorage.getItem('authInitialized')) {
-      initAuth();
-    } else {
-      setLoading(false);
-    }
+    checkAuth();
   }, [checkAuth]);
 
   const login = useCallback(async (email, password) => {
@@ -65,7 +53,6 @@ export const AuthProvider = ({ children }) => {
 
   const logout = useCallback(() => {
     tokenUtils.removeToken();
-    sessionStorage.removeItem('authInitialized');
     setAdmin(null);
     setError(null);
   }, []);

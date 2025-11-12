@@ -26,7 +26,7 @@ const FormResponses = () => {
   });
 
   // Fetch submissions
-  const { data: submissions = [], isLoading } = useQuery({
+  const { data: submissionsData, isLoading } = useQuery({
     queryKey: ['formSubmissions', id],
     queryFn: async () => {
       const token = localStorage.getItem('token');
@@ -36,6 +36,8 @@ const FormResponses = () => {
       return data;
     },
   });
+
+  const submissions = submissionsData?.submissions || [];
 
   // Delete submission mutation
   const deleteMutation = useMutation({
