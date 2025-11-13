@@ -9,6 +9,7 @@ import OurStoryManager from '../components/dashboard/pages/our-story/OurStoryMan
 import EventsManager from '../components/dashboard/pages/events/EventsManager';
 import FormsManager from '../components/dashboard/pages/forms/FormsManager';
 import FormResponses from '../components/dashboard/pages/forms/sections/FormResponses';
+import TrainingsManager from '../components/dashboard/pages/trainings/TrainingsManager';
 
 const Dashboard = () => {
   return (
@@ -20,7 +21,7 @@ const Dashboard = () => {
           <Route path="/events" element={<EventsManager />} />
           <Route path="/forms" element={<FormsManager />} />
           <Route path="/forms/:id/responses" element={<FormResponses />} />
-          <Route path="/trainings" element={<div>Trainings Page</div>} />
+          <Route path="/trainings" element={<TrainingsManager />} />
           <Route path="/crew" element={<div>Crew Page</div>} />
           <Route path="/daily-life" element={<div>Daily Life Page</div>} />
           <Route path="/blog" element={<BlogManager />} />
