@@ -79,10 +79,9 @@ const TrainingsPage = () => {
       {/* Hero Section */}
       {(hero?.isActive && hero?.backgroundImage?.url) ? (
         <div
-          className="relative bg-cover bg-center"
+          className="relative bg-cover bg-center h-screen"
           style={{
-            backgroundImage: `url(${hero.backgroundImage.url})`,
-            height: hero.layout?.height || '600px'
+            backgroundImage: `url(${hero.backgroundImage.url})`
           }}
         >
           {/* Overlay */}
@@ -144,7 +143,7 @@ const TrainingsPage = () => {
         </div>
       ) : (
         /* Default Hero Section */
-        <div className="relative bg-gradient-to-br from-gray-800 via-gray-700 to-gray-900 h-[600px]">
+        <div className="relative bg-gradient-to-br from-gray-800 via-gray-700 to-gray-900 h-screen">
           <div className="absolute inset-0 bg-black opacity-40" />
           
           <div className="relative h-full flex flex-col justify-center items-center text-center px-6">
