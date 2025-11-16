@@ -9,6 +9,8 @@ import EventDetailsPage from './pages/EventDetailsPage';
 import TrainingsPage from './pages/TrainingsPage';
 import TrainingDetailsPage from './pages/TrainingDetailsPage';
 import FormViewPage from './pages/FormViewPage';
+import BlogPage from './pages/BlogPage';
+import BlogDetailPage from './pages/BlogDetailPage';
 import AdminLogin from './pages/AdminLogin';
 import Dashboard from './pages/Dashboard';
 import PrivateRoute from './components/PrivateRoute';
@@ -65,7 +67,8 @@ export default function AppContent() {
         <Route path="/forms/:slug" element={<Layout><FormViewPage /></Layout>} />
         <Route path="/crew" element={<Layout><DevelopmentPage title="Crew" /></Layout>} />
         <Route path="/daily-life" element={<Layout><DevelopmentPage title="Daily Life" /></Layout>} />
-        <Route path="/blog" element={<Layout><DevelopmentPage title="Blog" /></Layout>} />
+        <Route path="/blog" element={<Layout><BlogPage /></Layout>} />
+        <Route path="/blog/:slug" element={<Layout><BlogDetailPage /></Layout>} />
         <Route path={`/${process.env.REACT_APP_DASHBOARD_PATH}/*`} element={
           <Layout>
             <PrivateRoute>
