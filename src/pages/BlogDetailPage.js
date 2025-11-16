@@ -83,15 +83,29 @@ const BlogDetailPage = () => {
     );
   }
 
+  const metaDescription = blog.excerpt || blog.content?.replace(/<[^>]+>/g, '').slice(0, 160) || 'Explore insights from MIND-X.';
+  const canonicalUrl = typeof window !== 'undefined' ? `${window.location.origin}/blog/${blog.slug}` : '';
+  const shareImage = blog.coverImage?.url;
+  const shareUrl = canonicalUrl || (typeof window !== 'undefined' ? window.location.href : '');
+
   return (
     <>
       <Helmet>
         <title>{blog.title} | MIND-X Blog</title>
-        <meta name="description" content={blog.excerpt || blog.content.substring(0, 160)} />
+        <meta name="description" content={metaDescription} />
         {blog.author?.name && <meta name="author" content={blog.author.name} />}
+        <meta property="og:type" content="article" />
         <meta property="og:title" content={blog.title} />
-        <meta property="og:description" content={blog.excerpt} />
-        {blog.coverImage?.url && <meta property="og:image" content={blog.coverImage.url} />}
+        <meta property="og:description" content={metaDescription} />
+        {canonicalUrl && <meta property="og:url" content={canonicalUrl} />}
+        {shareImage && <meta property="og:image" content={shareImage} />}
+        <meta property="og:site_name" content="MIND-X" />
+        {blog.author?.name && <meta property="article:author" content={blog.author.name} />}
+        {blog.publishedAt && <meta property="article:published_time" content={blog.publishedAt} />}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={blog.title} />
+        <meta name="twitter:description" content={metaDescription} />
+        {shareImage && <meta name="twitter:image" content={shareImage} />}
       </Helmet>
 
       {/* Reading Progress Bar */}
@@ -295,7 +309,7 @@ const BlogDetailPage = () => {
               <button
                 onClick={() => {
                   const text = `I'm happy to share this article with you:\n\n${blog.title}`;
-                  const url = window.location.href;
+                  const url = shareUrl;
                   // Twitter allows text + URL
                   window.open(
                     `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`,
@@ -314,7 +328,7 @@ const BlogDetailPage = () => {
               {/* LinkedIn */}
               <button
                 onClick={async () => {
-                  const url = window.location.href;
+                  const url = shareUrl;
                   const text = `I'm happy to share this article with you: ${blog.title}`;
                   
                   // Try Web Share API first (mobile)
@@ -344,7 +358,7 @@ const BlogDetailPage = () => {
               {/* Facebook */}
               <button
                 onClick={async () => {
-                  const url = window.location.href;
+                  const url = shareUrl;
                   const text = `I'm happy to share this article with you: ${blog.title}`;
                   
                   // Try Web Share API first (mobile)
@@ -374,7 +388,7 @@ const BlogDetailPage = () => {
               {/* WhatsApp */}
               <button
                 onClick={() => {
-                  const text = `I'm happy to share this article with you:\n\n*${blog.title}*\n\n${window.location.href}`;
+                  const text = `I'm happy to share this article with you:\n\n*${blog.title}*\n\n${shareUrl}`;
                   // WhatsApp supports text parameter
                   window.open(
                     `https://wa.me/?text=${encodeURIComponent(text)}`,
@@ -393,7 +407,7 @@ const BlogDetailPage = () => {
               <button
                 onClick={() => {
                   const text = `I'm happy to share this article with you:\n\n${blog.title}`;
-                  const url = window.location.href;
+                  const url = shareUrl;
                   // Telegram supports text and url parameters
                   window.open(
                     `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`,
