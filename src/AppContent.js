@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Header from './components/layout/Header';
+import ScrollToTop from './components/ScrollToTop';
 import Home from './pages/Home';
 import OurStory from './pages/OurStory';
 import EventsPage from './pages/EventsPage';
@@ -51,7 +52,8 @@ export default function AppContent() {
     <>
       {isInitialLoad && <SplashScreen progress={progress} />}
       <Toaster position="top-center" />
-      
+      <ScrollToTop />
+
       <Routes>
         <Route path={`/${process.env.REACT_APP_ADMIN_PATH}/access`} element={
           <Layout hideHeader>
