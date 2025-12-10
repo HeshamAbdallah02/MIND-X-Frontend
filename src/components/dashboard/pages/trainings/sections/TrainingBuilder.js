@@ -3,8 +3,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useQueryClient } from '@tanstack/react-query';
 import { FiX, FiUpload, FiTrash2, FiPlus, FiSave } from 'react-icons/fi';
-
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+import { API_BASE_URL } from '../../../../../config/api';
 
 const TrainingBuilder = ({ training, onCancel, onSaved }) => {
   const queryClient = useQueryClient();
@@ -99,8 +98,8 @@ const TrainingBuilder = ({ training, onCancel, onSaved }) => {
         endDate: training.endDate ? new Date(training.endDate).toISOString().split('T')[0] : '',
         registration: {
           ...training.registration,
-          deadline: training.registration?.deadline 
-            ? new Date(training.registration.deadline).toISOString().split('T')[0] 
+          deadline: training.registration?.deadline
+            ? new Date(training.registration.deadline).toISOString().split('T')[0]
             : ''
         },
         pricing: {
@@ -118,7 +117,7 @@ const TrainingBuilder = ({ training, onCancel, onSaved }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!formData.title || !formData.startDate || !formData.endDate || !formData.displayDate) {
       alert('Please fill in all required fields');
       return;
@@ -133,7 +132,7 @@ const TrainingBuilder = ({ training, onCancel, onSaved }) => {
 
     try {
       const token = localStorage.getItem('token');
-      
+
       if (training?._id) {
         // Update existing training
         await axios.put(
@@ -201,7 +200,7 @@ const TrainingBuilder = ({ training, onCancel, onSaved }) => {
 
   const addToList = (field, value, setterFunc) => {
     if (!value.trim()) return;
-    
+
     setFormData(prev => ({
       ...prev,
       [field]: [...(prev[field] || []), value.trim()]
@@ -271,11 +270,10 @@ const TrainingBuilder = ({ training, onCancel, onSaved }) => {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
-                activeTab === tab.id
+              className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${activeTab === tab.id
                   ? 'border-[#FBB859] text-[#FBB859]'
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              }`}
+                }`}
             >
               {tab.label}
             </button>
@@ -285,7 +283,7 @@ const TrainingBuilder = ({ training, onCancel, onSaved }) => {
 
       <form onSubmit={handleSubmit}>
         <div className="p-6 max-h-[calc(100vh-20rem)] overflow-y-auto">
-          
+
           {/* Basic Info Tab */}
           {activeTab === 'basic' && (
             <div className="space-y-6">
@@ -296,7 +294,7 @@ const TrainingBuilder = ({ training, onCancel, onSaved }) => {
                 <input
                   type="text"
                   value={formData.title}
-                  onChange={(e) => setFormData({...formData, title: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FBB859] focus:border-transparent"
                   required
                 />
@@ -308,7 +306,7 @@ const TrainingBuilder = ({ training, onCancel, onSaved }) => {
                 </label>
                 <textarea
                   value={formData.shortDescription || ''}
-                  onChange={(e) => setFormData({...formData, shortDescription: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, shortDescription: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FBB859] focus:border-transparent"
                   rows={2}
                   maxLength={300}
@@ -324,7 +322,7 @@ const TrainingBuilder = ({ training, onCancel, onSaved }) => {
                 </label>
                 <textarea
                   value={formData.description}
-                  onChange={(e) => setFormData({...formData, description: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FBB859] focus:border-transparent"
                   rows={6}
                   required
@@ -339,7 +337,7 @@ const TrainingBuilder = ({ training, onCancel, onSaved }) => {
                   <input
                     type="date"
                     value={formData.startDate}
-                    onChange={(e) => setFormData({...formData, startDate: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FBB859] focus:border-transparent"
                     required
                   />
@@ -352,7 +350,7 @@ const TrainingBuilder = ({ training, onCancel, onSaved }) => {
                   <input
                     type="date"
                     value={formData.endDate}
-                    onChange={(e) => setFormData({...formData, endDate: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FBB859] focus:border-transparent"
                     required
                   />
@@ -366,7 +364,7 @@ const TrainingBuilder = ({ training, onCancel, onSaved }) => {
                 <input
                   type="text"
                   value={formData.displayDate}
-                  onChange={(e) => setFormData({...formData, displayDate: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, displayDate: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FBB859] focus:border-transparent"
                   placeholder="December 15-17, 2025"
                   required
@@ -381,7 +379,7 @@ const TrainingBuilder = ({ training, onCancel, onSaved }) => {
                   <input
                     type="text"
                     value={formData.duration || ''}
-                    onChange={(e) => setFormData({...formData, duration: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FBB859] focus:border-transparent"
                     placeholder="3 Days"
                   />
@@ -394,7 +392,7 @@ const TrainingBuilder = ({ training, onCancel, onSaved }) => {
                   <input
                     type="text"
                     value={formData.schedule || ''}
-                    onChange={(e) => setFormData({...formData, schedule: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, schedule: e.target.value })}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FBB859] focus:border-transparent"
                     placeholder="9:00 AM - 5:00 PM"
                   />
@@ -409,7 +407,7 @@ const TrainingBuilder = ({ training, onCancel, onSaved }) => {
                   <input
                     type="text"
                     value={formData.category}
-                    onChange={(e) => setFormData({...formData, category: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FBB859] focus:border-transparent"
                   />
                 </div>
@@ -420,7 +418,7 @@ const TrainingBuilder = ({ training, onCancel, onSaved }) => {
                   </label>
                   <select
                     value={formData.level}
-                    onChange={(e) => setFormData({...formData, level: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, level: e.target.value })}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FBB859] focus:border-transparent"
                   >
                     <option value="All Levels">All Levels</option>
@@ -434,7 +432,7 @@ const TrainingBuilder = ({ training, onCancel, onSaved }) => {
               {/* Location */}
               <div className="border-t pt-6 mt-6">
                 <h3 className="text-lg font-medium text-gray-900 mb-4">Location</h3>
-                
+
                 <div className="mb-4">
                   <label className="flex items-center">
                     <input
@@ -657,7 +655,7 @@ const TrainingBuilder = ({ training, onCancel, onSaved }) => {
                 </label>
                 <textarea
                   value={formData.targetAudience || ''}
-                  onChange={(e) => setFormData({...formData, targetAudience: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, targetAudience: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FBB859] focus:border-transparent"
                   rows={3}
                   placeholder="Who is this training for?"
@@ -727,7 +725,7 @@ const TrainingBuilder = ({ training, onCancel, onSaved }) => {
                     <span className="ml-2 text-sm text-gray-700">Certificate Provided</span>
                   </label>
                 </div>
-                
+
                 {formData.certificate?.isProvided && (
                   <div className="space-y-4">
                     <div>
@@ -781,7 +779,7 @@ const TrainingBuilder = ({ training, onCancel, onSaved }) => {
                     <span className="ml-2 text-sm text-gray-700">Materials Provided</span>
                   </label>
                 </div>
-                
+
                 {formData.materials?.isProvided && (
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -816,7 +814,7 @@ const TrainingBuilder = ({ training, onCancel, onSaved }) => {
                     <input
                       type="text"
                       value={newInstructor.name}
-                      onChange={(e) => setNewInstructor({...newInstructor, name: e.target.value})}
+                      onChange={(e) => setNewInstructor({ ...newInstructor, name: e.target.value })}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FBB859] focus:border-transparent"
                     />
                   </div>
@@ -827,7 +825,7 @@ const TrainingBuilder = ({ training, onCancel, onSaved }) => {
                     <input
                       type="text"
                       value={newInstructor.title}
-                      onChange={(e) => setNewInstructor({...newInstructor, title: e.target.value})}
+                      onChange={(e) => setNewInstructor({ ...newInstructor, title: e.target.value })}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FBB859] focus:border-transparent"
                       placeholder="e.g., Senior Developer"
                     />
@@ -838,7 +836,7 @@ const TrainingBuilder = ({ training, onCancel, onSaved }) => {
                     </label>
                     <textarea
                       value={newInstructor.bio}
-                      onChange={(e) => setNewInstructor({...newInstructor, bio: e.target.value})}
+                      onChange={(e) => setNewInstructor({ ...newInstructor, bio: e.target.value })}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FBB859] focus:border-transparent"
                       rows={3}
                     />
@@ -851,7 +849,7 @@ const TrainingBuilder = ({ training, onCancel, onSaved }) => {
                       <input
                         type="url"
                         value={newInstructor.linkedin}
-                        onChange={(e) => setNewInstructor({...newInstructor, linkedin: e.target.value})}
+                        onChange={(e) => setNewInstructor({ ...newInstructor, linkedin: e.target.value })}
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FBB859] focus:border-transparent"
                         placeholder="https://linkedin.com/in/..."
                       />
@@ -863,7 +861,7 @@ const TrainingBuilder = ({ training, onCancel, onSaved }) => {
                       <input
                         type="url"
                         value={newInstructor.website}
-                        onChange={(e) => setNewInstructor({...newInstructor, website: e.target.value})}
+                        onChange={(e) => setNewInstructor({ ...newInstructor, website: e.target.value })}
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FBB859] focus:border-transparent"
                         placeholder="https://..."
                       />
@@ -945,7 +943,7 @@ const TrainingBuilder = ({ training, onCancel, onSaved }) => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Cover Image * {!training && <span className="text-gray-500 text-xs">(Save training first)</span>}
                 </label>
-                
+
                 {formData.coverImage?.url ? (
                   <div className="relative">
                     <img
@@ -983,7 +981,7 @@ const TrainingBuilder = ({ training, onCancel, onSaved }) => {
                     )}
                   </label>
                 )}
-                
+
                 {uploadingCover && (
                   <div className="mt-2 text-center text-sm text-gray-600">
                     Uploading image...
@@ -1003,7 +1001,7 @@ const TrainingBuilder = ({ training, onCancel, onSaved }) => {
               {/* Pricing */}
               <div>
                 <h3 className="text-lg font-medium text-gray-900 mb-4">Pricing</h3>
-                
+
                 <div className="mb-4">
                   <label className="flex items-center">
                     <input
@@ -1118,7 +1116,7 @@ const TrainingBuilder = ({ training, onCancel, onSaved }) => {
               {/* Registration */}
               <div className="border-t pt-6 mt-6">
                 <h3 className="text-lg font-medium text-gray-900 mb-4">Registration</h3>
-                
+
                 <div className="mb-4">
                   <label className="flex items-center">
                     <input
@@ -1323,11 +1321,10 @@ const TrainingBuilder = ({ training, onCancel, onSaved }) => {
           <button
             type="submit"
             disabled={saving}
-            className={`px-6 py-2 rounded-lg transition-colors flex items-center gap-2 ${
-              saving
+            className={`px-6 py-2 rounded-lg transition-colors flex items-center gap-2 ${saving
                 ? 'bg-gray-100 text-gray-500 cursor-wait'
                 : 'bg-[#FBB859] text-white hover:bg-[#e9a748]'
-            }`}
+              }`}
           >
             {saving ? (
               <>

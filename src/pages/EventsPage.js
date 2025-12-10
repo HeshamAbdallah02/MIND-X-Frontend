@@ -3,7 +3,7 @@
 import React from 'react';
 import { FeaturedEventSection, EventsCTA, PastEventsSection } from '../components/events';
 import Header from '../components/layout/Header';
-import Footer from '../components/home/Footer';
+import Footer from '../components/layout/Footer';
 
 const EventsPage = () => {
   return (

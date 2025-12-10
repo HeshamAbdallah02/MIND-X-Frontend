@@ -1,7 +1,6 @@
 //frontend/src/services/timelineAPI.js
 import axios from 'axios';
-
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+import { API_BASE_URL } from '../config/api';
 
 // Create axios instance with default config
 const timelineAPI = axios.create({
@@ -43,7 +42,7 @@ timelineAPI.interceptors.response.use(
 export const fetchTimelineData = async () => {
   try {
     const response = await timelineAPI.get('/timeline');
-    
+
     // Validate response structure
     if (!response.data || typeof response.data !== 'object') {
       throw new Error('Invalid timeline data format received');
@@ -86,16 +85,16 @@ export const fetchTimelineData = async () => {
     };
   } catch (error) {
     console.warn('Timeline API Error:', error.message);
-    
+
     // Always return fallback data in development, or when backend is not available
     if (process.env.NODE_ENV === 'development' || error.code === 'ECONNREFUSED' || error.response?.status === 404) {
       console.warn('Using fallback timeline data - Backend not implemented yet');
       return getFallbackTimelineData();
     }
-    
+
     throw new Error(
-      error.response?.data?.message || 
-      error.message || 
+      error.response?.data?.message ||
+      error.message ||
       'Failed to fetch timeline data'
     );
   }
@@ -112,7 +111,7 @@ export const fetchTimelineSections = async () => {
   } catch (error) {
     console.error('Error fetching timeline sections:', error);
     throw new Error(
-      error.response?.data?.message || 
+      error.response?.data?.message ||
       'Failed to fetch timeline sections'
     );
   }
@@ -130,7 +129,7 @@ export const fetchTimelinePhases = async (sectionId) => {
   } catch (error) {
     console.error('Error fetching timeline phases:', error);
     throw new Error(
-      error.response?.data?.message || 
+      error.response?.data?.message ||
       'Failed to fetch timeline phases'
     );
   }
@@ -148,7 +147,7 @@ export const createTimelineSection = async (sectionData) => {
   } catch (error) {
     console.error('Error creating timeline section:', error);
     throw new Error(
-      error.response?.data?.message || 
+      error.response?.data?.message ||
       'Failed to create timeline section'
     );
   }
@@ -167,7 +166,7 @@ export const updateTimelineSection = async (sectionId, updateData) => {
   } catch (error) {
     console.error('Error updating timeline section:', error);
     throw new Error(
-      error.response?.data?.message || 
+      error.response?.data?.message ||
       'Failed to update timeline section'
     );
   }
@@ -185,7 +184,7 @@ export const deleteTimelineSection = async (sectionId) => {
   } catch (error) {
     console.error('Error deleting timeline section:', error);
     throw new Error(
-      error.response?.data?.message || 
+      error.response?.data?.message ||
       'Failed to delete timeline section'
     );
   }
@@ -203,7 +202,7 @@ export const createTimelinePhase = async (phaseData) => {
   } catch (error) {
     console.error('Error creating timeline phase:', error);
     throw new Error(
-      error.response?.data?.message || 
+      error.response?.data?.message ||
       'Failed to create timeline phase'
     );
   }
@@ -222,7 +221,7 @@ export const updateTimelinePhase = async (phaseId, updateData) => {
   } catch (error) {
     console.error('Error updating timeline phase:', error);
     throw new Error(
-      error.response?.data?.message || 
+      error.response?.data?.message ||
       'Failed to update timeline phase'
     );
   }
@@ -240,7 +239,7 @@ export const deleteTimelinePhase = async (phaseId) => {
   } catch (error) {
     console.error('Error deleting timeline phase:', error);
     throw new Error(
-      error.response?.data?.message || 
+      error.response?.data?.message ||
       'Failed to delete timeline phase'
     );
   }
@@ -261,7 +260,7 @@ export const reorderTimelinePhases = async (sectionId, phaseIds) => {
   } catch (error) {
     console.error('Error reordering timeline phases:', error);
     throw new Error(
-      error.response?.data?.message || 
+      error.response?.data?.message ||
       'Failed to reorder timeline phases'
     );
   }

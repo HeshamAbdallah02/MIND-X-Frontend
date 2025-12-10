@@ -2,8 +2,7 @@
 // Service specifically for the Events Page featured & past events functionality
 import axios from 'axios';
 import { useQuery, useInfiniteQuery } from '@tanstack/react-query';
-
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+import { API_BASE_URL } from '../config/api';
 
 // Create axios instance with default config
 const featuredEventAPI = axios.create({
@@ -81,11 +80,11 @@ export const getPastEvents = async ({ pageParam = 1, search = '', categories = [
     limit: 12,
     search,
   };
-  
+
   if (categories.length > 0) {
     params.categories = categories.join(',');
   }
-  
+
   const response = await featuredEventAPI.get('/past', { params });
   return response.data;
 };

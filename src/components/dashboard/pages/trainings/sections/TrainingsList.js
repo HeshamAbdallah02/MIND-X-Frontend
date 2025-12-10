@@ -3,8 +3,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { FiEdit2, FiTrash2, FiCalendar, FiMapPin, FiUsers, FiEye, FiEyeOff, FiPlus, FiStar, FiClock } from 'react-icons/fi';
-
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+import { API_BASE_URL } from '../../../../../config/api';
 
 const TrainingsList = ({ onEdit, onCreateNew }) => {
   const [filter, setFilter] = useState('all'); // all, upcoming, past, ongoing
@@ -28,11 +27,11 @@ const TrainingsList = ({ onEdit, onCreateNew }) => {
   // Delete training
   const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this training? This will also delete all associated images.')) return;
-    
+
     if (deleting === id) return;
-    
+
     setDeleting(id);
-    
+
     try {
       const token = localStorage.getItem('token');
       await axios.delete(`${API_BASE_URL}/api/trainings/admin/${id}`, {
@@ -50,9 +49,9 @@ const TrainingsList = ({ onEdit, onCreateNew }) => {
   // Toggle publish status
   const handleTogglePublish = async (id) => {
     if (publishing === id) return;
-    
+
     setPublishing(id);
-    
+
     try {
       const token = localStorage.getItem('token');
       await axios.patch(
@@ -75,16 +74,16 @@ const TrainingsList = ({ onEdit, onCreateNew }) => {
       alert('Only published trainings can be featured. Please publish the training first.');
       return;
     }
-    
+
     if (training.status === 'completed') {
       alert('Only upcoming or ongoing trainings can be featured.');
       return;
     }
-    
+
     if (featuring === training._id) return;
-    
+
     setFeaturing(training._id);
-    
+
     try {
       const token = localStorage.getItem('token');
       await axios.patch(
@@ -108,7 +107,7 @@ const TrainingsList = ({ onEdit, onCreateNew }) => {
   });
 
   // Sort trainings by start date (newest first)
-  const sortedTrainings = [...filteredTrainings].sort((a, b) => 
+  const sortedTrainings = [...filteredTrainings].sort((a, b) =>
     new Date(b.startDate) - new Date(a.startDate)
   );
 
@@ -161,41 +160,37 @@ const TrainingsList = ({ onEdit, onCreateNew }) => {
       <div className="mb-6 flex gap-2 flex-wrap">
         <button
           onClick={() => setFilter('all')}
-          className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-            filter === 'all'
+          className={`px-4 py-2 rounded-lg font-medium transition-colors ${filter === 'all'
               ? 'bg-[#FBB859] text-white'
               : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
-          }`}
+            }`}
         >
           All ({trainings.length})
         </button>
         <button
           onClick={() => setFilter('upcoming')}
-          className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-            filter === 'upcoming'
+          className={`px-4 py-2 rounded-lg font-medium transition-colors ${filter === 'upcoming'
               ? 'bg-[#FBB859] text-white'
               : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
-          }`}
+            }`}
         >
           Upcoming ({trainings.filter(t => t.status === 'upcoming').length})
         </button>
         <button
           onClick={() => setFilter('ongoing')}
-          className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-            filter === 'ongoing'
+          className={`px-4 py-2 rounded-lg font-medium transition-colors ${filter === 'ongoing'
               ? 'bg-[#FBB859] text-white'
               : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
-          }`}
+            }`}
         >
           Ongoing ({trainings.filter(t => t.status === 'ongoing').length})
         </button>
         <button
           onClick={() => setFilter('completed')}
-          className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-            filter === 'completed'
+          className={`px-4 py-2 rounded-lg font-medium transition-colors ${filter === 'completed'
               ? 'bg-[#FBB859] text-white'
               : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
-          }`}
+            }`}
         >
           Past ({trainings.filter(t => t.status === 'completed').length})
         </button>
@@ -207,7 +202,7 @@ const TrainingsList = ({ onEdit, onCreateNew }) => {
           <FiCalendar size={48} className="mx-auto text-gray-400 mb-4" />
           <h3 className="text-xl font-medium text-gray-900 mb-2">No trainings found</h3>
           <p className="text-gray-600 mb-6">
-            {filter === 'all' 
+            {filter === 'all'
               ? 'Get started by creating your first training program'
               : `No ${filter} trainings found`
             }
@@ -316,13 +311,12 @@ const TrainingsList = ({ onEdit, onCreateNew }) => {
                     <button
                       onClick={() => handleTogglePublish(training._id)}
                       disabled={publishing === training._id}
-                      className={`px-4 py-2 rounded-lg transition-colors flex items-center gap-2 ${
-                        publishing === training._id
+                      className={`px-4 py-2 rounded-lg transition-colors flex items-center gap-2 ${publishing === training._id
                           ? 'bg-gray-100 text-gray-500 cursor-wait'
                           : training.isPublished
-                          ? 'bg-green-100 text-green-700 hover:bg-green-200'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                      }`}
+                            ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        }`}
                     >
                       {publishing === training._id ? (
                         <>
@@ -340,13 +334,12 @@ const TrainingsList = ({ onEdit, onCreateNew }) => {
                     <button
                       onClick={() => handleToggleFeatured(training)}
                       disabled={featuring === training._id}
-                      className={`px-4 py-2 rounded-lg transition-colors flex items-center gap-2 ${
-                        featuring === training._id
+                      className={`px-4 py-2 rounded-lg transition-colors flex items-center gap-2 ${featuring === training._id
                           ? 'bg-gray-100 text-gray-500 cursor-wait'
                           : training.isFeatured
-                          ? 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                      }`}
+                            ? 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200'
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        }`}
                     >
                       {featuring === training._id ? (
                         <>
@@ -364,11 +357,10 @@ const TrainingsList = ({ onEdit, onCreateNew }) => {
                     <button
                       onClick={() => handleDelete(training._id)}
                       disabled={deleting === training._id}
-                      className={`px-4 py-2 rounded-lg transition-colors flex items-center gap-2 ${
-                        deleting === training._id
+                      className={`px-4 py-2 rounded-lg transition-colors flex items-center gap-2 ${deleting === training._id
                           ? 'bg-gray-100 text-gray-500 cursor-wait'
                           : 'bg-red-50 text-red-600 hover:bg-red-100'
-                      }`}
+                        }`}
                     >
                       {deleting === training._id ? (
                         <>

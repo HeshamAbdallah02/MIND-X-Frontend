@@ -15,7 +15,7 @@ import DetailsCard from './components/sidebar/DetailsCard';
 import IncludesCard from './components/sidebar/IncludesCard';
 import ContactCard from './components/sidebar/ContactCard';
 import useTrainingDetails from './hooks/useTrainingDetails';
-import Footer from '../home/Footer';
+import Footer from '../layout/Footer';
 
 const TrainingDetailsPage = () => {
     const { training, isLoading, error, registrationLink, isRegistrationOpen } = useTrainingDetails();

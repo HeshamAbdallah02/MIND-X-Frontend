@@ -8,8 +8,7 @@ import {
   FiSearch, FiChevronLeft, FiChevronRight, FiBarChart2,
   FiList, FiCheck, FiX, FiMail, FiClock
 } from 'react-icons/fi';
-
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+import { API_BASE_URL } from '../../../../../config/api';
 
 const FormResponses = () => {
   const { id } = useParams();

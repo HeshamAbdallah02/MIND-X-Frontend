@@ -3,14 +3,13 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { FiUpload, FiSave, FiEye, FiEyeOff } from 'react-icons/fi';
-
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+import { API_BASE_URL } from '../../../../../config/api';
 
 const TrainingHeroManager = () => {
   const queryClient = useQueryClient();
   const [saving, setSaving] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
-  
+
   const [formData, setFormData] = useState({
     heading: {
       text: 'Expand Your Skills',
@@ -62,7 +61,7 @@ const TrainingHeroManager = () => {
 
   const handleSave = async (e) => {
     e.preventDefault();
-    
+
     if (!formData.backgroundImage?.url) {
       alert('Please upload a background image');
       return;
@@ -72,7 +71,7 @@ const TrainingHeroManager = () => {
 
     try {
       const token = localStorage.getItem('token');
-      
+
       await axios.put(
         `${API_BASE_URL}/api/training-hero/admin`,
         formData,
@@ -131,7 +130,7 @@ const TrainingHeroManager = () => {
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      
+
       setFormData(prev => ({ ...prev, isActive: !prev.isActive }));
       await queryClient.invalidateQueries(['training-hero']);
     } catch (error) {
@@ -159,11 +158,10 @@ const TrainingHeroManager = () => {
         {hero && (
           <button
             onClick={handleToggleActive}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
-              formData.isActive
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${formData.isActive
                 ? 'bg-green-100 text-green-700 hover:bg-green-200'
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-            }`}
+              }`}
           >
             {formData.isActive ? <FiEye size={16} /> : <FiEyeOff size={16} />}
             <span>{formData.isActive ? 'Active' : 'Inactive'}</span>
@@ -177,7 +175,7 @@ const TrainingHeroManager = () => {
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Background Image *
           </label>
-          
+
           {formData.backgroundImage?.url ? (
             <div className="relative">
               <img
@@ -210,7 +208,7 @@ const TrainingHeroManager = () => {
               />
             </label>
           )}
-          
+
           {uploadingImage && (
             <div className="mt-2 text-center text-sm text-gray-600">
               Uploading image...
@@ -310,7 +308,7 @@ const TrainingHeroManager = () => {
         {/* Overlay Settings */}
         <div className="border-t pt-6 mt-6">
           <h3 className="text-lg font-medium text-gray-900 mb-4">Overlay Settings</h3>
-          
+
           <div className="space-y-4">
             <div>
               <label className="flex items-center">
@@ -381,7 +379,7 @@ const TrainingHeroManager = () => {
         {/* Layout Settings */}
         <div className="border-t pt-6 mt-6">
           <h3 className="text-lg font-medium text-gray-900 mb-4">Layout Settings</h3>
-          
+
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -440,7 +438,7 @@ const TrainingHeroManager = () => {
         {/* CTA Settings */}
         <div className="border-t pt-6 mt-6">
           <h3 className="text-lg font-medium text-gray-900 mb-4">Call to Action</h3>
-          
+
           <div className="space-y-4">
             <div>
               <label className="flex items-center">
@@ -481,11 +479,10 @@ const TrainingHeroManager = () => {
           <button
             type="submit"
             disabled={saving}
-            className={`px-6 py-2 rounded-lg transition-colors flex items-center gap-2 ${
-              saving
+            className={`px-6 py-2 rounded-lg transition-colors flex items-center gap-2 ${saving
                 ? 'bg-gray-100 text-gray-500 cursor-wait'
                 : 'bg-[#FBB859] text-white hover:bg-[#e9a748]'
-            }`}
+              }`}
           >
             {saving ? (
               <>

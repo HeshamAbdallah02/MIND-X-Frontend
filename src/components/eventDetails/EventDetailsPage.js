@@ -10,7 +10,7 @@ import ScheduleSection from './ScheduleSection';
 import GallerySection from './GallerySection';
 import RegisterSection from './RegisterSection';
 import TestimonialsSection from './TestimonialsSection';
-import Footer from '../home/Footer';
+import Footer from '../layout/Footer';
 import EventDetailsSkeleton from './EventDetailsSkeleton';
 import ErrorState from './ErrorState';
 import NotFoundState from './NotFoundState';

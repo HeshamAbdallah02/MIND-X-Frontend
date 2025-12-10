@@ -3,8 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { FiSave, FiEye, FiEyeOff } from 'react-icons/fi';
-
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+import { API_BASE_URL } from '../../../../../config/api';
 
 const TrainingCTAManager = () => {
   const queryClient = useQueryClient();
@@ -135,11 +134,10 @@ const TrainingCTAManager = () => {
           </div>
           <button
             onClick={handleToggleActive}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition ${
-              formData.isActive
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition ${formData.isActive
                 ? 'bg-green-100 text-green-700 hover:bg-green-200'
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-            }`}
+              }`}
           >
             {formData.isActive ? <FiEye /> : <FiEyeOff />}
             {formData.isActive ? 'Active' : 'Inactive'}
@@ -278,17 +276,17 @@ const TrainingCTAManager = () => {
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Preview
             </label>
-            <div 
+            <div
               className="p-8 rounded-lg text-center"
               style={{ backgroundColor: formData.backgroundColor }}
             >
-              <h3 
+              <h3
                 className="text-2xl font-bold mb-2"
                 style={{ color: formData.textColor }}
               >
                 {formData.title || 'Title'}
               </h3>
-              <p 
+              <p
                 className="mb-4 opacity-90"
                 style={{ color: formData.textColor }}
               >
@@ -307,11 +305,10 @@ const TrainingCTAManager = () => {
           <button
             type="submit"
             disabled={saving}
-            className={`w-full flex items-center justify-center gap-2 px-6 py-3 rounded-lg text-white font-medium transition ${
-              saving
+            className={`w-full flex items-center justify-center gap-2 px-6 py-3 rounded-lg text-white font-medium transition ${saving
                 ? 'bg-gray-400 cursor-not-allowed'
                 : 'bg-[#FBB859] hover:bg-[#e9a748]'
-            }`}
+              }`}
           >
             <FiSave />
             {saving ? 'Saving...' : 'Save Changes'}

@@ -3,8 +3,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { FiEdit2, FiTrash2, FiCalendar, FiMapPin, FiUsers, FiEye, FiEyeOff, FiPlus, FiStar } from 'react-icons/fi';
-
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+import { API_BASE_URL } from '../../../../../config/api';
 
 const EventsList = ({ onEdit, onCreateNew }) => {
   const [filter, setFilter] = useState('all'); // all, upcoming, past
@@ -28,12 +27,12 @@ const EventsList = ({ onEdit, onCreateNew }) => {
   // Delete event
   const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this event?')) return;
-    
+
     // Prevent multiple simultaneous requests
     if (deleting === id) return;
-    
+
     setDeleting(id);
-    
+
     try {
       const token = localStorage.getItem('token');
       await axios.delete(`${API_BASE_URL}/api/page-events/${id}`, {
@@ -52,9 +51,9 @@ const EventsList = ({ onEdit, onCreateNew }) => {
   const handleToggleActive = async (id, currentStatus) => {
     // Prevent multiple simultaneous requests
     if (togglingActive === id) return;
-    
+
     setTogglingActive(id);
-    
+
     try {
       const token = localStorage.getItem('token');
       await axios.patch(
@@ -74,22 +73,22 @@ const EventsList = ({ onEdit, onCreateNew }) => {
   // Toggle featured status
   const handleToggleFeatured = async (event) => {
     const isPast = new Date(event.eventDate) < new Date();
-    
+
     if (isPast) {
       alert('Only upcoming events can be featured');
       return;
     }
-    
+
     if (!event.active && !event.isFeatured) {
       alert('Only active events can be featured. Please activate the event first.');
       return;
     }
-    
+
     // Prevent multiple simultaneous requests
     if (togglingFeatured === event._id) return;
-    
+
     setTogglingFeatured(event._id);
-    
+
     try {
       const token = localStorage.getItem('token');
       await axios.patch(
@@ -122,7 +121,7 @@ const EventsList = ({ onEdit, onCreateNew }) => {
   });
 
   // Sort events by date (newest first)
-  const sortedEvents = [...filteredEvents].sort((a, b) => 
+  const sortedEvents = [...filteredEvents].sort((a, b) =>
     new Date(b.eventDate) - new Date(a.eventDate)
   );
 
@@ -170,11 +169,10 @@ const EventsList = ({ onEdit, onCreateNew }) => {
           <button
             key={tab.id}
             onClick={() => setFilter(tab.id)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-              filter === tab.id
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${filter === tab.id
                 ? 'bg-[#FBB859] text-white'
                 : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'
-            }`}
+              }`}
           >
             {tab.label} ({tab.count})
           </button>
@@ -195,7 +193,7 @@ const EventsList = ({ onEdit, onCreateNew }) => {
           {sortedEvents.map((event) => {
             const eventDate = new Date(event.eventDate);
             const isPast = eventDate < new Date();
-            
+
             return (
               <div
                 key={event._id}
@@ -220,20 +218,18 @@ const EventsList = ({ onEdit, onCreateNew }) => {
                             {event.title?.text}
                           </h3>
                           <span
-                            className={`px-2 py-1 text-xs font-medium rounded ${
-                              event.active
+                            className={`px-2 py-1 text-xs font-medium rounded ${event.active
                                 ? 'bg-green-100 text-green-700'
                                 : 'bg-gray-100 text-gray-700'
-                            }`}
+                              }`}
                           >
                             {event.active ? 'Active' : 'Hidden'}
                           </span>
                           <span
-                            className={`px-2 py-1 text-xs font-medium rounded ${
-                              isPast
+                            className={`px-2 py-1 text-xs font-medium rounded ${isPast
                                 ? 'bg-gray-100 text-gray-700'
                                 : 'bg-blue-100 text-blue-700'
-                            }`}
+                              }`}
                           >
                             {isPast ? 'Past' : 'Upcoming'}
                           </span>
@@ -281,11 +277,10 @@ const EventsList = ({ onEdit, onCreateNew }) => {
                       <button
                         onClick={() => handleToggleActive(event._id, event.active)}
                         disabled={togglingActive === event._id}
-                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors ${
-                          togglingActive === event._id
+                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors ${togglingActive === event._id
                             ? 'bg-gray-100 text-gray-500 border border-gray-200 cursor-wait'
                             : 'bg-white hover:bg-gray-50 text-gray-700 border border-gray-200'
-                        }`}
+                          }`}
                       >
                         {togglingActive === event._id ? (
                           <>
@@ -305,15 +300,14 @@ const EventsList = ({ onEdit, onCreateNew }) => {
                         <button
                           onClick={() => handleToggleFeatured(event)}
                           disabled={(!event.active && !event.isFeatured) || togglingFeatured === event._id}
-                          className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors ${
-                            togglingFeatured === event._id
+                          className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors ${togglingFeatured === event._id
                               ? 'bg-gray-100 text-gray-500 border border-gray-200 cursor-wait'
-                              : event.isFeatured 
-                                ? 'bg-yellow-100 text-yellow-800 border border-yellow-200' 
-                                : !event.active 
-                                  ? 'bg-gray-50 text-gray-400 border border-gray-200 cursor-not-allowed' 
+                              : event.isFeatured
+                                ? 'bg-yellow-100 text-yellow-800 border border-yellow-200'
+                                : !event.active
+                                  ? 'bg-gray-50 text-gray-400 border border-gray-200 cursor-not-allowed'
                                   : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-50'
-                          }`}
+                            }`}
                           title={!event.active && !event.isFeatured ? 'Activate event first to feature it' : ''}
                         >
                           {togglingFeatured === event._id ? (
@@ -333,11 +327,10 @@ const EventsList = ({ onEdit, onCreateNew }) => {
                       <button
                         onClick={() => handleDelete(event._id)}
                         disabled={deleting === event._id}
-                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors ${
-                          deleting === event._id
+                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors ${deleting === event._id
                             ? 'bg-gray-100 text-gray-500 border border-gray-200 cursor-wait'
                             : 'bg-white hover:bg-red-50 text-red-600 border border-red-200'
-                        }`}
+                          }`}
                       >
                         {deleting === event._id ? (
                           <>

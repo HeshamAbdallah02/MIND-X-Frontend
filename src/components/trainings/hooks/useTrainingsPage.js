@@ -2,8 +2,7 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
-
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+import { API_BASE_URL } from '../../../config/api';
 
 export const useTrainingsPage = () => {
     const [filter, setFilter] = useState('all'); // all, upcoming, past

@@ -4,8 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { FiEdit2, FiTrash2, FiCopy, FiEye, FiEyeOff, FiPlus, FiExternalLink, FiList } from 'react-icons/fi';
-
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+import { API_BASE_URL } from '../../../../../config/api';
 
 const FormsList = ({ onEdit, onCreateNew }) => {
   const navigate = useNavigate();
@@ -28,10 +27,10 @@ const FormsList = ({ onEdit, onCreateNew }) => {
   // Delete form
   const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this form? All submissions will also be deleted.')) return;
-    
+
     if (deleting === id) return;
     setDeleting(id);
-    
+
     try {
       const token = localStorage.getItem('token');
       await axios.delete(`${API_BASE_URL}/api/forms/admin/${id}`, {
@@ -50,7 +49,7 @@ const FormsList = ({ onEdit, onCreateNew }) => {
   const handleTogglePublish = async (id) => {
     if (publishing === id) return;
     setPublishing(id);
-    
+
     try {
       const token = localStorage.getItem('token');
       await axios.patch(
@@ -139,11 +138,10 @@ const FormsList = ({ onEdit, onCreateNew }) => {
                           {form.title}
                         </h3>
                         <span
-                          className={`px-2 py-1 text-xs font-medium rounded ${
-                            form.settings.isPublished
+                          className={`px-2 py-1 text-xs font-medium rounded ${form.settings.isPublished
                               ? 'bg-green-100 text-green-700'
                               : 'bg-gray-100 text-gray-700'
-                          }`}
+                            }`}
                         >
                           {form.settings.isPublished ? 'Published' : 'Draft'}
                         </span>
@@ -178,15 +176,14 @@ const FormsList = ({ onEdit, onCreateNew }) => {
                       <FiEdit2 size={16} />
                       Edit
                     </button>
-                    
+
                     <button
                       onClick={() => handleTogglePublish(form._id)}
                       disabled={publishing === form._id}
-                      className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors ${
-                        publishing === form._id
+                      className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors ${publishing === form._id
                           ? 'bg-gray-100 text-gray-500 border border-gray-200 cursor-wait'
                           : 'bg-white hover:bg-gray-50 text-gray-700 border border-gray-200'
-                      }`}
+                        }`}
                     >
                       {publishing === form._id ? (
                         <>
@@ -222,11 +219,10 @@ const FormsList = ({ onEdit, onCreateNew }) => {
                     <button
                       onClick={() => handleDelete(form._id)}
                       disabled={deleting === form._id}
-                      className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors ${
-                        deleting === form._id
+                      className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors ${deleting === form._id
                           ? 'bg-gray-100 text-gray-500 border border-gray-200 cursor-wait'
                           : 'bg-white hover:bg-red-50 text-red-600 border border-red-200'
-                      }`}
+                        }`}
                     >
                       {deleting === form._id ? (
                         <>

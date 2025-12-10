@@ -6,7 +6,7 @@ import TrainingsFilter from './components/TrainingsFilter';
 import TrainingsList from './components/TrainingsList';
 import TrainingsCTA from './components/TrainingsCTA';
 import { useTrainingsPage } from './hooks/useTrainingsPage';
-import Footer from '../home/Footer';
+import Footer from '../layout/Footer';
 
 const TrainingsPage = () => {
     const { hero, trainings, cta, isLoading, filter, setFilter, scrollToTrainings } = useTrainingsPage();

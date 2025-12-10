@@ -11,8 +11,7 @@ import {
   RegistrationSection,
   TestimonialsSection
 } from './EventFormSections';
-
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+import { API_BASE_URL } from '../../../../../config/api';
 
 const EventForm = ({ event, onCancel, onSaved }) => {
   const queryClient = useQueryClient();
@@ -48,7 +47,7 @@ const EventForm = ({ event, onCancel, onSaved }) => {
     eventDate: '',
     eventTime: { start: '', end: '' },
     location: { venue: '', address: '' },
-    
+
     // Registration & Pricing
     registrationLink: '',
     attendeeCount: 0,
@@ -56,22 +55,22 @@ const EventForm = ({ event, onCancel, onSaved }) => {
     category: '',
     tags: [],
     price: { regular: 0, student: 0, currency: '$' },
-    
+
     // Event Details
     highlights: [],
-    
+
     // Speakers
     speakers: [],
     speakersHeadline: '',
-    
+
     // Schedule
     schedule: [],
     scheduleHeadline: '',
-    
+
     // Gallery Albums
     galleryAlbums: [],
     galleryHeadline: '',
-    
+
     // Registration (for upcoming events)
     registration: {
       headline: '',
@@ -82,15 +81,15 @@ const EventForm = ({ event, onCancel, onSaved }) => {
       deadline: '',
       spots: { available: 0, total: 0 }
     },
-    
+
     // Testimonials (for past events)
     testimonials: [],
     testimonialsHeadline: '',
-    
+
     // Media
     coverImage: { url: '', alt: '' },
     heroImage: { url: '', alt: '' },
-    
+
     // Additional
     contentAreaColor: '#81C99C',
     url: '',
@@ -167,7 +166,7 @@ const EventForm = ({ event, onCancel, onSaved }) => {
       setHasChanges(hasFormChanges);
     } else if (!event) {
       // For create mode, check if any required fields are filled
-      const hasRequiredData = 
+      const hasRequiredData =
         formData.title.text.trim() !== '' ||
         formData.description.text.trim() !== '' ||
         formData.coverImage.url.trim() !== '';
@@ -610,7 +609,7 @@ const EventForm = ({ event, onCancel, onSaved }) => {
               }))}
               required
             />
-            
+
             <ImageUploadField
               label="Hero Image"
               value={formData.heroImage.url}
@@ -797,7 +796,7 @@ const SectionCard = ({ title, children, expanded, onToggle, showVisibility, visi
           {expanded ? <FiChevronUp size={20} /> : <FiChevronDown size={20} />}
         </button>
         {showVisibility && (
-          <label 
+          <label
             className="ml-4 flex items-center gap-2 cursor-pointer"
             onClick={(e) => e.stopPropagation()}
           >

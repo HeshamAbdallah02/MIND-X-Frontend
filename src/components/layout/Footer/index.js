@@ -1,9 +1,9 @@
-// frontend/src/components/home/Footer/index.js
+// frontend/src/components/layout/Footer/index.js
 import React from 'react';
 import { FaFacebook, FaInstagram, FaYoutube, FaLinkedin } from 'react-icons/fa';
 import { useSettings } from '../../../context/BrandSettingsContext';
-import Logo          from './components/Logo';
-import Subscribe     from './components/Subscribe';
+import Logo from './components/Logo';
+import Subscribe from './components/Subscribe';
 import DeveloperCard from './components/DeveloperCard';
 
 const Footer = () => {
@@ -37,21 +37,21 @@ const Footer = () => {
               Follow us:
             </h4>
             <div className="flex gap-4">
-              <a 
-                href="https://www.facebook.com/MindxEgy/" 
+              <a
+                href="https://www.facebook.com/MindxEgy/"
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{ color: c.linkColor }} 
+                style={{ color: c.linkColor }}
                 className="text-2xl hover:opacity-80 transition-opacity"
                 aria-label="Visit our Facebook page"
               >
                 <FaFacebook />
               </a>
-              <a 
-                href="https://www.instagram.com/mind_x199/" 
+              <a
+                href="https://www.instagram.com/mind_x199/"
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{ color: c.linkColor }} 
+                style={{ color: c.linkColor }}
                 className="text-2xl hover:opacity-80 transition-opacity"
                 aria-label="Visit our Instagram page"
               >
@@ -67,11 +67,11 @@ const Footer = () => {
               >
                 <FaYoutube />
               </a> */}
-              <a 
-                href="https://www.linkedin.com/company/mindxegy" 
+              <a
+                href="https://www.linkedin.com/company/mindxegy"
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{ color: c.linkColor }} 
+                style={{ color: c.linkColor }}
                 className="text-2xl hover:opacity-80 transition-opacity"
                 aria-label="Visit our LinkedIn page"
               >
@@ -89,7 +89,7 @@ const Footer = () => {
           >
             Quick Links
           </h3>
-          {['Home','Events','Trainings','Blog'].map(link => (
+          {['Home', 'Events', 'Trainings', 'Blog'].map(link => (
             <a
               key={link}
               href={link === 'Home' ? '/' : `/${link.toLowerCase()}`}
@@ -109,10 +109,10 @@ const Footer = () => {
           >
             Hot Topics
           </h3>
-          {['FAQs','Support','Privacy Policy','Terms'].map(link => (
+          {['FAQs', 'Support', 'Privacy Policy', 'Terms'].map(link => (
             <a
               key={link}
-              href={`/${link.replace(/\s+/g,'').toLowerCase()}`}
+              href={`/${link.replace(/\s+/g, '').toLowerCase()}`}
               className="text-base hover:opacity-80 transition-opacity"
               style={{ color: c.linkColor }}
             >

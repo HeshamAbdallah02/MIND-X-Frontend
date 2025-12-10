@@ -6,7 +6,7 @@ import UpcomingEvents from '../components/home/UpcomingEvents';
 import StatsSection from '../components/home/StatsSection';
 import TestimonialsSection from '../components/home/TestimonialsSection';
 import SponsorsSection from '../components/home/SponsorsSection';
-import Footer from '../components/home/Footer';
+import Footer from '../components/layout/Footer';
 
 const Home = () => {
   return (

@@ -1,13 +1,12 @@
 // frontend/src/components/dashboard/pages/events/sections/ImageUploadField.js
 import React, { useState } from 'react';
 import { FiUpload, FiX } from 'react-icons/fi';
+import { API_BASE_URL } from '../../../../../config/api';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
-
-const ImageUploadField = ({ 
-  label, 
-  value, 
-  onChange, 
+const ImageUploadField = ({
+  label,
+  value,
+  onChange,
   required = false,
   accept = "image/*"
 }) => {
@@ -65,7 +64,7 @@ const ImageUploadField = ({
       <label className="block text-sm font-medium text-gray-700 mb-2">
         {label} {required && <span className="text-red-500">*</span>}
       </label>
-      
+
       <div className="space-y-3">
         {/* Upload Button */}
         <div className="flex gap-2">
@@ -73,8 +72,8 @@ const ImageUploadField = ({
             flex-1 flex items-center justify-center gap-2 px-4 py-3
             border-2 border-dashed rounded-lg cursor-pointer
             transition-colors
-            ${uploading 
-              ? 'border-gray-300 bg-gray-50 cursor-wait' 
+            ${uploading
+              ? 'border-gray-300 bg-gray-50 cursor-wait'
               : 'border-gray-300 hover:border-[#FBB859] hover:bg-[#FBB859]/5'
             }
           `}>
@@ -90,7 +89,7 @@ const ImageUploadField = ({
               className="hidden"
             />
           </label>
-          
+
           {value && (
             <button
               type="button"

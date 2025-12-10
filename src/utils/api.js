@@ -1,5 +1,6 @@
 // frontend/src/utils/api.js
 import axios from 'axios';
+import { API_BASE_URL } from '../config/api';
 
 // Cache token to avoid repeated localStorage access
 let cachedToken = null;
@@ -9,7 +10,7 @@ const getToken = () => {
   if (cachedToken && tokenExpiry && Date.now() < tokenExpiry) {
     return cachedToken;
   }
-  
+
   cachedToken = localStorage.getItem('token');
   // Cache for 5 minutes to reduce localStorage access
   tokenExpiry = Date.now() + 5 * 60 * 1000;
@@ -23,7 +24,7 @@ const clearTokenCache = () => {
 
 // API Configuration
 const API_CONFIG = {
-  baseURL: process.env.REACT_APP_API_URL + '/api',
+  baseURL: API_BASE_URL + '/api',
   timeout: 10000, // 10 second timeout
   headers: {
     'Content-Type': 'application/json',

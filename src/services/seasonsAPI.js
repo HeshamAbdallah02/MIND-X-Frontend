@@ -1,7 +1,6 @@
 // frontend/src/services/seasonsAPI.js
 import axios from 'axios';
-
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+import { API_BASE_URL } from '../config/api';
 
 // Create axios instance with default config
 const seasonsAPI = axios.create({
@@ -135,7 +134,7 @@ export const uploadCoverImage = async (seasonId, imageFile) => {
   try {
     const formData = new FormData();
     formData.append('image', imageFile);
-    
+
     const response = await seasonsAPI.post(
       `/seasons/admin/${seasonId}/cover-image`,
       formData,
@@ -169,7 +168,7 @@ export const uploadMemberAvatar = async (seasonId, memberId, imageFile) => {
   try {
     const formData = new FormData();
     formData.append('image', imageFile);
-    
+
     const response = await seasonsAPI.post(
       `/seasons/admin/${seasonId}/board-members/${memberId}/avatar`,
       formData,
@@ -204,7 +203,7 @@ export const addBoardMember = async (seasonId, memberData) => {
 export const updateBoardMember = async (seasonId, memberId, memberData) => {
   try {
     const response = await seasonsAPI.put(
-      `/seasons/admin/${seasonId}/board-members/${memberId}`, 
+      `/seasons/admin/${seasonId}/board-members/${memberId}`,
       memberData
     );
     return response.data;
@@ -229,7 +228,7 @@ export const deleteBoardMember = async (seasonId, memberId) => {
 export const reorderBoardMembers = async (seasonId, members) => {
   try {
     const response = await seasonsAPI.put(
-      `/seasons/admin/${seasonId}/board-members/reorder`, 
+      `/seasons/admin/${seasonId}/board-members/reorder`,
       { members }
     );
     return response.data;
@@ -267,7 +266,7 @@ export const addHighlight = async (seasonId, highlightData) => {
 export const updateHighlight = async (seasonId, highlightId, highlightData) => {
   try {
     const response = await seasonsAPI.put(
-      `/seasons/admin/${seasonId}/highlights/${highlightId}`, 
+      `/seasons/admin/${seasonId}/highlights/${highlightId}`,
       highlightData
     );
     return response.data;
@@ -292,7 +291,7 @@ export const deleteHighlight = async (seasonId, highlightId) => {
 export const reorderHighlights = async (seasonId, highlights) => {
   try {
     const response = await seasonsAPI.put(
-      `/seasons/admin/${seasonId}/highlights/reorder`, 
+      `/seasons/admin/${seasonId}/highlights/reorder`,
       { highlights }
     );
     return response.data;
@@ -334,26 +333,26 @@ const seasonsAPIService = {
   getSeasons,
   getSeasonByYear,
   getSeasonById,
-  
+
   // Admin functions
   getAllSeasons,
   createSeason,
   updateSeason,
   deleteSeason,
   reorderSeasons,
-  
+
   // Image functions
   uploadCoverImage,
   deleteCoverImage,
   uploadMemberAvatar,
-  
+
   // Board member functions
   addBoardMember,
   updateBoardMember,
   deleteBoardMember,
   reorderBoardMembers,
   setLeader,
-  
+
   // Highlight functions
   addHighlight,
   updateHighlight,

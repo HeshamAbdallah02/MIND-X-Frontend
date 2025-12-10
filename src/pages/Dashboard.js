@@ -10,6 +10,7 @@ import EventsManager from '../components/dashboard/pages/events/EventsManager';
 import FormsManager from '../components/dashboard/pages/forms/FormsManager';
 import FormResponses from '../components/dashboard/pages/forms/sections/FormResponses';
 import TrainingsManager from '../components/dashboard/pages/trainings/TrainingsManager';
+import CrewManager from '../components/dashboard/pages/crew/CrewManager';
 
 const Dashboard = () => {
   return (
@@ -22,7 +23,7 @@ const Dashboard = () => {
           <Route path="/forms" element={<FormsManager />} />
           <Route path="/forms/:id/responses" element={<FormResponses />} />
           <Route path="/trainings" element={<TrainingsManager />} />
-          <Route path="/crew" element={<div>Crew Page</div>} />
+          <Route path="/crew" element={<CrewManager />} />
           <Route path="/daily-life" element={<div>Daily Life Page</div>} />
           <Route path="/blog" element={<BlogManager />} />
         </Routes>

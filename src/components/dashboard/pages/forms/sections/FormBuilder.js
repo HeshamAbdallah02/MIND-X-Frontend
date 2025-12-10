@@ -3,8 +3,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useQueryClient } from '@tanstack/react-query';
 import { FiSave, FiX, FiPlus, FiTrash2, FiSettings } from 'react-icons/fi';
-
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+import { API_BASE_URL } from '../../../../../config/api';
 
 const QUESTION_TYPES = [
   { value: 'text', label: 'Short Text' },
@@ -25,7 +24,7 @@ const FormBuilder = ({ form, onCancel, onSaved }) => {
   const queryClient = useQueryClient();
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('questions'); // questions, settings
-  
+
   const [formData, setFormData] = useState({
     title: form?.title || '',
     description: form?.description || '',
@@ -92,7 +91,7 @@ const FormBuilder = ({ form, onCancel, onSaved }) => {
 
     const newQuestions = [...formData.questions];
     [newQuestions[index], newQuestions[newIndex]] = [newQuestions[newIndex], newQuestions[index]];
-    
+
     setFormData(prev => ({
       ...prev,
       questions: newQuestions.map((q, i) => ({ ...q, order: i }))
@@ -138,7 +137,7 @@ const FormBuilder = ({ form, onCancel, onSaved }) => {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      
+
       if (form?._id) {
         // Update existing form
         await axios.put(
@@ -227,21 +226,19 @@ const FormBuilder = ({ form, onCancel, onSaved }) => {
       <div className="mb-6 flex gap-2">
         <button
           onClick={() => setActiveTab('questions')}
-          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-            activeTab === 'questions'
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === 'questions'
               ? 'bg-[#FBB859] text-white'
               : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'
-          }`}
+            }`}
         >
           Questions ({formData.questions.length})
         </button>
         <button
           onClick={() => setActiveTab('settings')}
-          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${
-            activeTab === 'settings'
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${activeTab === 'settings'
               ? 'bg-[#FBB859] text-white'
               : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'
-          }`}
+            }`}
         >
           <FiSettings size={16} />
           Settings
@@ -415,7 +412,7 @@ const FormBuilder = ({ form, onCancel, onSaved }) => {
         <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-6">
           <div>
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Form Settings</h3>
-            
+
             <div className="space-y-4">
               {/* Collect Email */}
               <div className="flex items-center gap-3">

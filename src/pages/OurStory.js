@@ -5,14 +5,14 @@ import OurJourney from '../components/our-story/OurJourney';
 import AwardsSection from '../components/our-story/AwardsSection';
 import SeasonsSection from '../components/our-story/SeasonsSection';
 import DynamicCTA from '../components/DynamicCTA';
-import Footer from '../components/home/Footer/index';
+import Footer from '../components/layout/Footer/index';
 
 const OurStory = () => {
   const beginningRef = useRef(null);
 
   const handleScrollToNext = () => {
     if (beginningRef.current) {
-      beginningRef.current.scrollIntoView({ 
+      beginningRef.current.scrollIntoView({
         behavior: 'smooth',
         block: 'start'
       });
