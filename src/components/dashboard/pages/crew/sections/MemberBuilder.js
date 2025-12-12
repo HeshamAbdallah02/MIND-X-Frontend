@@ -2,8 +2,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { FiArrowLeft, FiSave, FiUpload, FiUser, FiX, FiLink } from 'react-icons/fi';
+import { FiArrowLeft, FiSave, FiCamera, FiUser, FiX, FiLink } from 'react-icons/fi';
 import { API_BASE_URL } from '../../../../../config/api';
+import AvatarCropper from '../../../../shared/AvatarCropper';
 
 const MemberBuilder = ({ member, onCancel, onSaved }) => {
     const queryClient = useQueryClient();
@@ -18,8 +19,13 @@ const MemberBuilder = ({ member, onCancel, onSaved }) => {
         mentorSection: '',
         blogs: []
     });
-    const [avatarFile, setAvatarFile] = useState(null);
+
+    // Avatar state
+    const [avatarBlob, setAvatarBlob] = useState(null);
     const [avatarPreview, setAvatarPreview] = useState(null);
+    const [originalAvatarUrl, setOriginalAvatarUrl] = useState(null);
+    const [showCropper, setShowCropper] = useState(false);
+
     const [saving, setSaving] = useState(false);
     const [uploadingAvatar, setUploadingAvatar] = useState(false);
     const [errors, setErrors] = useState({});
@@ -33,11 +39,14 @@ const MemberBuilder = ({ member, onCancel, onSaved }) => {
         }
     });
 
-    // Fetch available blogs
+    // Fetch available blogs (using admin endpoint with auth)
     const { data: availableBlogs = [] } = useQuery({
-        queryKey: ['available-blogs'],
+        queryKey: ['available-blogs-admin'],
         queryFn: async () => {
-            const response = await axios.get(`${API_BASE_URL}/api/blogs`);
+            const token = localStorage.getItem('token');
+            const response = await axios.get(`${API_BASE_URL}/api/blogs/admin/all`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
             return response.data;
         }
     });
@@ -55,6 +64,7 @@ const MemberBuilder = ({ member, onCancel, onSaved }) => {
             });
             if (member.avatar?.url) {
                 setAvatarPreview(member.avatar.url);
+                setOriginalAvatarUrl(member.avatar.url);
             }
         }
     }, [member]);
@@ -64,23 +74,17 @@ const MemberBuilder = ({ member, onCancel, onSaved }) => {
     const requiresSection = positionsRequiringSection.includes(formData.position);
     const requiresMentorSection = formData.position === 'High Board Member';
 
-    // Handle avatar file selection
-    const handleAvatarChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            if (file.size > 5 * 1024 * 1024) {
-                setErrors(prev => ({ ...prev, avatar: 'Image must be less than 5MB' }));
-                return;
-            }
-            setAvatarFile(file);
-            setAvatarPreview(URL.createObjectURL(file));
-            setErrors(prev => ({ ...prev, avatar: null }));
-        }
+    // Handle cropped avatar
+    const handleAvatarCrop = (dataUrl, blob) => {
+        setAvatarPreview(dataUrl);
+        setAvatarBlob(blob);
+        setShowCropper(false);
+        setErrors(prev => ({ ...prev, avatar: null }));
     };
 
     // Remove avatar
     const handleRemoveAvatar = () => {
-        setAvatarFile(null);
+        setAvatarBlob(null);
         setAvatarPreview(null);
     };
 
@@ -150,11 +154,11 @@ const MemberBuilder = ({ member, onCancel, onSaved }) => {
                 savedMember = response.data;
             }
 
-            // Upload avatar if changed
-            if (avatarFile && savedMember._id) {
+            // Upload avatar if we have a new cropped blob
+            if (avatarBlob && savedMember._id) {
                 setUploadingAvatar(true);
                 const formDataAvatar = new FormData();
-                formDataAvatar.append('avatar', avatarFile);
+                formDataAvatar.append('avatar', avatarBlob, 'avatar.jpg');
 
                 await axios.post(
                     `${API_BASE_URL}/api/members/admin/${savedMember._id}/avatar`,
@@ -223,52 +227,52 @@ const MemberBuilder = ({ member, onCancel, onSaved }) => {
                 <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                     <h3 className="text-lg font-semibold text-gray-900 mb-4">Profile Photo</h3>
 
-                    <div className="flex items-start gap-6">
-                        {/* Avatar Preview */}
-                        <div className="relative w-32 h-32 rounded-full overflow-hidden bg-gray-100 flex-shrink-0">
-                            {avatarPreview ? (
-                                <>
+                    <div className="flex items-center gap-6">
+                        {/* Circular Avatar Preview */}
+                        <div className="relative">
+                            <div className="w-32 h-32 rounded-full overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 border-4 border-white shadow-lg">
+                                {avatarPreview ? (
                                     <img
                                         src={avatarPreview}
                                         alt="Avatar preview"
                                         className="w-full h-full object-cover"
                                     />
-                                    <button
-                                        type="button"
-                                        onClick={handleRemoveAvatar}
-                                        className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full hover:bg-red-600"
-                                    >
-                                        <FiX size={14} />
-                                    </button>
-                                </>
-                            ) : (
-                                <div className="w-full h-full flex items-center justify-center text-gray-400">
-                                    <FiUser size={48} />
-                                </div>
+                                ) : (
+                                    <div className="w-full h-full flex items-center justify-center text-gray-400">
+                                        <FiUser size={48} />
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Remove button */}
+                            {avatarPreview && (
+                                <button
+                                    type="button"
+                                    onClick={handleRemoveAvatar}
+                                    className="absolute -top-1 -right-1 p-1.5 bg-red-500 text-white rounded-full hover:bg-red-600 shadow-md transition-colors"
+                                    title="Remove photo"
+                                >
+                                    <FiX size={14} />
+                                </button>
                             )}
                         </div>
 
                         {/* Upload Controls */}
                         <div className="flex-1">
-                            <label className="block">
-                                <span className="sr-only">Choose avatar</span>
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={handleAvatarChange}
-                                    className="hidden"
-                                    id="avatar-upload"
-                                />
-                                <label
-                                    htmlFor="avatar-upload"
-                                    className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 cursor-pointer transition-colors"
+                            <div className="flex flex-wrap gap-2">
+                                <button
+                                    type="button"
+                                    onClick={() => setShowCropper(true)}
+                                    className="inline-flex items-center gap-2 px-4 py-2 bg-[#FBB859] text-white rounded-lg hover:bg-[#e9a748] transition-colors font-medium"
                                 >
-                                    <FiUpload size={16} />
-                                    <span>Upload Photo</span>
-                                </label>
-                            </label>
+                                    <FiCamera size={16} />
+                                    <span>{avatarPreview ? 'Change Photo' : 'Upload Photo'}</span>
+                                </button>
+                            </div>
                             <p className="mt-2 text-sm text-gray-500">
-                                Recommended: Square image, at least 400x400px. Max 5MB.
+                                {avatarPreview
+                                    ? 'Click to upload a new photo or re-crop the current one'
+                                    : 'Click to upload and crop a circular profile photo'}
                             </p>
                             {errors.avatar && (
                                 <p className="mt-1 text-sm text-red-600">{errors.avatar}</p>
@@ -482,6 +486,19 @@ const MemberBuilder = ({ member, onCancel, onSaved }) => {
                     </button>
                 </div>
             </form>
+
+            {/* Avatar Cropper Modal */}
+            {showCropper && (
+                <AvatarCropper
+                    onCrop={handleAvatarCrop}
+                    onCancel={() => setShowCropper(false)}
+                    initialImage={originalAvatarUrl}
+                    width={280}
+                    height={280}
+                    borderRadius={140}
+                    outputSize={512}
+                />
+            )}
         </div>
     );
 };

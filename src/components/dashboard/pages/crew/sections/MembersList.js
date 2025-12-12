@@ -197,102 +197,109 @@ const MembersList = ({ onEdit, onCreateNew }) => {
                     )}
                 </div>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     {filteredMembers.map((member) => (
                         <div
                             key={member._id}
-                            className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow"
+                            className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-200"
                         >
-                            {/* Avatar */}
-                            <div className="relative h-48 bg-gradient-to-br from-gray-100 to-gray-200">
-                                {member.avatar?.url ? (
-                                    <img
-                                        src={member.avatar.url}
-                                        alt={member.name}
-                                        className="w-full h-full object-cover"
-                                    />
-                                ) : (
-                                    <div className="w-full h-full flex items-center justify-center">
-                                        <FiUser size={64} className="text-gray-400" />
+                            {/* Card Content with centered avatar */}
+                            <div className="p-6 text-center">
+                                {/* Circular Avatar */}
+                                <div className="relative inline-block mb-4">
+                                    <div className="w-24 h-24 rounded-full overflow-hidden bg-gradient-to-br from-[#FBB859]/20 to-[#e9a748]/20 border-4 border-white shadow-lg mx-auto">
+                                        {member.avatar?.url ? (
+                                            <img
+                                                src={member.avatar.url}
+                                                alt={member.name}
+                                                className="w-full h-full object-cover"
+                                            />
+                                        ) : (
+                                            <div className="w-full h-full flex items-center justify-center bg-gray-100">
+                                                <FiUser size={32} className="text-gray-400" />
+                                            </div>
+                                        )}
                                     </div>
-                                )}
-                                {/* Status Badge */}
-                                <span className={`absolute top-3 right-3 px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(member.status)}`}>
-                                    {member.status.charAt(0).toUpperCase() + member.status.slice(1)}
-                                </span>
-                            </div>
+                                    {/* Status Badge */}
+                                    <span className={`absolute -bottom-1 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full text-xs font-medium whitespace-nowrap ${getStatusColor(member.status)}`}>
+                                        {member.status.charAt(0).toUpperCase() + member.status.slice(1)}
+                                    </span>
+                                </div>
 
-                            {/* Content */}
-                            <div className="p-4">
+                                {/* Name */}
                                 <h3 className="text-lg font-bold text-gray-900 mb-1">{member.name}</h3>
-                                <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium mb-2 ${getPositionColor(member.position)}`}>
+
+                                {/* Position Badge */}
+                                <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium mb-2 ${getPositionColor(member.position)}`}>
                                     {member.fullPosition || member.position}
                                 </span>
 
+                                {/* Section */}
                                 {member.section && (
-                                    <p className="text-sm text-gray-600 mb-2">
-                                        Section: {member.section}
+                                    <p className="text-sm text-gray-500 mb-2">
+                                        {member.section}
                                     </p>
                                 )}
 
+                                {/* Blog count */}
                                 {member.blogs?.length > 0 && (
-                                    <p className="text-sm text-gray-500 mb-3">
+                                    <p className="text-xs text-gray-400">
                                         {member.blogs.length} blog{member.blogs.length !== 1 ? 's' : ''} written
                                     </p>
                                 )}
+                            </div>
 
-                                {/* Actions */}
-                                <div className="flex items-center gap-2 flex-wrap pt-3 border-t border-gray-100">
-                                    <button
-                                        onClick={() => onEdit(member)}
-                                        className="flex items-center gap-1 px-3 py-1.5 bg-[#FBB859] text-white rounded-lg hover:bg-[#e9a748] transition-colors text-sm"
-                                    >
-                                        <FiEdit2 size={14} />
-                                        <span>Edit</span>
-                                    </button>
+                            {/* Actions */}
+                            <div className="flex items-center justify-center gap-2 flex-wrap p-4 pt-0">
+                                <button
+                                    onClick={() => onEdit(member)}
+                                    className="flex items-center gap-1 px-3 py-1.5 bg-[#FBB859] text-white rounded-lg hover:bg-[#e9a748] transition-colors text-sm"
+                                >
+                                    <FiEdit2 size={14} />
+                                    <span>Edit</span>
+                                </button>
 
-                                    <button
-                                        onClick={() => handleCopyLink(member.slug)}
-                                        className="flex items-center gap-1 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors text-sm"
-                                    >
-                                        <FiLink size={14} />
-                                        <span>Link</span>
-                                    </button>
+                                <button
+                                    onClick={() => handleCopyLink(member.slug)}
+                                    className="flex items-center gap-1 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors text-sm"
+                                >
+                                    <FiLink size={14} />
+                                    <span>Link</span>
+                                </button>
 
-                                    <button
-                                        onClick={() => handleToggleStatus(member._id)}
-                                        disabled={togglingStatus === member._id}
-                                        className={`flex items-center gap-1 px-3 py-1.5 rounded-lg transition-colors text-sm ${togglingStatus === member._id
-                                                ? 'bg-gray-100 text-gray-500 cursor-wait'
-                                                : member.status === 'active'
-                                                    ? 'bg-green-50 text-green-600 hover:bg-green-100'
-                                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                                            }`}
-                                    >
-                                        {togglingStatus === member._id ? (
-                                            <div className="w-3 h-3 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
-                                        ) : member.status === 'active' ? (
-                                            <FiEye size={14} />
-                                        ) : (
-                                            <FiEyeOff size={14} />
-                                        )}
-                                    </button>
+                                <button
+                                    onClick={() => handleToggleStatus(member._id)}
+                                    disabled={togglingStatus === member._id}
+                                    className={`flex items-center gap-1 px-3 py-1.5 rounded-lg transition-colors text-sm ${togglingStatus === member._id
+                                        ? 'bg-gray-100 text-gray-500 cursor-wait'
+                                        : member.status === 'active'
+                                            ? 'bg-green-50 text-green-600 hover:bg-green-100'
+                                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                        }`}
+                                >
+                                    {togglingStatus === member._id ? (
+                                        <div className="w-3 h-3 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
+                                    ) : member.status === 'active' ? (
+                                        <FiEye size={14} />
+                                    ) : (
+                                        <FiEyeOff size={14} />
+                                    )}
+                                </button>
 
-                                    <button
-                                        onClick={() => handleDelete(member._id)}
-                                        disabled={deleting === member._id}
-                                        className={`flex items-center gap-1 px-3 py-1.5 rounded-lg transition-colors text-sm ${deleting === member._id
-                                                ? 'bg-gray-100 text-gray-500 cursor-wait'
-                                                : 'bg-red-50 text-red-600 hover:bg-red-100'
-                                            }`}
-                                    >
-                                        {deleting === member._id ? (
-                                            <div className="w-3 h-3 border-2 border-gray-300 border-t-red-600 rounded-full animate-spin" />
-                                        ) : (
-                                            <FiTrash2 size={14} />
-                                        )}
-                                    </button>
-                                </div>
+                                <button
+                                    onClick={() => handleDelete(member._id)}
+                                    disabled={deleting === member._id}
+                                    className={`flex items-center gap-1 px-3 py-1.5 rounded-lg transition-colors text-sm ${deleting === member._id
+                                        ? 'bg-gray-100 text-gray-500 cursor-wait'
+                                        : 'bg-red-50 text-red-600 hover:bg-red-100'
+                                        }`}
+                                >
+                                    {deleting === member._id ? (
+                                        <div className="w-3 h-3 border-2 border-gray-300 border-t-red-600 rounded-full animate-spin" />
+                                    ) : (
+                                        <FiTrash2 size={14} />
+                                    )}
+                                </button>
                             </div>
                         </div>
                     ))}
@@ -303,3 +310,4 @@ const MembersList = ({ onEdit, onCreateNew }) => {
 };
 
 export default MembersList;
+
