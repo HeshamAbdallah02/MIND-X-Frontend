@@ -19,7 +19,26 @@ module.exports = {
       },
       containers: {
         'splash': '20rem',
-      }
+      },
+      keyframes: {
+        shimmer: {
+          '0%, 100%': { backgroundPosition: '0% center' },
+          '50%': { backgroundPosition: '200% center' },
+        },
+        fadeSlideIn: {
+          from: { opacity: '0', transform: 'translateY(16px)' },
+          to: { opacity: '1', transform: 'translateY(0)' },
+        },
+        fadeIn: {
+          from: { opacity: '0' },
+          to: { opacity: '1' },
+        },
+      },
+      animation: {
+        shimmer: 'shimmer 3s ease-in-out infinite',
+        fadeSlideIn: 'fadeSlideIn 0.5s ease',
+        fadeIn: 'fadeIn 0.2s ease',
+      },
     },
   },
   plugins: [

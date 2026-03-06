@@ -21,7 +21,7 @@ const HeaderManager = () => {
   // Refs to track latest currentData and config
   const currentDataRef = useRef(currentData);
   const configRef = useRef(config);
-  
+
   useEffect(() => {
     currentDataRef.current = currentData;
     configRef.current = config;
@@ -70,11 +70,11 @@ const HeaderManager = () => {
         ...(colorType === 'background'
           ? { background: value }
           : {
-              text: {
-                ...prev.colors.text,
-                [colorType]: value
-              }
-            })
+            text: {
+              ...prev.colors.text,
+              [colorType]: value
+            }
+          })
       }
     }));
   };
@@ -87,21 +87,21 @@ const HeaderManager = () => {
       fileSize: file?.size,
       fileType: file?.type
     });
-    
+
     setIsUploading(true);
-    
+
     try {
       // Validate file exists
       if (!file) {
         throw new Error('No file provided');
       }
-      
+
       // Create FormData identical to sponsor form
       const formData = new FormData();
       formData.append('file', file); // Must match sponsor form's field name
-      
+
       console.log('FormData created, file appended as "file"');
-  
+
       // Use API instance with default headers
       const response = await api.post('/upload', formData, {
         headers: {
@@ -109,17 +109,17 @@ const HeaderManager = () => {
         },
         timeout: 60000 // 60 seconds for file uploads
       });
-  
+
       // Update state with response
       const newData = {
         ...currentDataRef.current,
         logo: {
           imageUrl: response.data.url,
-          publicId: response.data.publicId,
+          public_id: response.data.public_id,
           altText: currentDataRef.current.logo?.altText || 'MIND-X Logo'
         }
       };
-  
+
       updateData(newData);
       return true;
     } catch (error) {
@@ -134,27 +134,27 @@ const HeaderManager = () => {
   // Updated handleLogoDelete
   const handleLogoDelete = async () => {
     try {
-      let publicIdToDelete = null;
-  
-      if (tempLogoData?.publicId) {
-        publicIdToDelete = encodeURIComponent(tempLogoData.publicId);
-      } else if (currentData.logo?.publicId) {
-        publicIdToDelete = encodeURIComponent(currentData.logo.publicId);
+      let idToDelete = null;
+
+      if (tempLogoData?.public_id) {
+        idToDelete = encodeURIComponent(tempLogoData.public_id);
+      } else if (currentData.logo?.public_id) {
+        idToDelete = encodeURIComponent(currentData.logo.public_id);
       }
-  
-      if (publicIdToDelete) {
-        await api.delete(`/upload/${publicIdToDelete}`);
+
+      if (idToDelete) {
+        await api.delete(`/upload/${idToDelete}`);
       }
-  
+
       updateData(prev => ({
         ...prev,
         logo: {
           ...prev.logo,
           imageUrl: '',
-          publicId: null
+          public_id: null
         }
       }));
-  
+
       setTempLogoData(null);
       toast.success('Logo removed successfully');
     } catch (error) {
@@ -167,7 +167,7 @@ const HeaderManager = () => {
 
   return (
     <div className="space-y-6">
-      <ColorManagement 
+      <ColorManagement
         colors={currentData.colors}
         onColorChange={handleColorChange}
       />
