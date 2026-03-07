@@ -52,9 +52,14 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       localStorage.removeItem('token');
       clearTokenCache();
-      // Use router navigation instead of direct window.location
-      if (window.location.pathname !== `/${process.env.REACT_APP_ADMIN_PATH}/access`) {
-        window.location.href = `/${process.env.REACT_APP_ADMIN_PATH}/access`;
+      // Only redirect to login if user is on a dashboard/admin route
+      const dashboardPath = process.env.REACT_APP_DASHBOARD_PATH;
+      const adminPath = process.env.REACT_APP_ADMIN_PATH;
+      const currentPath = window.location.pathname;
+      const isOnDashboard = currentPath.startsWith(`/${dashboardPath}`) ||
+        currentPath.startsWith(`/${adminPath}`);
+      if (isOnDashboard && currentPath !== `/${adminPath}/access`) {
+        window.location.href = `/${adminPath}/access`;
       }
     }
     return Promise.reject(error);
